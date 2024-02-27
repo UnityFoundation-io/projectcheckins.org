@@ -105,7 +105,7 @@ class QuestionController {
         questionRepository.update(questionUpdate);
         return HttpResponse.seeOther(PATH_SHOW_BUILDER.apply(id));
     }
-
+ 
     @PostForm(uri = PATH_DELETE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
     HttpResponse<?> questionDelete(@PathVariable @NotBlank String id) {
         return HttpResponse.seeOther(URI.create(PATH_LIST));
