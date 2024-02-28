@@ -1,6 +1,6 @@
 <th:block th:each="field : ${el.fields()}" th:fragment="fieldset(el)" xmlns:th="http://www.thymeleaf.org">
-    <th:block th:if="${field.class.name == 'com.softamo.concertados.http.InputFileFormElement'}"><div th:replace="~{fieldset/inputfile :: inputfile(${field})}"/></th:block>
-    <th:block th:unless="${field.class.name == 'com.softamo.concertados.http.InputFileFormElement'}">
+    <th:block th:if="${field.class.name == 'io.micronaut.views.fields.elements.InputFileFormElement'}"><div th:replace="~{fieldset/inputfile :: inputfile(${field})}"/></th:block>
+    <th:block th:unless="${field.class.name == 'io.micronaut.views.fields.elements.InputFileFormElement'}">
         <th:block th:if="${field.tag.toString() == 'input' && field.type.toString() == 'hidden'}"><input th:replace="~{fieldset/inputhidden :: inputhidden(${field})}"/></th:block>
         <th:block th:if="${field.tag.toString() == 'input' && field.type.toString() == 'password'}"><div class="mb-3" th:insert="~{fieldset/inputstring :: inputstring('password',${field})}"/></th:block>
         <th:block th:if="${field.tag.toString() == 'textarea'}"><div class="mb-3" th:insert="~{fieldset/textarea :: textarea(${field})}"/></th:block>

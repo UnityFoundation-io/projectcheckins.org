@@ -8,7 +8,9 @@ import io.micronaut.runtime.server.event.ServerStartupEvent;
 import jakarta.inject.Singleton;
 import org.projectcheckins.security.RegisterService;
 import org.projectcheckins.security.UserAlreadyExistsException;
+import org.projectcheckins.annotations.Generated;
 
+@Generated// "ignore for jacoco"
 @Requires(env = Environment.DEVELOPMENT)
 @Singleton
 public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {

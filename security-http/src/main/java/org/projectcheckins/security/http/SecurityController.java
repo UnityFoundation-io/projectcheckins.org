@@ -1,6 +1,6 @@
 package org.projectcheckins.security.http;
 
-import com.softamo.concertados.annotations.GetHtml;
+import org.projectcheckins.annotations.GetHtml;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.security.endpoints.LoginControllerConfiguration;
 import io.micronaut.security.rules.SecurityRule;

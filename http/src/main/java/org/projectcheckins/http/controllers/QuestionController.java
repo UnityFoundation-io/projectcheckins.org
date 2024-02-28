@@ -1,7 +1,7 @@
 package org.projectcheckins.http.controllers;
 
-import com.softamo.concertados.annotations.GetHtml;
-import com.softamo.concertados.annotations.PostForm;
+import org.projectcheckins.annotations.GetHtml;
+import org.projectcheckins.annotations.PostForm;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Body;

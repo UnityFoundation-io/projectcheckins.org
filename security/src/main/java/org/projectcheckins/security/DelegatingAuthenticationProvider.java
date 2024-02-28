@@ -9,6 +9,7 @@ import io.micronaut.security.authentication.AuthenticationException;
 import io.micronaut.security.authentication.AuthenticationFailed;
 import io.micronaut.security.authentication.AuthenticationRequest;
 import io.micronaut.security.authentication.AuthenticationResponse;
+import io.micronaut.security.authentication.provider.HttpRequestExecutorAuthenticationProvider;
 import io.micronaut.security.authentication.provider.HttpRequestReactiveAuthenticationProvider;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
@@ -26,7 +27,7 @@ import static io.micronaut.security.authentication.AuthenticationFailureReason.U
 
 @Requires(beans = { UserFetcher.class, PasswordEncoder.class, AuthoritiesFetcher.class })
 @Singleton
-class DelegatingAuthenticationProvider<B> implements HttpRequestReactiveAuthenticationProvider<B> {
+class DelegatingAuthenticationProvider<B> implements HttpRequestExecutorAuthenticationProvider<B> {
 
     public static final String ATTRIBUTES_EMAIL = "email";
     private final UserFetcher userFetcher;
@@ -45,28 +46,21 @@ class DelegatingAuthenticationProvider<B> implements HttpRequestReactiveAuthenti
     }
 
     @Override
-    public Publisher<AuthenticationResponse> authenticate(@Nullable HttpRequest<B> httpRequest,
-                                                          AuthenticationRequest<String, String> authenticationRequest) {
-        return Flux.<AuthenticationResponse>create(emitter -> {
-            UserState user = fetchUserState(authenticationRequest);
-            AuthenticationFailed authenticationFailed = user == null
-                    ? new AuthenticationFailed(USER_NOT_FOUND)
-                    : validate(user, authenticationRequest);
-            if (authenticationFailed != null) {
-                emitter.error(new AuthenticationException(authenticationFailed));
-            } else {
-                emitter.next(createSuccessfulAuthenticationResponse(user));
-                emitter.complete();
-            }
-        }, FluxSink.OverflowStrategy.ERROR).subscribeOn(scheduler);
+    public @NonNull AuthenticationResponse authenticate(@Nullable HttpRequest<B> requestContext,
+                                                        @NonNull AuthenticationRequest<String, String> authRequest) {
+            UserState user = fetchUserState(authRequest);
+            AuthenticationFailed authenticationFailed = validate(user, authRequest);
+
+            return authenticationFailed != null
+                    ? AuthenticationResponse.failure(authenticationFailed.getReason())
+                    : createSuccessfulAuthenticationResponse(user);
     }
 
     @Nullable
     private AuthenticationFailed validate(@Nullable UserState user,
                                           @NonNull AuthenticationRequest<?, ?> authenticationRequest) {
-        AuthenticationFailed authenticationFailed = null;
         if (user == null) {
-            authenticationFailed = new AuthenticationFailed(USER_NOT_FOUND);
+            return new AuthenticationFailed(USER_NOT_FOUND);
         }
         for (PasswordEncoder passwordEncoder : passwordEncoders) {
             if (passwordEncoder.matches(authenticationRequest.getSecret().toString(), user.getPassword())) {
@@ -89,4 +83,5 @@ class DelegatingAuthenticationProvider<B> implements HttpRequestReactiveAuthenti
                 authorities,
                 Collections.singletonMap(ATTRIBUTES_EMAIL, user.getEmail()));
     }
+
 }
