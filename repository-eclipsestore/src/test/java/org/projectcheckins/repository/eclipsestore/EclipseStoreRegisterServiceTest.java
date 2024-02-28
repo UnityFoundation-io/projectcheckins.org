@@ -7,7 +7,7 @@ import org.projectcheckins.security.UserAlreadyExistsException;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@MicronautTest
+@MicronautTest(startApplication = false)
 class EclipseStoreRegisterServiceTest {
     @Test
     void testRegister(EclipseStoreRegisterService registerService) {
