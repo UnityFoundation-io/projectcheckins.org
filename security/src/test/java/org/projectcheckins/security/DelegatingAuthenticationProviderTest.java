@@ -28,7 +28,7 @@ class DelegatingAuthenticationProviderTest {
     private static final String WRONG_PASSWORD = "wrongpassword";
 
     @Test
-    void testUserNotFoundAuthentication(DelegatingAuthenticationProvider authenticationProvider) {
+    void testUserNotFoundAuthentication(DelegatingAuthenticationProvider<?> authenticationProvider) {
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(NOT_FOUND_EMAIL, CORRECT_PASSWORD);
         assertFalse(authenticationProvider.authenticate(null, credentials).isAuthenticated());
         assertTrue(authenticationProvider.authenticate(null, credentials) instanceof AuthenticationFailed);
@@ -37,7 +37,7 @@ class DelegatingAuthenticationProviderTest {
     }
 
     @Test
-    void testUserCredentialsDontMatch(DelegatingAuthenticationProvider authenticationProvider) {
+    void testUserCredentialsDontMatch(DelegatingAuthenticationProvider<?> authenticationProvider) {
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(FOUND_EMAIL, WRONG_PASSWORD);
         assertFalse(authenticationProvider.authenticate(null, credentials).isAuthenticated());
         assertTrue(authenticationProvider.authenticate(null, credentials) instanceof AuthenticationFailed);
@@ -46,7 +46,7 @@ class DelegatingAuthenticationProviderTest {
     }
 
     @Test
-    void testUserFoundAuthentication(DelegatingAuthenticationProvider authenticationProvider) {
+    void testUserFoundAuthentication(DelegatingAuthenticationProvider<?> authenticationProvider) {
         UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(FOUND_EMAIL, CORRECT_PASSWORD);
         AuthenticationResponse authenticationResponse = authenticationProvider.authenticate(null, credentials);
         assertTrue(authenticationResponse.isAuthenticated());
