@@ -4,7 +4,7 @@ plugins {
 dependencies {
     annotationProcessor(project(":processor"))
     testAnnotationProcessor(project(":processor"))
-    implementation(project(":annotations"))
+    api(project(":annotations"))
 
     // HTTP Server
     annotationProcessor("io.micronaut:micronaut-http-validation")
