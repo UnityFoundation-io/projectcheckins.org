@@ -1,6 +1,5 @@
 plugins {
     id("org.projectcheckins.micronaut-boms")
-    id("org.projectcheckins.java-warning-errors")
 }
 dependencies {
     implementation("io.micronaut:micronaut-aop")

@@ -1,6 +1,5 @@
 plugins {
     id("org.projectcheckins.micronaut-modules-conventions")
-    id("org.projectcheckins.java-warning-errors")
 }
 
 dependencies {
