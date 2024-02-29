@@ -30,8 +30,8 @@ import java.util.function.Function;
 @Controller
 class QuestionController {
 
-    private static final String QUESTION = "question";
-    private static final String PATH = ApiConstants.SLASH + QUESTION;
+    public static final String QUESTION = "question";
+    public static final String PATH = ApiConstants.SLASH + QUESTION;
 
     private static final String MODEL_QUESTIONS = "questions";
     private static final String MODEL_QUESTION = "question";

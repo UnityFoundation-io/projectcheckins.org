@@ -1,4 +1,4 @@
-package org.projectcheckins.core;
+package org.projectcheckins.core.forms;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
