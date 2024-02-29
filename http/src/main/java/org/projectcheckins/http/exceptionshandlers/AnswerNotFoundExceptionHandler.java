@@ -6,14 +6,14 @@ import io.micronaut.http.server.exceptions.response.ErrorResponseProcessor;
 import io.micronaut.views.ViewsRenderer;
 import jakarta.inject.Singleton;
 import java.util.Map;
-import org.projectcheckins.core.exceptions.QuestionNotFoundException;
+import org.projectcheckins.core.exceptions.AnswerNotFoundException;
 
 @Produces
 @Singleton
-public class QuestionNotFoundExceptionHandler extends NotFoundExceptionHandler<QuestionNotFoundException> {
+public class AnswerNotFoundExceptionHandler extends NotFoundExceptionHandler<AnswerNotFoundException> {
 
-    public QuestionNotFoundExceptionHandler(ErrorResponseProcessor<?> errorResponseProcessor,
-                                            ViewsRenderer<Map<?, ?>, HttpRequest<?>> viewsRenderer) {
+    public AnswerNotFoundExceptionHandler(ErrorResponseProcessor<?> errorResponseProcessor,
+                                          ViewsRenderer<Map<?, ?>, HttpRequest<?>> viewsRenderer) {
         super(errorResponseProcessor, viewsRenderer);
     }
 }

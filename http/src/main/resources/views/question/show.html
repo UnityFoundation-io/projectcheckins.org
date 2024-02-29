@@ -8,6 +8,8 @@
 <main>
     <a href="/question/list" th:text="#{question.list}"></a>
     <a th:href="@{|/question/${question.id}/edit|}" th:text="#{question.edit}"></a>
+    <a th:href="@{|/question/${question.id}/answer/list|}" th:text="#{answer.list}"></a>
+    <a th:href="@{|/question/${question.id}/answer/create|}" th:text="#{answer.create}"></a>
 
     <h1 th:text="${question.title}"></h1>
 </main>

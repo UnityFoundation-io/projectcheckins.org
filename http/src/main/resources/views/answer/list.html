@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" th:replace="~{layout :: layout(~{::title},~{::script},~{::main})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title></title>
+    <script></script>
+</head>
+<body>
+<main>
+    <a th:href="@{|/question/list|}" th:text="#{question.list}"></a>
+    <a th:href="@{|/question/${questionId}/answer/create|}" th:text="#{answer.create}"></a>
+    <ul>
+        <th:block th:each="answer : ${answers}">
+            <li><a th:href="@{|/question/${answer.questionId}/answer/${answer.id}/show|}"><span th:text="${answer.text}"></span></a></li>
+        </th:block>
+    </ul>
+</main>
+</body>
+</html>
