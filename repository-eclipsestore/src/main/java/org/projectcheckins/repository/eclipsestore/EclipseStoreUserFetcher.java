@@ -35,6 +35,11 @@ class EclipseStoreUserFetcher implements UserFetcher {
             }
 
             @Override
+            public boolean isEnabled() {
+                return user.isEnabled();
+            }
+
+            @Override
             public String getEmail() {
                 return user.getEmail();
             }
