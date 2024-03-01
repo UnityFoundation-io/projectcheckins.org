@@ -21,7 +21,7 @@ class EclipseStoreUserFetcher implements UserFetcher {
     @NonNull
     public Optional<UserState> findByEmail(@NotBlank @NonNull String email) {
         return rootProvider.root().getUsers().stream()
-                .filter(user -> user.email().equals(email))
+                .filter(user -> user.getEmail().equals(email))
                 .map(EclipseStoreUserFetcher::userStateOfEntity)
                 .findFirst();
     }
@@ -31,17 +31,17 @@ class EclipseStoreUserFetcher implements UserFetcher {
         return new UserState() {
             @Override
             public String getId() {
-                return user.id();
+                return user.getId();
             }
 
             @Override
             public String getEmail() {
-                return user.email();
+                return user.getEmail();
             }
 
             @Override
             public String getPassword() {
-                return user.encodedPassword();
+                return user.getEncodedPassword();
             }
         };
     }
