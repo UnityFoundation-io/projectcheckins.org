@@ -20,8 +20,9 @@ class EclipseStoreUserFetcherTest {
             .isEmpty();
         registerService.register(FOUND_EMAIL, "password");
         assertThat(userFetcher.findByEmail(FOUND_EMAIL)).hasValueSatisfying(userState -> assertThat(userState)
-            .matches(u -> u.getEmail().equals(FOUND_EMAIL))
-            .matches(u -> u.getId() != null)
-            .matches(u -> u.getPassword() != null && !u.getPassword().equals("password")));
+                .matches(u -> !u.isEnabled())
+                .matches(u -> u.getEmail().equals(FOUND_EMAIL))
+                .matches(u -> u.getId() != null)
+                .matches(u -> u.getPassword() != null && !u.getPassword().equals("password")));
     }
 }

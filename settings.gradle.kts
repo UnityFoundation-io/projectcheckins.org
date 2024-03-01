@@ -2,6 +2,7 @@ rootProject.name = "projectcheckins"
 include("annotations")
 include("code-coverage-report")
 include("core")
+include("bootstrap")
 include("http")
 include("email")
 include("email-http")
