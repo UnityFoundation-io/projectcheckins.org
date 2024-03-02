@@ -5,20 +5,14 @@ import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.scheduling.TaskExecutors;
-import io.micronaut.security.authentication.*;
+import io.micronaut.security.authentication.AuthenticationFailureReason;
+import io.micronaut.security.authentication.AuthenticationRequest;
+import io.micronaut.security.authentication.AuthenticationResponse;
 import io.micronaut.security.authentication.provider.HttpRequestExecutorAuthenticationProvider;
-import io.micronaut.security.authentication.provider.HttpRequestReactiveAuthenticationProvider;
 import jakarta.inject.Named;
 import jakarta.inject.Singleton;
-import org.reactivestreams.Publisher;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.FluxSink;
-import reactor.core.scheduler.Scheduler;
-import reactor.core.scheduler.Schedulers;
-
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 
 import static io.micronaut.security.authentication.AuthenticationFailureReason.*;
 
@@ -30,16 +24,13 @@ class DelegatingAuthenticationProvider<B> implements HttpRequestExecutorAuthenti
     private final UserFetcher userFetcher;
     private final List<PasswordEncoder> passwordEncoders;
     private final AuthoritiesFetcher authoritiesFetcher;
-    private final Scheduler scheduler;
 
     DelegatingAuthenticationProvider(UserFetcher userFetcher,
                                      List<PasswordEncoder> passwordEncoders,
-                                     AuthoritiesFetcher authoritiesFetcher,
-                                     @Named(TaskExecutors.BLOCKING) ExecutorService executorService) {
+                                     AuthoritiesFetcher authoritiesFetcher) {
         this.userFetcher = userFetcher;
         this.passwordEncoders = passwordEncoders;
         this.authoritiesFetcher = authoritiesFetcher;
-        this.scheduler = Schedulers.fromExecutorService(executorService);
     }
 
     @Override
