@@ -12,6 +12,6 @@ class EmailConfigurationTest {
 
     @Test
     void testEmailConfiguration(EmailConfiguration emailConfiguration) {
-        assertEquals("info@projectcheckins.org", emailConfiguration.getSender());
+        assertThat(emailConfiguration.getSender()).isEqualTo("info@projectcheckins.org");
     }
 }
