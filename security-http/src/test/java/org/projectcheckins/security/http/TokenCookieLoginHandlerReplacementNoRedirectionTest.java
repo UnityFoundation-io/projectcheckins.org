@@ -35,10 +35,11 @@ class TokenCookieLoginHandlerReplacementNoRedirectionTest {
     @Test
     void crud(@Client("/") HttpClient httpClient) {
         BlockingHttpClient client = httpClient.toBlocking();
-        HttpClientResponseException ex = assertThrows(HttpClientResponseException.class,
-                () -> client.exchange(HttpRequest.POST("/login", new UsernamePasswordCredentials("watson@example.com", "password"))));
-        assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatus());
-        assertNull(ex.getResponse().getHeaders().get(HttpHeaders.LOCATION));
+        assertThatThrownBy(() -> client.exchange(HttpRequest.POST("/login", new UsernamePasswordCredentials("watson@example.com", "password"))))
+            .isInstanceOf(HttpClientResponseException.class)
+            .hasFieldOrPropertyWithValue("status", HttpStatus.UNAUTHORIZED)
+            .extracting(e -> ((HttpClientResponseException) e).getResponse().getHeaders().get(HttpHeaders.LOCATION))
+            .isNull();
     }
 
     @Requires(property = "spec.name", value="TokenCookieLoginHandlerReplacementTest")
