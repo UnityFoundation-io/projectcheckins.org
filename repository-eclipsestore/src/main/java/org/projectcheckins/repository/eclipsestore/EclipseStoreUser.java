@@ -4,20 +4,22 @@ import io.micronaut.core.annotation.NonNull;
 import io.micronaut.eclipsestore.RootProvider;
 import io.micronaut.eclipsestore.annotations.StoreParams;
 import jakarta.inject.Singleton;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.projectcheckins.core.idgeneration.IdGenerator;
+import org.projectcheckins.email.EmailConfirmationRepository;
 import org.projectcheckins.security.*;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Singleton
-class EclipseStoreRegisterService extends AbstractRegisterService implements UserRepository {
-
+class EclipseStoreUser extends AbstractRegisterService implements UserFetcher, EmailConfirmationRepository {
     private final RootProvider<Data> rootProvider;
     private final IdGenerator idGenerator;
-    protected EclipseStoreRegisterService(PasswordEncoder passwordEncoder,
-                                          RootProvider<Data> rootProvider,
-                                          IdGenerator idGenerator) {
+    protected EclipseStoreUser(PasswordEncoder passwordEncoder,
+                               RootProvider<Data> rootProvider,
+                               IdGenerator idGenerator) {
         super(passwordEncoder);
         this.rootProvider = rootProvider;
         this.idGenerator = idGenerator;
@@ -36,9 +38,9 @@ class EclipseStoreRegisterService extends AbstractRegisterService implements Use
     }
 
     @Override
-    public void enable(String userId) {
+    public void enableByEmail(@NonNull @NotBlank @Email String email) {
         rootProvider.root().getUsers().stream()
-                .filter(user -> user.getId().equals(userId))
+                .filter(user -> user.getEmail().equals(email))
                 .findFirst()
                 .ifPresent(this::enableUser);
     }
@@ -60,5 +62,39 @@ class EclipseStoreRegisterService extends AbstractRegisterService implements Use
         userEntity.setEncodedPassword(userSave.encodedPassword());
         userEntity.setAuthorities(userSave.authorities());
         return userEntity;
+    }
+
+    @Override
+    @NonNull
+    public Optional<UserState> findByEmail(@NotBlank @NonNull String email) {
+        return rootProvider.root().getUsers().stream()
+                .filter(user -> user.getEmail().equals(email))
+                .map(EclipseStoreUser::userStateOfEntity)
+                .findFirst();
+    }
+
+    @NonNull
+    private static UserState userStateOfEntity(UserEntity user) {
+        return new UserState() {
+            @Override
+            public String getId() {
+                return user.getId();
+            }
+
+            @Override
+            public boolean isEnabled() {
+                return user.isEnabled();
+            }
+
+            @Override
+            public String getEmail() {
+                return user.getEmail();
+            }
+
+            @Override
+            public String getPassword() {
+                return user.getEncodedPassword();
+            }
+        };
     }
 }

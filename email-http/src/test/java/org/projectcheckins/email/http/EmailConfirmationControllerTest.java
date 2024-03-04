@@ -2,6 +2,7 @@ package org.projectcheckins.email.http;
 
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpHeaders;
 import io.micronaut.http.HttpRequest;
@@ -12,10 +13,10 @@ import io.micronaut.http.client.annotation.Client;
 import io.micronaut.http.uri.UriBuilder;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Singleton;
+import jakarta.validation.constraints.NotBlank;
 import org.junit.jupiter.api.Test;
+import org.projectcheckins.email.EmailConfirmationRepository;
 import org.projectcheckins.email.EmailConfirmationTokenGenerator;
-import org.projectcheckins.security.UserRepository;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,7 @@ class EmailConfirmationControllerTest {
         HttpRequest<?> request = HttpRequest.GET(uri);
         HttpResponse<?> response = client.exchange(request);
         assertEquals("/security/login", response.getHeaders().get(HttpHeaders.LOCATION));
-        assertTrue(userRepository.getUserIds().contains(email));
+        assertTrue(userRepository.getEmails().contains(email));
 
         uri = UriBuilder.of("/email").path("confirm").queryParam("token", "bogus").build();
         request = HttpRequest.GET(uri);
@@ -46,16 +47,16 @@ class EmailConfirmationControllerTest {
 
     @Requires(property = "spec.name", value = "EmailConfirmationControllerTest")
     @Singleton
-    static class UserRepositoryMock implements UserRepository {
-        List<String> userIds = new ArrayList<>();
+    static class UserRepositoryMock implements EmailConfirmationRepository {
+        List<String> emails = new ArrayList<>();
 
-        @Override
-        public void enable(String userId) {
-            userIds.add(userId);
+        public List<String> getEmails() {
+            return emails;
         }
 
-        public List<String> getUserIds() {
-            return userIds;
+        @Override
+        public void enableByEmail(@NonNull @NotBlank String email) {
+            emails.add(email);
         }
     }
 }
