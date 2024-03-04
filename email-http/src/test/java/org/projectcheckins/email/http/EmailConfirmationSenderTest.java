@@ -32,7 +32,7 @@ class EmailConfirmationSenderTest {
         emailConfirmationSender.sendConfirmationEmail(recipient, "https://projectcheckins.example.com", Locale.ENGLISH);
         await().atMost(1, SECONDS).until(() -> !emailSenderReplacement.getEmails().isEmpty());
         List<Email> emails = emailSenderReplacement.getEmails();
-        assertEquals(1, emails.size());
+        assertThat(emails).hasSize(1);
         Email email = emails.getFirst();
         AssertConfirmationEmailUtils.assertConfirmationEmail(recipient, email);
 
