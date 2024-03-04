@@ -45,7 +45,7 @@ class LoginFailedEventListenerTest {
         loginFailedEventPublisher.publishEvent(new LoginFailedEvent(authenticationResponse, usernamePasswordCredentials));
         await().atMost(3, SECONDS).until(() -> !emailSenderReplacement.getEmails().isEmpty());
         List<Email> emails = emailSenderReplacement.getEmails();
-        assertEquals(1, emails.size());
+        assertThat(emails).hasSize(1);
         Email email = emails.getFirst();
         AssertConfirmationEmailUtils.assertConfirmationEmail(recipient, email);
         emailSenderReplacement.getEmails().clear();
