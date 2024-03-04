@@ -31,7 +31,8 @@ public final class AssertConfirmationEmailUtils {
         assertThat(multipartBody.get(BodyType.TEXT).get()).startsWith("""
                 To confirm your email address, please click the link below:
                 https://projectcheckins.example.com/email/confirm?token=""");
-        assertFalse(multipartBody.get(BodyType.HTML).isEmpty());
+        assertThat(multipartBody.get(BodyType.HTML))
+                .isNotEmpty();
         assertTrue(multipartBody.get(BodyType.HTML).get().startsWith("""
                 To confirm your email address, please click the link below:
                 <a href="https://projectcheckins.example.com/email/confirm?token="""));
