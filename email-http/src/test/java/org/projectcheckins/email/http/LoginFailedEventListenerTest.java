@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Property(name = "spec.name", value = "LoginFailedEventListenerTest")
 @Property(name = "email.sender", value = "info@projectcheckins.org")
