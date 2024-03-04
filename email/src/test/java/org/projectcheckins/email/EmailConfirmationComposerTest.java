@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Property(name = "email.sender", value = "info@projectcheckins.org")
 @MicronautTest
