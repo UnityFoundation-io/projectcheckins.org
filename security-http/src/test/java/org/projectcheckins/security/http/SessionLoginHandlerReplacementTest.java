@@ -20,7 +20,7 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Singleton;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Property(name = "micronaut.security.authentication", value="session")
 @Property(name = "micronaut.http.client.follow-redirects", value = StringUtils.FALSE)
