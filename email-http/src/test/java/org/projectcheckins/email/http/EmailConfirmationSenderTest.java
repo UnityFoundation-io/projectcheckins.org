@@ -19,7 +19,6 @@ import java.util.function.Consumer;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.*;
 
 @MicronautTest(startApplication = false)
 @Property(name = "spec.name", value = "EmailConfirmationSenderTest")
