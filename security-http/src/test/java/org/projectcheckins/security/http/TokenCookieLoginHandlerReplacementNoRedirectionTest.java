@@ -22,7 +22,7 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Singleton;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Property(name = "micronaut.security.authentication", value="cookie")
 @Property(name = "micronaut.http.client.follow-redirects", value = StringUtils.FALSE)
