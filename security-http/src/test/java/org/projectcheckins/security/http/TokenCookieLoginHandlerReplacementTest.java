@@ -34,8 +34,8 @@ class TokenCookieLoginHandlerReplacementTest {
     void crud(@Client("/") HttpClient httpClient) {
         BlockingHttpClient client = httpClient.toBlocking();
         HttpResponse<?> response = client.exchange(HttpRequest.POST("/login", new UsernamePasswordCredentials("watson@example.com", "password")));
-        String location = response.getHeaders().get(HttpHeaders.LOCATION);
-        assertEquals("/security/login?reason=USER_DISABLED", location);
+        assertThat(response.getHeaders().get(HttpHeaders.LOCATION))
+            .isEqualTo("/security/login?reason=USER_DISABLED");
     }
 
     @Requires(property = "spec.name", value="TokenCookieLoginHandlerReplacementTest")
