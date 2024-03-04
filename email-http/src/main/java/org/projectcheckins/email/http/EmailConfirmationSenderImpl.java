@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
+import java.util.Optional;
 
 
 @Requires(beans = {EmailConfirmationComposer.class, EmailSender.class})
@@ -43,8 +44,7 @@ class EmailConfirmationSenderImpl implements EmailConfirmationSender {
 
     @Override
     public void sendConfirmationEmail(@NonNull @NotBlank @Email String email) {
-        ServerRequestContext.currentRequest()
-                .map(httpHostResolver::resolve)
+        resolveHost()
                 .ifPresentOrElse(host -> sendConfirmationEmail(email, host, locale),
                         () -> LOG.warn("No host found for current request, cannot send confirmation email to {}", email));
     }
@@ -56,6 +56,12 @@ class EmailConfirmationSenderImpl implements EmailConfirmationSender {
         String url = host + emailConfirmationControllerConfiguration.getPath();
         LOG.trace("Sending email confirmation to {} with url {}", email, url);
         sendEmail(email, url, locale);
+    }
+
+    @NonNull
+    protected Optional<String> resolveHost() {
+        return ServerRequestContext.currentRequest()
+                .map(httpHostResolver::resolve);
     }
 
     @Async

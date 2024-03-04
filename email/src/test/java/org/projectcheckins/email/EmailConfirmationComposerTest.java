@@ -4,9 +4,9 @@ import io.micronaut.context.annotation.Property;
 import io.micronaut.email.BodyType;
 import io.micronaut.email.Email;
 import io.micronaut.email.MultipartBody;
-import io.micronaut.email.StringBody;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.junit.jupiter.api.Test;
+
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;

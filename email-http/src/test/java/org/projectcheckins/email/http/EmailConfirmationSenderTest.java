@@ -35,26 +35,7 @@ class EmailConfirmationSenderTest {
         List<Email> emails = emailSenderReplacement.getEmails();
         assertEquals(1, emails.size());
         Email email = emails.getFirst();
-
-        assertThat(email.getSubject())
-                .isEqualTo("Confirm email address for your Project Check-ins account");
-        assertThat(email.getFrom().getEmail())
-                .isEqualTo("info@projectcheckins.org");
-        assertThat(email.getTo())
-                .hasSize(1);
-        assertEquals(recipient, email.getTo().stream().findFirst().get().getEmail());
-
-        assertTrue(email.getBody() instanceof MultipartBody);
-        MultipartBody multipartBody = (MultipartBody) email.getBody();
-        assertFalse(multipartBody.get(BodyType.TEXT).isEmpty());
-
-        assertTrue(multipartBody.get(BodyType.TEXT).get().startsWith("""
-                To confirm your email address, please click the link below:
-                https://projectcheckins.example.com/email/confirm?token="""));
-        assertFalse(multipartBody.get(BodyType.HTML).isEmpty());
-        assertTrue(multipartBody.get(BodyType.HTML).get().startsWith("""
-                To confirm your email address, please click the link below:
-                <a href="https://projectcheckins.example.com/email/confirm?token="""));
+        AssertConfirmationEmailUtils.assertConfirmationEmail(recipient, email);
 
         emailSenderReplacement.getEmails().clear();
         try {
@@ -65,6 +46,8 @@ class EmailConfirmationSenderTest {
             Thread.currentThread().interrupt();
         }
     }
+
+
 
     @Requires(property = "spec.name", value = "EmailConfirmationSenderTest")
     @Singleton

@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.Locale;
 
-@Singleton
 public interface EmailConfirmationSender {
     void sendConfirmationEmail(@NonNull @NotBlank @Email String email);
 
