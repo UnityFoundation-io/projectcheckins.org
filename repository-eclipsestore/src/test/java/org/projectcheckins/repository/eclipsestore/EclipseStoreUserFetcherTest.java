@@ -48,7 +48,7 @@ class EclipseStoreUserFetcherTest {
         String id = registerService.register(email, "password");
         assertThat(rootProvider.root().getUsers()).noneMatch(UserEntity::isEnabled);
         emailConfirmationRepository.enableByEmail(email);
-        assertTrue(rootProvider.root().getUsers().stream().anyMatch(UserEntity::isEnabled));
+        assertThat(rootProvider.root().getUsers()).anyMatch(UserEntity::isEnabled);
 
     }
 }
