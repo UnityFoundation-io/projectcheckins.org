@@ -2,11 +2,13 @@ package org.projectcheckins.email;
 
 import io.micronaut.context.annotation.Property;
 import io.micronaut.email.BodyType;
+import io.micronaut.email.Contact;
 import io.micronaut.email.Email;
 import io.micronaut.email.MultipartBody;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
