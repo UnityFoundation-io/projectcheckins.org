@@ -39,8 +39,8 @@ class SecurityControllerTest {
         assertThat(html).contains("""
     User disabled. Verify your email address first.""");
         html = client.retrieve(HttpRequest.POST("/login", Map.of("username", "watson@example.com", "password", "password")));
-        assertTrue(html.contains("""    
-    The username or password is incorrect. Please try again."""));
+        assertThat(html).contains("""    
+    The username or password is incorrect. Please try again.""");
     }
 
 
