@@ -5,8 +5,6 @@ import io.micronaut.email.Email;
 import io.micronaut.email.MultipartBody;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class AssertConfirmationEmailUtils {
     private AssertConfirmationEmailUtils() {
