@@ -12,6 +12,7 @@ class LoginFailureUtilsTest {
     @Test
     void testNoFailure() {
         String loginFailure = "/foo";
-        assertEquals(URI.create(loginFailure), LoginFailureUtils.loginFailure(loginFailure, AuthenticationResponse.success("foo@example.com")).get());
+        assertThat(LoginFailureUtils.loginFailure(loginFailure, AuthenticationResponse.success("foo@example.com")))
+            .hasValueSatisfying(x -> assertThat(x).isEqualTo(URI.create(loginFailure)));
     }
 }
