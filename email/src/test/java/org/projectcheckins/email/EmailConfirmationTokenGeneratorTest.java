@@ -19,10 +19,8 @@ class EmailConfirmationTokenGeneratorTest {
                                           EmailConfirmationTokenValidator emailConfirmationTokenValidator) {
         String email = "delamos@unityfoundation.io";
         String token = emailConfirmationTokenGenerator.generateToken(email);
-        assertNotNull(token);
-        Optional<Authentication> authenticationOptional = emailConfirmationTokenValidator.validate(token);
-        assertTrue(authenticationOptional.isPresent());
-        Authentication authentication = authenticationOptional.get();
-        assertEquals(email, authentication.getName());
+        assertThat(token).isNotNull();
+        assertThat(emailConfirmationTokenValidator.validate(token))
+            .hasValueSatisfying(a -> assertThat(a).hasFieldOrPropertyWithValue("name", email));
     }
 }
