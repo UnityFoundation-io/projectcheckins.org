@@ -1,15 +1,14 @@
 package org.projectcheckins.core;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-
 import io.micronaut.core.type.Argument;
 import io.micronaut.serde.SerdeIntrospections;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.validation.validator.Validator;
 import org.junit.jupiter.api.Test;
-import org.projectcheckins.core.forms.Question;
 import org.projectcheckins.core.forms.QuestionUpdate;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 @MicronautTest
 class QuestionUpdateTest {
@@ -35,14 +34,14 @@ class QuestionUpdateTest {
     }
 
     @Test
-    void questionSaveIsAnnotatedWithSerdeableDeserializable(SerdeIntrospections serdeIntrospections) {
+    void questionUpdateIsAnnotatedWithSerdeableDeserializable(SerdeIntrospections serdeIntrospections) {
         assertThatCode(() -> serdeIntrospections.getDeserializableIntrospection(Argument.of(QuestionUpdate.class)))
             .doesNotThrowAnyException();
     }
 
     @Test
-    void questionSaveIsAnnotatedWithSerdeableSerializable(SerdeIntrospections serdeIntrospections) {
-        assertThatCode(() -> serdeIntrospections.getSerializableIntrospection(Argument.of(Question.class)))
+    void questionUpdateIsAnnotatedWithSerdeableSerializable(SerdeIntrospections serdeIntrospections) {
+        assertThatCode(() -> serdeIntrospections.getSerializableIntrospection(Argument.of(QuestionUpdate.class)))
             .doesNotThrowAnyException();
     }
 }

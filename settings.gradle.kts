@@ -1,10 +1,12 @@
 rootProject.name = "projectcheckins"
 include("annotations")
+include("bootstrap")
 include("code-coverage-report")
 include("core")
 include("http")
 include("multitenancy")
 include("netty")
+include("thymeleaf-fieldset")
 include("security")
 include("security-http")
 include("processor")
