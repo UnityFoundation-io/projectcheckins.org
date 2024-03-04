@@ -7,4 +7,8 @@
     <root level="info">
         <appender-ref ref="STDOUT" />
     </root>
+<<<<<<< HEAD
 </configuration>
+=======
+</configuration>
+>>>>>>> main

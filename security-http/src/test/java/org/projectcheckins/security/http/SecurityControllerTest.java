@@ -31,7 +31,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Property(name = "spec.name", value = "SecurityControllerTest")
+
+
 @MicronautTest
+@Property(name = "micronaut.security.authentication", value="cookie")
+@Property(name = "micronaut.security.token.jwt.signatures.secret.generator.secret", value="pleaseChangeThisSecretForANewOne")
+@Property(name = "micronaut.security.redirect.login-failure", value="/security/login")
+@Property(name = "spec.name", value="SecurityControllerTest")
 class SecurityControllerTest {
     private static final String EMAIL_ALREADY_EXISTS = "delamos@unityfoundation.io";
     private static final String NEW_USER_EMAIL = "calvog@unityfoundation.io";
@@ -43,6 +49,13 @@ class SecurityControllerTest {
     void login(@Client("/") HttpClient httpClient) {
         BlockingHttpClient client = httpClient.toBlocking();
         assertInLogin(client.retrieve(BrowserRequest.GET("/security/login")));
+
+        assertThat(client.retrieve(HttpRequest.POST("/login", Map.of("username", "sherlock@example.com", "password", "password"))))
+                .contains("""
+    User disabled. Verify your email address first.""");
+
+        assertThat(client.retrieve(HttpRequest.POST("/login", Map.of("username", "watson@example.com", "password", "password"))))
+                .contains("The username or password is incorrect. Please try again.");
     }
 
     @Test
