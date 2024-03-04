@@ -43,7 +43,7 @@ class EmailConfirmationControllerTest {
         uri = UriBuilder.of("/email").path("confirm").queryParam("token", "bogus").build();
         request = HttpRequest.GET(uri);
         response = client.exchange(request);
-        assertEquals("/", response.getHeaders().get(HttpHeaders.LOCATION));
+        assertThat(response.getHeaders().get(HttpHeaders.LOCATION)).isEqualTo("/");
     }
 
     @Requires(property = "spec.name", value = "EmailConfirmationControllerTest")
