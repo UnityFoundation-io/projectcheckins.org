@@ -37,8 +37,8 @@ class EmailConfirmationControllerTest {
         URI uri = UriBuilder.of("/email").path("confirm").queryParam("token", token).build();
         HttpRequest<?> request = HttpRequest.GET(uri);
         HttpResponse<?> response = client.exchange(request);
-        assertEquals("/security/login", response.getHeaders().get(HttpHeaders.LOCATION));
-        assertTrue(userRepository.getEmails().contains(email));
+        assertThat(response.getHeaders().get(HttpHeaders.LOCATION)).isEqualTo("/security/login");
+        assertThat(userRepository.getEmails()).contains(email);
 
         uri = UriBuilder.of("/email").path("confirm").queryParam("token", "bogus").build();
         request = HttpRequest.GET(uri);
