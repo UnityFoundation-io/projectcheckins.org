@@ -15,7 +15,7 @@ class EmailConfigurationDisabledByDefaultTest {
 
     @Test
     void beanOfTypeEmailConfigurationDoesNotExist() {
-        assertFalse(beanContext.containsBean(EmailConfiguration.class));
+        assertThat(beanContext.containsBean(EmailConfiguration.class)).isFalse();
     }
 
 }
