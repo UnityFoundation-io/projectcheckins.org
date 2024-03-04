@@ -21,7 +21,8 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+
 @Property(name = "micronaut.http.client.follow-redirects", value = StringUtils.FALSE)
 @Property(name = "spec.name", value = "EmailConfirmationControllerTest")
 @MicronautTest
