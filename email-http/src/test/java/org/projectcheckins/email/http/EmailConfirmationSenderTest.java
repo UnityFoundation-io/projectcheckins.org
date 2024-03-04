@@ -40,7 +40,7 @@ class EmailConfirmationSenderTest {
         try {
             emailConfirmationSender.sendConfirmationEmail(recipient);
             Thread.sleep(1000); // waits for 1 second
-            assertTrue(emailSenderReplacement.getEmails().isEmpty());
+            assertThat(emailSenderReplacement.getEmails()).isEmpty();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
