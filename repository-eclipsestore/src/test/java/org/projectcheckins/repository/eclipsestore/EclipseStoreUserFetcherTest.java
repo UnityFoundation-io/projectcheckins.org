@@ -46,7 +46,7 @@ class EclipseStoreUserFetcherTest {
                         EmailConfirmationRepository emailConfirmationRepository) throws UserAlreadyExistsException {
         String email = idGenerator.generate() + "@projectcheckins.org";
         String id = registerService.register(email, "password");
-        assertTrue(rootProvider.root().getUsers().stream().noneMatch(UserEntity::isEnabled));
+        assertThat(rootProvider.root().getUsers()).noneMatch(UserEntity::isEnabled);
         emailConfirmationRepository.enableByEmail(email);
         assertTrue(rootProvider.root().getUsers().stream().anyMatch(UserEntity::isEnabled));
 
