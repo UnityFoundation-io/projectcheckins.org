@@ -22,7 +22,8 @@ public final class AssertConfirmationEmailUtils {
                 .hasSize(1);
         assertEquals(recipient, email.getTo().stream().findFirst().get().getEmail());
 
-        assertTrue(email.getBody() instanceof MultipartBody);
+        assertThat(email.getBody())
+                .isInstanceOf(MultipartBody.class);
         MultipartBody multipartBody = (MultipartBody) email.getBody();
         assertFalse(multipartBody.get(BodyType.TEXT).isEmpty());
 
