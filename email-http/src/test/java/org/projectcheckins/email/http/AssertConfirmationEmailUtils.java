@@ -20,7 +20,8 @@ public final class AssertConfirmationEmailUtils {
                 .isEqualTo("info@projectcheckins.org");
         assertThat(email.getTo())
                 .hasSize(1);
-        assertEquals(recipient, email.getTo().stream().findFirst().get().getEmail());
+        assertThat(email.getTo().stream().findFirst().get().getEmail())
+                .isEqualTo(recipient);
 
         assertThat(email.getBody())
                 .isInstanceOf(MultipartBody.class);
