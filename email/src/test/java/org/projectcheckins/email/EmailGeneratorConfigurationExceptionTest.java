@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Property(name = "spec.name", value = "EmailGeneratorConfigurationExceptionTest")
 @MicronautTest(startApplication = false)
