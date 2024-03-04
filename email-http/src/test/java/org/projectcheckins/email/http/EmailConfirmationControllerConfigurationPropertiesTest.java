@@ -12,9 +12,9 @@ class EmailConfirmationControllerConfigurationPropertiesTest {
         conf.setPath("/foo");
         conf.setFailureRedirect("/bar");
         conf.setSuccessfulRedirect("/xxx");
-        assertEquals("/xxx", conf.getSuccessfulRedirect());
-        assertEquals("/bar", conf.getFailureRedirect());
-        assertEquals("/foo", conf.getPath());
+        assertThat(conf.getSuccessfulRedirect()).isEqualTo("/xxx");
+        assertThat(conf.getFailureRedirect()).isEqualTo("/bar");
+        assertThat(conf.getPath()).isEqualTo("/foo");
     }
 
 }
