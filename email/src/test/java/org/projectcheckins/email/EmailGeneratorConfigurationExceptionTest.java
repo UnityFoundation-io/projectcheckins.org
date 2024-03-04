@@ -22,7 +22,8 @@ class EmailGeneratorConfigurationExceptionTest {
 
     @Test
     void configurationEx(EmailConfirmationTokenGenerator generator) {
-        assertThrows(ConfigurationException.class, () -> generator.generateToken("sergio.delamo@softamo.com"));
+        assertThatThrownBy(() -> generator.generateToken("sergio.delamo@softamo.com"))
+            .isInstanceOf(ConfigurationException.class);
     }
 
     @Singleton
