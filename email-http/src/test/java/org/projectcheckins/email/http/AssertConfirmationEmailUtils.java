@@ -25,7 +25,8 @@ public final class AssertConfirmationEmailUtils {
         assertThat(email.getBody())
                 .isInstanceOf(MultipartBody.class);
         MultipartBody multipartBody = (MultipartBody) email.getBody();
-        assertFalse(multipartBody.get(BodyType.TEXT).isEmpty());
+        assertThat(multipartBody.get(BodyType.TEXT))
+                .isNotEmpty();
 
         assertTrue(multipartBody.get(BodyType.TEXT).get().startsWith("""
                 To confirm your email address, please click the link below:
