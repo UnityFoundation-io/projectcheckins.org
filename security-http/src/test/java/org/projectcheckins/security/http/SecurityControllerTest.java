@@ -6,6 +6,7 @@ import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.type.Argument;
 import io.micronaut.http.HttpRequest;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.http.client.BlockingHttpClient;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
@@ -16,7 +17,6 @@ import io.micronaut.security.authentication.AuthenticationResponse;
 import io.micronaut.security.authentication.provider.HttpRequestExecutorAuthenticationProvider;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Singleton;
-import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.security.RegisterService;
 import org.projectcheckins.security.UserAlreadyExistsException;
@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.projectcheckins.security.http.AssertUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Property(name = "spec.name", value = "SecurityControllerTest")
 
@@ -44,32 +44,60 @@ class SecurityControllerTest {
     private static final HttpRequest<?> NOT_MATCHING_PASSWORD_REQUEST = BrowserRequest.POST("/security/signUp", Map.of("email", EMAIL_ALREADY_EXISTS, "password", "password", "repeatPassword", "bogus"));
     private static final HttpRequest<?> EMAIL_ALREADY_EXISTS_REQUEST = BrowserRequest.POST("/security/signUp", Map.of("email", EMAIL_ALREADY_EXISTS, "password", "password", "repeatPassword", "password"));
     private static final HttpRequest<?> NEW_USER_REQUEST = BrowserRequest.POST("/security/signUp", Map.of("email", NEW_USER_EMAIL, "password", "password", "repeatPassword", "password"));
+    public static final String TYPE_PASSWORD = "type=\"password\"";
+    public static final String TYPE_EMAIL = """
+            type="email""";
+    public static final String ACTION_SECURITY_SIGN_UP = "action=\"/security/signUp\"";
+    public static final String ACTION_SECURITY_LOGIN = "action=\"/login\"";
 
     @Test
     void login(@Client("/") HttpClient httpClient) {
         BlockingHttpClient client = httpClient.toBlocking();
-        assertInLogin(client.retrieve(BrowserRequest.GET("/security/login")));
+        assertThat(client.retrieve(BrowserRequest.GET("/security/login")))
+                .containsOnlyOnce(ACTION_SECURITY_LOGIN)
+                .containsOnlyOnce(TYPE_EMAIL)
+                .containsOnlyOnce(TYPE_PASSWORD);
 
         assertThat(client.retrieve(HttpRequest.POST("/login", Map.of("username", "sherlock@example.com", "password", "password"))))
-                .contains("""
-    User disabled. Verify your email address first.""");
+                .containsOnlyOnce(ACTION_SECURITY_LOGIN)
+                .containsOnlyOnce(TYPE_EMAIL)
+                .containsOnlyOnce(TYPE_PASSWORD)
+                        .contains("User disabled. Verify your email address first.");
 
         assertThat(client.retrieve(HttpRequest.POST("/login", Map.of("username", "watson@example.com", "password", "password"))))
+                .containsOnlyOnce(ACTION_SECURITY_LOGIN)
+                .containsOnlyOnce(TYPE_EMAIL)
+                .containsOnlyOnce(TYPE_PASSWORD)
                 .contains("The username or password is incorrect. Please try again.");
     }
 
     @Test
     void signUp(@Client("/") HttpClient httpClient) {
         BlockingHttpClient client = httpClient.toBlocking();
-        assertInSignup(client.retrieve(BrowserRequest.GET("/security/signUp")));
-        assertInSignup(client.retrieve(NOT_MATCHING_PASSWORD_REQUEST))
+
+        assertThat(client.retrieve(BrowserRequest.GET("/security/signUp")))
+                .satisfies(containsManyTimes(2, TYPE_PASSWORD))
+                .containsOnlyOnce(TYPE_EMAIL)
+                .containsOnlyOnce(ACTION_SECURITY_SIGN_UP);
+
+        assertThat(client.retrieve(NOT_MATCHING_PASSWORD_REQUEST))
+                .satisfies(containsManyTimes(2, TYPE_PASSWORD))
+                .containsOnlyOnce(TYPE_EMAIL)
+                .containsOnlyOnce(ACTION_SECURITY_SIGN_UP)
                 .containsOnlyOnce("Passwords do not match");
 
         Argument<String> ok = Argument.of(String.class);
         Argument<String> ko = Argument.of(String.class);
-        HttpClientResponseException ex = assertThrows(HttpClientResponseException.class, () -> client.retrieve(EMAIL_ALREADY_EXISTS_REQUEST, ok, ko));
-        assertInSignup(ex).containsOnlyOnce("User already exists");
-        assertInLogin(client.retrieve(NEW_USER_REQUEST, String.class));
+        assertThrowsWithHtml(() -> client.retrieve(EMAIL_ALREADY_EXISTS_REQUEST, ok, ko), HttpStatus.UNPROCESSABLE_ENTITY)
+                .satisfies(containsManyTimes(2, TYPE_PASSWORD))
+                .satisfies(containsOnlyOnce(TYPE_EMAIL))
+                .satisfies(containsOnlyOnce(ACTION_SECURITY_SIGN_UP))
+                .satisfies(containsOnlyOnce("User already exists"));
+
+        assertThat(client.retrieve(NEW_USER_REQUEST))
+                .containsOnlyOnce(ACTION_SECURITY_LOGIN)
+                .containsOnlyOnce(TYPE_EMAIL)
+                .containsOnlyOnce(TYPE_PASSWORD);
     }
 
     @Requires(property = "spec.name", value = "SecurityControllerTest")
@@ -102,31 +130,5 @@ class SecurityControllerTest {
                 return AuthenticationResponse.failure(AuthenticationFailureReason.CREDENTIALS_DO_NOT_MATCH);
             }
         }
-    }
-
-    private static AbstractStringAssert<?> assertInSignup(HttpClientResponseException ex) {
-        Optional<String> htmlOptional = ex.getResponse().getBody(String.class);
-        assertTrue(htmlOptional.isPresent());
-        String html = htmlOptional.get();
-        return assertInSignup(html);
-    }
-
-    private static AbstractStringAssert<?> assertInSignup(String html) {
-        return assertThat(html)
-                .matches(h -> countOccurrences(h, "type=\"password\"") == 2)
-                .containsOnlyOnce("""
-    type="email""")
-                .containsOnlyOnce("""
-    action="/security/signUp""");
-    }
-
-    private static AbstractStringAssert<?> assertInLogin(String html) {
-        return assertThat(html)
-                .containsOnlyOnce("""
-    type="password""");
-    }
-
-    public static int countOccurrences(String haystack, String needle) {
-        return haystack.split(needle, -1).length - 1;
     }
 }
