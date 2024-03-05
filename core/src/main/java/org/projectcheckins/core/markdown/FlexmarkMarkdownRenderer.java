@@ -19,7 +19,7 @@ class FlexmarkMarkdownRenderer implements MarkdownRenderer {
 
     @Override
     public String render(String markdown) {
-        Node document = parser.parse("This is *Sparta*");
+        Node document = parser.parse(markdown);
         return renderer.render(document);
     }
 }
