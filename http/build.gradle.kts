@@ -10,4 +10,5 @@ dependencies {
     // OpenAPI https://micronaut-projects.github.io/micronaut-openapi/latest/guide/
     annotationProcessor("io.micronaut.openapi:micronaut-openapi")
     compileOnly("io.micronaut.openapi:micronaut-openapi-annotations")
+    testImplementation(project(":thymeleaf-fieldset"))
 }
