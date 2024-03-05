@@ -6,6 +6,7 @@
 </head>
 <body>
 <main>
+    <a href="/profile/show" th:text="#{profile.show}"></a>
     <a href="/question/create" th:text="#{question.create}"></a>
     <ul>
         <th:block th:each="question : ${questions}">
