@@ -1,0 +1,5 @@
+<th:block th:fragment="answers(answers)" xmlns:th="http://www.thymeleaf.org">
+    <th:block th:each="answer : ${answers}">
+        <article th:replace="~{answer/_show :: answer(${answer})}"></article>
+    </th:block>
+</th:block>

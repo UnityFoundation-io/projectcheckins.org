@@ -10,6 +10,7 @@ import java.time.LocalDate;
 
 @Serdeable
 public record AnswerSave(@NotBlank @InputHidden String questionId,
+                         @InputHidden Format format,
                          @NotNull @PastOrPresent LocalDate answerDate,
                          @NotBlank String text) {
 }

@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.forms.Question;
 import org.projectcheckins.core.forms.QuestionSave;
 import org.projectcheckins.core.forms.QuestionUpdate;
+import org.projectcheckins.core.models.Element;
 import org.projectcheckins.core.repositories.QuestionRepository;
 import org.projectcheckins.http.BrowserRequest;
 
@@ -120,6 +121,12 @@ class QuestionControllerFormTest {
         @Override
         public void deleteById(@NotBlank String id, @Nullable Tenant tenant) {
             titleById.remove(id);
+        }
+
+        @Override
+        @NonNull
+        public Optional<Element> findElementById(@NotBlank String id, @Nullable Tenant tenant) {
+            return Optional.empty();
         }
     }
 }

@@ -11,6 +11,7 @@ repositories {
 dependencies {
     implementation(project(":thymeleaf-fieldset"))
     implementation(project(":security-http"))
+    implementation(project(":email-http"))
     implementation(project(":http"))
     implementation("io.micronaut.security:micronaut-security-session")
     developmentOnly("io.micronaut.security:micronaut-security-jwt")

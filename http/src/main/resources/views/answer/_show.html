@@ -1,0 +1,7 @@
+<th:block th:fragment="answer(answer)" xmlns:th="http://www.thymeleaf.org">
+    <article>
+        <p><a th:href="@{|/question/${answer.questionId}/user/${answer.user.id()}/list|}" th:text="${answer.user.name()}"></a></p>
+        <div th:utext="${answer.html}"></div>
+        Answer for <span th:text="${answer.answerDate}"></span>
+    </article>
+</th:block>

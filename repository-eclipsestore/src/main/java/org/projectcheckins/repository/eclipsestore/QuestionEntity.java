@@ -1,6 +1,10 @@
 package org.projectcheckins.repository.eclipsestore;
 
+import io.micronaut.core.annotation.NonNull;
 import jakarta.validation.constraints.NotBlank;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class QuestionEntity {
     @NotBlank
@@ -8,6 +12,9 @@ public class QuestionEntity {
 
     @NotBlank
     private String title;
+
+    @NonNull
+    private List<AnswerEntity> answers = new ArrayList<>();
 
     public String getId() {
         return id;
@@ -23,5 +30,9 @@ public class QuestionEntity {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public List<AnswerEntity> getAnswers() {
+        return answers;
     }
 }

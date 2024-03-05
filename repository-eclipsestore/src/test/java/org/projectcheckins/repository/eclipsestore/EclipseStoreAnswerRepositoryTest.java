@@ -15,20 +15,21 @@ class EclipseStoreAnswerRepositoryTest {
     void testCrud(EclipseStoreAnswerRepository answerRepository) {
 
         String text = "Lorem ipsum";
-        String id = answerRepository.save(new AnswerSave("xxx", LocalDate.now(), text), null, null);
-        assertThat(answerRepository.findByQuestionId("xxx", null))
+        String questionId = "xxx";
+        String id = answerRepository.save(new AnswerSave(questionId, LocalDate.now(), text), null, null);
+        assertThat(answerRepository.findByQuestionId(questionId, null))
             .anyMatch(a -> a.text().equals(text));
 
-        assertThat(answerRepository.findByQuestionId("xxx", null))
+        assertThat(answerRepository.findByQuestionId(questionId, null))
             .anyMatch(a -> a.id().equals(id));
 
         String updatedText = "Hello world";
-        answerRepository.update(new AnswerUpdate(id, LocalDate.now(), updatedText), null);
+        answerRepository.update(new AnswerUpdate(questionId, id, LocalDate.now(), updatedText), null);
         assertThat(answerRepository.findById(id, null))
             .isNotEmpty()
             .hasValueSatisfying(a -> a.text().equals(updatedText));
 
         answerRepository.deleteById(id, null);
-        assertThat(answerRepository.findByQuestionId("xxx", null)).isEmpty();
+        assertThat(answerRepository.findByQuestionId(questionId, null)).isEmpty();
     }
 }

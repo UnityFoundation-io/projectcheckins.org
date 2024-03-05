@@ -17,6 +17,7 @@ import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.views.ModelAndView;
 import io.micronaut.views.fields.Form;
 import io.micronaut.views.fields.FormGenerator;
+import io.micronaut.views.fields.messages.Message;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -24,29 +25,34 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import org.projectcheckins.annotations.GetHtml;
 import org.projectcheckins.annotations.PostForm;
+import org.projectcheckins.bootstrap.Breadcrumb;
 import org.projectcheckins.core.forms.Answer;
 import org.projectcheckins.core.forms.AnswerSave;
 import org.projectcheckins.core.forms.AnswerUpdate;
+import org.projectcheckins.core.models.Element;
 import org.projectcheckins.core.repositories.AnswerRepository;
+import org.projectcheckins.core.repositories.QuestionRepository;
 
 import java.net.URI;
 import java.util.function.Function;
+
+import static org.projectcheckins.http.controllers.ApiConstants.MODEL_BREADCRUMBS;
 
 @Controller
 class AnswerController {
     private static final String ANSWER = "answer";
     private static final String PATH = QuestionController.PATH + ApiConstants.SLASH + "{questionId}" + ApiConstants.SLASH + ANSWER;
 
-    private static final String MODEL_ANSWERS = "answers";
     private static final String MODEL_ANSWER = "answer";
-    private static final String MODEL_QUESTION_ID = "questionId";
 
     // LIST
     private static final String PATH_LIST = PATH + ApiConstants.PATH_LIST;
     private static final String VIEW_LIST = ApiConstants.SLASH + ANSWER + ApiConstants.VIEW_LIST;
+    public static final Breadcrumb BREADCRUMB_ANSWER_LIST = new Breadcrumb(Message.of("Answers", "answer.list"));
 
     // CREATE
     private static final String PATH_CREATE = PATH + ApiConstants.PATH_CREATE;
@@ -58,7 +64,7 @@ class AnswerController {
     // SAVE
     private static final String PATH_SAVE = PATH + ApiConstants.PATH_SAVE;
 
-    private static final Function<String, String> PATH_SAVE_BUILDER  = questionId -> new StringBuilder()
+    public static final Function<String, String> ANSWER_PATH_SAVE_BUILDER  = questionId -> new StringBuilder()
         .append(QuestionController.PATH).append(ApiConstants.SLASH).append(questionId).append(ApiConstants.SLASH).append(ANSWER).append(ApiConstants.SLASH).append(ApiConstants.ACTION_SAVE).toString();
 
     // SHOW
@@ -82,23 +88,34 @@ class AnswerController {
     private final FormGenerator formGenerator;
 
     private final AnswerRepository answerRepository;
+    private final QuestionRepository questionRepository;
 
-    AnswerController(FormGenerator formGenerator, AnswerRepository answerRepository) {
+    AnswerController(FormGenerator formGenerator,
+                     AnswerRepository answerRepository,
+                     QuestionRepository questionRepository) {
         this.formGenerator = formGenerator;
         this.answerRepository = answerRepository;
+        this.questionRepository = questionRepository;
     }
 
     @Hidden
     @GetHtml(uri = PATH_LIST, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_LIST)
-    @SuppressWarnings("rawtypes")
-    Map<String, Object> answerList(@NotBlank @PathVariable String questionId, @Nullable Tenant tenant) {
-        return Map.of(MODEL_QUESTION_ID, questionId, MODEL_ANSWERS, answerRepository.findByQuestionId(questionId, tenant));
+    HttpResponse<?> answerList(@NotBlank @PathVariable String questionId, @Nullable Tenant tenant) {
+        Optional<Element> questionOptional = questionRepository.findElementById(questionId, tenant);
+        if (questionOptional.isEmpty()) {
+            return HttpResponse.notFound();
+        }
+        Element question = questionOptional.get();
+        return HttpResponse.ok(answerListModel(question, tenant));
     }
 
-    @GetHtml(uri = PATH_CREATE, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_CREATE)
-    Map<String, Object> answerCreate(@NotBlank @PathVariable String questionId) {
-        final AnswerSave answerSave = new AnswerSave(questionId, LocalDate.now(), "");
-        return Map.of(ApiConstants.MODEL_FORM, formGenerator.generate(PATH_SAVE_BUILDER.apply(questionId), answerSave));
+    @NonNull
+    private Map<String, Object> answerListModel(@NonNull Element question, @Nullable Tenant tenant) {
+        return Map.of(MODEL_BREADCRUMBS,
+                List.of(QuestionController.BREADCRUMB_QUESTION_LIST,
+                        QuestionController.BREADCRUMB_QUESTION_SHOW.apply(question.id(), question.name()),
+                        BREADCRUMB_ANSWER_LIST),
+                QuestionController.MODEL_QUESTION, question);
     }
 
     @PostForm(uri = PATH_SAVE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
@@ -131,8 +148,8 @@ class AnswerController {
                                @PathVariable @NotBlank String id,
                                @Nullable Tenant tenant) {
         // TODO: Should we check that question IDs match?
-        return answerRepository.findById(id, tenant)
-            .map(answer -> (HttpResponse) HttpResponse.ok(new ModelAndView<>(VIEW_EDIT, updateModel(questionId, answer))))
+        return answerRepository.findAnswerUpdate(questionId, id, tenant)
+            .map(answerUpdate -> (HttpResponse) HttpResponse.ok(new ModelAndView<>(VIEW_EDIT, updateModel(answerUpdate))))
             .orElseGet(NotFoundController.NOT_FOUND_REDIRECT);
     }
 
@@ -159,8 +176,8 @@ class AnswerController {
     }
 
     @NonNull
-    private Map<String, Object> updateModel(@NotBlank @PathVariable String questionId, @NonNull Answer answer) {
-        Form form = formGenerator.generate(PATH_UPDATE_BUILDER.apply(questionId, answer.id()).toString(), new AnswerUpdate(answer.id(), answer.answerDate(), answer.text()));
+    private Map<String, Object> updateModel(@NonNull AnswerUpdate answerUpdate) {
+        Form form = formGenerator.generate(PATH_SHOW_BUILDER.apply(answerUpdate.questionId(), answerUpdate.id()).toString(), answerUpdate);
         return Map.of(ApiConstants.MODEL_FORM, form);
     }
 }

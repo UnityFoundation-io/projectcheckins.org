@@ -5,7 +5,6 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.multitenancy.Tenant;
 import io.micronaut.security.authentication.Authentication;
-import io.micronaut.security.authentication.ServerAuthentication;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.annotation.Nullable;
 import jakarta.inject.Singleton;
@@ -13,16 +12,18 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Optional;
+import jakarta.validation.constraints.PastOrPresent;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.forms.Answer;
 import org.projectcheckins.core.forms.AnswerSave;
+import org.projectcheckins.core.forms.AnswerUpdate;
+import org.projectcheckins.core.forms.Format;
 
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import org.projectcheckins.core.forms.AnswerUpdate;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -31,14 +32,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class AnswerRepositoryTest {
     @Test
     void testAnswerSaveIsValidated(AnswerRepository answerRepository) {
-        AnswerSave answerSave = new AnswerSave("questionId", null, "text");
-        Authentication authentication = new ServerAuthentication("user", Collections.emptyList(), Map.of("email", "delamos@unityfoundation.io"));
+        AnswerSave answerSave = new AnswerSave("questionId", Format.MARKDOWN, null, "text");
+        Authentication authentication = Authentication.build("user", Collections.emptyList(), Map.of("email", "delamos@unityfoundation.io"));
         assertThrows(ConstraintViolationException.class, () -> answerRepository.save(answerSave, authentication, null));
     }
 
     @Requires(property = "spec.name", value = "AnswerRepositoryTest")
     @Singleton
     static class AnswerRepositoryImpl implements AnswerRepository {
+
+        @NonNull
+        public Optional<AnswerUpdate> findAnswerUpdate(@NotBlank String questionId,
+                                                @NotBlank String id,
+                                                @Nullable Tenant tenant) {
+            return Optional.empty();
+        }
 
         @Override
         @NonNull
@@ -68,6 +76,14 @@ class AnswerRepositoryTest {
         @Override
         public void deleteById(@NotBlank String id, @Nullable Tenant tenant) {
             throw new UnsupportedOperationException("Not implemented");
+        }
+
+        @Override
+        public boolean hasAnswered(@NotBlank String questionId,
+                                   @NotNull@PastOrPresent LocalDate answerDate,
+                                   @NonNull @NotNull Authentication authentication,
+                                   @Nullable Tenant tenant) {
+            return false;
         }
     }
 

@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotNull;
 import org.projectcheckins.core.forms.Question;
 import org.projectcheckins.core.forms.QuestionSave;
 import org.projectcheckins.core.forms.QuestionUpdate;
+import org.projectcheckins.core.models.Element;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,4 +51,8 @@ public interface QuestionRepository {
     default void deleteById(@NotBlank String id) {
         deleteById(id, null);
     }
+
+    @NonNull
+    Optional<Element> findElementById(@NotBlank String questionId,
+                                      @Nullable Tenant tenant);
 }

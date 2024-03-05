@@ -4,10 +4,12 @@ import io.micronaut.core.type.Argument;
 import io.micronaut.serde.SerdeIntrospections;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.validation.validator.Validator;
+import jakarta.validation.ConstraintViolation;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
+import static org.projectcheckins.core.AssertUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
@@ -15,33 +17,30 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 class AnswerSaveTest {
     @Test
     void textIsRequired(Validator validator) {
-        assertThat(validator.validate(new AnswerSave("xxx", LocalDate.now(),  null)))
-            .isNotEmpty();
-        assertThat(validator.validate(new AnswerSave("xxx", LocalDate.now(),"")))
-            .anyMatch(x -> x.getPropertyPath().toString().equals("text") && x.getMessage().equals("must not be blank"));
-        assertThat(validator.validate(new AnswerSave("xxx", LocalDate.now(), "I worked on bla bla bla")))
+        assertNotBlank(validator, new AnswerSave("xxx", Format.MARKDOWN, LocalDate.now(), null), "text");
+    }
+
+    @Test
+    void validAnswerSave(Validator validator) {
+        assertThat(validator.validate(new AnswerSave("xxx", Format.MARKDOWN, LocalDate.now(), "I worked on bla bla bla")))
             .isEmpty();
     }
 
     @Test
     void questionIdIsRequired(Validator validator) {
-        assertThat(validator.validate(new AnswerSave(null, LocalDate.now(),  "I worked on bla bla bla")))
-                .isNotEmpty();
-        assertThat(validator.validate(new AnswerSave("", LocalDate.now(),"I worked on bla bla bla")))
-                .anyMatch(x -> x.getPropertyPath().toString().equals("questionId") && x.getMessage().equals("must not be blank"));
+        assertNotBlank(validator, new AnswerSave(null, Format.MARKDOWN, LocalDate.now(),  "I worked on bla bla bla"), "questionId");
+        assertNotBlank(validator, new AnswerSave("", Format.MARKDOWN, LocalDate.now(),  "I worked on bla bla bla"), "questionId");
     }
 
     @Test
     void answerDateIsRequired(Validator validator) {
-        assertThat(validator.validate(new AnswerSave("xxx", null,"I worked on bla bla bla")))
-                .anyMatch(x -> x.getPropertyPath().toString().equals("answerDate") && x.getMessage().equals("must not be null"));
+        assertNotNull(validator, new AnswerSave("xxx", Format.MARKDOWN,  null,"I worked on bla bla bla"), "answerDate");
     }
 
     @Test
     void answerDateIsPresentOrPast(Validator validator) {
         LocalDate answerDate = LocalDate.now().plusDays(2);
-        assertThat(validator.validate(new AnswerSave("xxx", answerDate, "I worked on bla bla bla")))
-                .anyMatch(x -> x.getPropertyPath().toString().equals("answerDate") && x.getMessage().equals("must be a date in the past or in the present"));
+        assertPastOrPresent(validator, new AnswerSave("xxx", Format.MARKDOWN, answerDate, "I worked on bla bla bla"), "answerDate");
     }
 
     @Test

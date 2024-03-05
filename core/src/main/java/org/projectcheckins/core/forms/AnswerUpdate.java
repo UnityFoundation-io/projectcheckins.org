@@ -8,7 +8,9 @@ import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 
 @Serdeable
-public record AnswerUpdate(@NotBlank @InputHidden String id,
+public record AnswerUpdate(@NotBlank @InputHidden String questionId,
+                           @NotBlank @InputHidden String id,
+                           @InputHidden Format format,
                            @NotNull @PastOrPresent LocalDate answerDate,
                            @NotBlank String text) {
 }

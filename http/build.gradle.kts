@@ -3,6 +3,7 @@ plugins {
 }
 dependencies {
     api(project(":core"))
+    api(project(":bootstrap"))
 
     compileOnly("com.fasterxml.jackson.core:jackson-databind")
     testCompileOnly("com.fasterxml.jackson.core:jackson-databind")
@@ -11,4 +12,6 @@ dependencies {
     annotationProcessor("io.micronaut.openapi:micronaut-openapi")
     compileOnly("io.micronaut.openapi:micronaut-openapi-annotations")
     testImplementation(project(":thymeleaf-fieldset"))
+
+    testImplementation("com.github.ksuid:ksuid:${project.properties["ksuidVersion"]}")
 }

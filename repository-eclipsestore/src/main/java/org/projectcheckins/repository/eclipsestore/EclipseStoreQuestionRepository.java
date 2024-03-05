@@ -14,8 +14,8 @@ import org.projectcheckins.core.forms.Question;
 import org.projectcheckins.core.forms.QuestionSave;
 import org.projectcheckins.core.forms.QuestionUpdate;
 import org.projectcheckins.core.idgeneration.IdGenerator;
+import org.projectcheckins.core.models.Element;
 import org.projectcheckins.core.repositories.QuestionRepository;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -45,13 +45,13 @@ class EclipseStoreQuestionRepository implements QuestionRepository {
     @Override
     @NonNull
     public Optional<Question> findById(@NotBlank String id, @Nullable Tenant tenant) {
-        return findEntityById(id)
+        return findEntityById(rootProvider, id)
                 .map(this::questionOfEntity);
     }
 
     @Override
     public void update(@NotNull @Valid QuestionUpdate questionUpdate, @Nullable Tenant tenant) {
-        QuestionEntity question = findEntityById(questionUpdate.id()).orElseThrow(QuestionNotFoundException::new);
+        QuestionEntity question = findEntityById(rootProvider, questionUpdate.id()).orElseThrow(QuestionNotFoundException::new);
         question.setTitle(questionUpdate.title());
         save(question);
     }
@@ -67,11 +67,17 @@ class EclipseStoreQuestionRepository implements QuestionRepository {
         save(rootProvider.root().getQuestions());
     }
 
+    @NonNull
+    public Optional<Element> findElementById(@NotBlank String questionId,
+                                             @Nullable Tenant tenant) {
+        return findEntityById(rootProvider, questionId).map(entity -> new Element(entity.getId(), entity.getTitle()));
+    }
+
     private Question questionOfEntity(QuestionEntity entity) {
         return new Question(entity.getId(), entity.getTitle());
     }
 
-    public Optional<QuestionEntity> findEntityById(String id) {
+    public static Optional<QuestionEntity> findEntityById(RootProvider<Data> rootProvider, String id) {
         return rootProvider.root().getQuestions()
                 .stream()
                 .filter(q -> q.getId().equals(id))

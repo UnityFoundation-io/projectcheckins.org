@@ -1,7 +1,9 @@
 package org.projectcheckins.http.controllers;
 
+import io.micronaut.views.fields.messages.Message;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import org.projectcheckins.bootstrap.Breadcrumb;
 
 @OpenAPIDefinition(
         info = @Info(
@@ -35,4 +37,7 @@ public interface ApiConstants {
     String PATH_UPDATE = SLASH + PATH_VARIABLE_ID + SLASH + ACTION_UPDATE;
     String PATH_LIST = SLASH + ACTION_LIST;
     String MODEL_FORM = "form";
+    String MODEL_BREADCRUMBS = "breadcrumbs";
+    Breadcrumb BREADCRUMB_EDIT = new Breadcrumb(Message.of("Edit", "action.edit"));
+    Breadcrumb BREADCRUMB_CREATE = new Breadcrumb(Message.of("Create", "action.create"));
 }
