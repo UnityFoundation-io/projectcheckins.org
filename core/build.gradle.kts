@@ -11,6 +11,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-annotations")
     compileOnly("com.fasterxml.jackson.core:jackson-databind")
     testCompileOnly("com.fasterxml.jackson.core:jackson-databind")
+
     compileOnly("com.github.ksuid:ksuid:${project.properties["ksuidVersion"]}")
     testImplementation("com.github.ksuid:ksuid:${project.properties["ksuidVersion"]}")
 }

@@ -11,6 +11,6 @@ class MarkdownRendererTest {
     @Test
     void renderMarkdown(MarkdownRenderer markdownRenderer) {
         assertThat(markdownRenderer.render("This is **Sparta**"))
-                .isEqualTo("<p>This is <em>Sparta</em></p>\n");
+                .isEqualTo("<p>This is <strong>Sparta</strong></p>\n");
     }
 }
