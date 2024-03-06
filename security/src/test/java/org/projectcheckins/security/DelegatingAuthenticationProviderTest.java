@@ -13,6 +13,8 @@ import io.micronaut.security.authentication.UsernamePasswordCredentials;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Singleton;
 import jakarta.validation.constraints.NotBlank;
+import java.time.DayOfWeek;
+import java.util.TimeZone;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -109,6 +111,21 @@ class DelegatingAuthenticationProviderTest {
                     @Override
                     public String getPassword() {
                         return encodedPassword;
+                    }
+
+                    @Override
+                    public TimeZone getTimeZone() {
+                        return TimeZone.getDefault();
+                    }
+
+                    @Override
+                    public DayOfWeek getFirstDayOfWeek() {
+                        return DayOfWeek.MONDAY;
+                    }
+
+                    @Override
+                    public boolean isUsing24HourClock() {
+                        return true;
                     }
                 });
             }

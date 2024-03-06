@@ -6,6 +6,8 @@ import io.micronaut.eclipsestore.annotations.StoreParams;
 import jakarta.inject.Singleton;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import java.time.DayOfWeek;
+import java.util.TimeZone;
 import org.projectcheckins.core.idgeneration.IdGenerator;
 import org.projectcheckins.email.EmailConfirmationRepository;
 import org.projectcheckins.security.*;
@@ -57,7 +59,15 @@ class EclipseStoreUser extends AbstractRegisterService implements UserFetcher, E
 
     @NonNull
     private UserEntity entityOf(@NonNull UserSave userSave) {
-        return new UserEntity(null, userSave.email(), userSave.encodedPassword(), userSave.authorities());
+        return new UserEntity(
+            null,
+            userSave.email(),
+            userSave.encodedPassword(),
+            userSave.authorities(),
+            userSave.timeZone(),
+            userSave.firstDayOfWeek(),
+            userSave.using24HourClock()
+        );
     }
 
     @Override
@@ -90,6 +100,21 @@ class EclipseStoreUser extends AbstractRegisterService implements UserFetcher, E
             @Override
             public String getPassword() {
                 return user.getEncodedPassword();
+            }
+
+            @Override
+            public TimeZone getTimeZone() {
+                return user.getTimeZone();
+            }
+
+            @Override
+            public DayOfWeek getFirstDayOfWeek() {
+                return user.getFirstDayOfWeek();
+            }
+
+            @Override
+            public boolean isUsing24HourClock() {
+                return user.isUsing24HourClock();
             }
         };
     }

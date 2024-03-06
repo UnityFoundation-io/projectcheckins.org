@@ -9,14 +9,11 @@ import io.micronaut.multitenancy.Tenant;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.views.ModelAndView;
-import io.micronaut.views.fields.Form;
 import io.micronaut.views.fields.FormGenerator;
-import jakarta.annotation.Nonnull;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.Map;
-import java.util.Optional;
 import org.projectcheckins.annotations.GetHtml;
 import org.projectcheckins.annotations.PostForm;
 import org.projectcheckins.core.forms.Profile;
@@ -56,31 +53,36 @@ class ProfileController {
     HttpResponse<?> profileShow(@Nullable Authentication authentication, @Nullable Tenant tenant) {
         return authenticationHelper.getEmailAttribute(authentication)
             .flatMap(profileRepository::findByEmail)
-            .map(p -> (HttpResponse) HttpResponse.ok(Map.of(MODEL_PROFILE, p)))
-            .orElseGet(NotFoundController.NOT_FOUND_REDIRECT);
+            .map(p -> HttpResponse.ok(Map.of(MODEL_PROFILE, p)))
+            .orElseGet(NotFoundController::notFoundRedirect);
     }
 
     @GetHtml(uri = PATH_EDIT, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_EDIT)
     HttpResponse<?> profileEdit(@Nullable Authentication authentication, @Nullable Tenant tenant) {
         return authenticationHelper.getEmailAttribute(authentication)
             .flatMap(profileRepository::findByEmail)
-            .map(p -> (HttpResponse) HttpResponse.ok(new ModelAndView<>(VIEW_EDIT, updateModel(p))))
-            .orElseGet(NotFoundController.NOT_FOUND_REDIRECT);
+            .map(p -> HttpResponse.ok(new ModelAndView<>(VIEW_EDIT, updateModel(p))))
+            .orElseGet(NotFoundController::notFoundRedirect);
     }
 
     @PostForm(uri = PATH_UPDATE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
     HttpResponse<?> profileUpdate(@Nullable Authentication authentication,
                                   @NonNull @NotNull @Valid @Body ProfileUpdate profileUpdate,
                                   @Nullable Tenant tenant) {
-        profileRepository.update(profileUpdate, tenant);
+        return authenticationHelper.getEmailAttribute(authentication)
+            .map(email -> update(email, profileUpdate, tenant))
+            .orElseGet(NotFoundController::notFoundRedirect);
+    }
+
+    private HttpResponse<?> update(String email, ProfileUpdate profileUpdate, Tenant tenant) {
+        profileRepository.update(email, profileUpdate, tenant);
         return HttpResponse.seeOther(URI.create(PATH_SHOW));
     }
 
     private Map<String, Object> updateModel(@NonNull Profile profile) {
         return Map.of(ApiConstants.MODEL_FORM, formGenerator.generate(PATH_UPDATE, new ProfileUpdate(
-            profile.id(),
             profile.timeZone(),
             profile.firstDayOfWeek(),
-            profile.timeFormat())));
+            profile.using24HourClock())));
     }
 }

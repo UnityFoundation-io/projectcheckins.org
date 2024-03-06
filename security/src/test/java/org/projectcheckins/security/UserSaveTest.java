@@ -1,6 +1,8 @@
 package org.projectcheckins.security;
 
 import static java.util.Collections.emptyList;
+import static java.util.TimeZone.getDefault;
+import static java.time.DayOfWeek.MONDAY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
@@ -14,20 +16,32 @@ import org.junit.jupiter.api.Test;
 class UserSaveTest {
     @Test
     void usernameIsRequired(Validator validator) {
-        assertThat(validator.validate(new UserSave(null, "encodedpassword", emptyList())))
+        assertThat(validator.validate(new UserSave(null, "encodedpassword", emptyList(), getDefault(), MONDAY, true)))
             .isNotEmpty();
-        assertThat(validator.validate(new UserSave("", "encodedpassword", emptyList())))
+        assertThat(validator.validate(new UserSave("", "encodedpassword", emptyList(), getDefault(), MONDAY, true)))
             .anyMatch(x -> x.getPropertyPath().toString().equals("email") && x.getMessage().equals("must not be blank"));
-        assertThat(validator.validate(new UserSave("manolo", "encodedpassword", emptyList())))
+        assertThat(validator.validate(new UserSave("manolo", "encodedpassword", emptyList(), getDefault(), MONDAY, true)))
             .isEmpty();
     }
 
     @Test
     void passwordIsRequired(Validator validator) {
-        assertThat(validator.validate(new UserSave("manolo", null, emptyList())))
+        assertThat(validator.validate(new UserSave("manolo", null, emptyList(), getDefault(), MONDAY, true)))
             .isNotEmpty();
-        assertThat(validator.validate(new UserSave("manolo", "", emptyList())))
+        assertThat(validator.validate(new UserSave("manolo", "", emptyList(), getDefault(), MONDAY, true)))
             .anyMatch(x -> x.getPropertyPath().toString().equals("encodedPassword") && x.getMessage().equals("must not be blank"));
+    }
+
+    @Test
+    void timeZoneIsRequired(Validator validator) {
+        assertThat(validator.validate(new UserSave("manolo", null, emptyList(), null, MONDAY, true)))
+            .isNotEmpty();
+    }
+
+    @Test
+    void firstDayOfWeekIsRequired(Validator validator) {
+        assertThat(validator.validate(new UserSave("manolo", null, emptyList(), getDefault(), null, true)))
+            .isNotEmpty();
     }
 
     @Test

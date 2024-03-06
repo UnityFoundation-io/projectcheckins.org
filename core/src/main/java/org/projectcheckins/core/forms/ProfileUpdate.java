@@ -8,8 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.DayOfWeek;
 
 @Serdeable
-public record ProfileUpdate(@NotBlank @InputHidden String id,
-                            @NotNull @Select(fetcher = TimeZoneFetcher.class) String timeZone,
+public record ProfileUpdate(@NotNull @Select(fetcher = TimeZoneFetcher.class) String timeZone,
                             @NotNull DayOfWeek firstDayOfWeek,
-                            @NotNull TimeFormat timeFormat) {
+                            boolean using24HourClock) {
 }
