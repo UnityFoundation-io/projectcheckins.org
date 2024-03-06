@@ -4,12 +4,11 @@ import io.micronaut.core.type.Argument;
 import io.micronaut.serde.SerdeIntrospections;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.validation.validator.Validator;
-import jakarta.validation.ConstraintViolation;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
-import static org.projectcheckins.core.AssertUtils.*;
+import static org.projectcheckins.test.AssertUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 

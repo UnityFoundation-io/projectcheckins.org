@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.projectcheckins.core.AssertUtils.*;
+import static org.projectcheckins.test.AssertUtils.*;
 
 @MicronautTest(startApplication = false)
 class AnswerUpdateTest {

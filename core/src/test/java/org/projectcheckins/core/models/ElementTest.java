@@ -6,7 +6,7 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.validation.validator.Validator;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.projectcheckins.core.AssertUtils.assertNotBlank;
+import static org.projectcheckins.test.AssertUtils.assertNotBlank;
 
 @MicronautTest(startApplication = false)
 class ElementTest {

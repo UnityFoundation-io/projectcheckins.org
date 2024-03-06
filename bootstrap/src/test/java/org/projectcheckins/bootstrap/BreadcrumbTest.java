@@ -4,7 +4,8 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.views.fields.messages.Message;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
-import static org.projectcheckins.bootstrap.AssertUtils.*;
+
+import static org.projectcheckins.test.AssertUtils.assertNotNull;
 
 @MicronautTest(startApplication = false)
 class BreadcrumbTest {

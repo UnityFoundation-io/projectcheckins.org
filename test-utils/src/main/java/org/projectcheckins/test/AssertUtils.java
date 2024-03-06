@@ -1,20 +1,53 @@
 package org.projectcheckins.test;
 
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.http.HttpHeaders;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.client.exceptions.HttpClientResponseException;
+import jakarta.validation.Validator;
 import org.assertj.core.api.AbstractObjectAssert;
 import org.assertj.core.api.Condition;
 import org.assertj.core.api.ThrowableAssert;
+import jakarta.validation.ConstraintViolation;
 
 import java.util.Optional;
 import java.util.function.Predicate;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public final class AssertUtils {
     private AssertUtils() {
+    }
+
+    public static <T> void assertValid(@NonNull Validator validator, T object) {
+        assertThat(validator.validate(object))
+                .isEmpty();
+    }
+
+    public static <T> void assertNotBlank(@NonNull Validator validator, T object, String propertyName) {
+        assertThat(validator.validate(object))
+                .anyMatch(x -> x.getPropertyPath().toString().equals(propertyName))
+                .extracting(ConstraintViolation::getMessage)
+                .first()
+                .isEqualTo("must not be blank");
+    }
+
+    public static <T> void assertNotNull(@NonNull Validator validator, T object, String propertyName) {
+        assertThat(validator.validate(object))
+                .anyMatch(x -> x.getPropertyPath().toString().equals(propertyName))
+                .extracting(ConstraintViolation::getMessage)
+                .first()
+                .isEqualTo("must not be null");
+    }
+
+    public static <T> void assertPastOrPresent(@NonNull Validator validator, T object, String propertyName) {
+        assertThat(validator.validate(object))
+                .anyMatch(x -> x.getPropertyPath().toString().equals(propertyName))
+                .extracting(ConstraintViolation::getMessage)
+                .first()
+                .isEqualTo("must be a date in the past or in the present");
     }
 
     public static AbstractObjectAssert<?, String> assertThrowsWithHtml(ThrowableAssert.ThrowingCallable shouldRaiseThrowable, HttpStatus httpStatus) {
