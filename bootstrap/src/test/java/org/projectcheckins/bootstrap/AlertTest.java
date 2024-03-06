@@ -3,7 +3,6 @@ package org.projectcheckins.bootstrap;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.type.Argument;
-import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.serde.SerdeIntrospections;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.validation.validator.Validator;
@@ -11,7 +10,7 @@ import jakarta.inject.Singleton;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import org.junit.jupiter.api.Test;
-
+import static org.projectcheckins.test.ValidationAssert.*;
 import static org.assertj.core.api.Assertions.*;
 
 @Property(name = "spec.name", value = "AlertTest")
@@ -19,7 +18,7 @@ import static org.assertj.core.api.Assertions.*;
 class AlertTest {
     @Test
     void messageCannotBeNull(Validator validator, AlertTestValidator testValidator) {
-        ValidationAssert.assertThat(validator, Alert.danger(null))
+        assertThat(validator, Alert.danger(null))
                 .fieldNotNull("message");
         String message = null;
         assertThatThrownBy(() -> testValidator.validate(new Alert(message, AlertVariant.DANGER, true)))

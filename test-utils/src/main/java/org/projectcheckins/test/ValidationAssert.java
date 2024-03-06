@@ -1,4 +1,4 @@
-package org.projectcheckins.bootstrap;
+package org.projectcheckins.test;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
