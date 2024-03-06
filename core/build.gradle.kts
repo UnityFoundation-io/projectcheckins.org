@@ -7,8 +7,6 @@ dependencies {
     api("io.micronaut.views:micronaut-views-fieldset")
 
     implementation("com.vladsch.flexmark:flexmark:${project.properties["flexmarkVersion"]}")
-    implementation("com.fasterxml.jackson.core:jackson-annotations")
-
 
     compileOnly("com.github.ksuid:ksuid:${project.properties["ksuidVersion"]}")
     testImplementation("com.github.ksuid:ksuid:${project.properties["ksuidVersion"]}")
