@@ -50,7 +50,7 @@ class ProfileController {
     }
 
     @GetHtml(uri = PATH_SHOW, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_SHOW)
-    HttpResponse<?> profileShow(@Nullable Authentication authentication, @Nullable Tenant tenant) {
+    HttpResponse<?> profileShow(@NonNull @NotNull Authentication authentication, @Nullable Tenant tenant) {
         return authenticationHelper.getEmailAttribute(authentication)
             .flatMap(profileRepository::findByEmail)
             .map(p -> HttpResponse.ok(Map.of(MODEL_PROFILE, p)))
@@ -58,7 +58,7 @@ class ProfileController {
     }
 
     @GetHtml(uri = PATH_EDIT, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_EDIT)
-    HttpResponse<?> profileEdit(@Nullable Authentication authentication, @Nullable Tenant tenant) {
+    HttpResponse<?> profileEdit(@NonNull @NotNull Authentication authentication, @Nullable Tenant tenant) {
         return authenticationHelper.getEmailAttribute(authentication)
             .flatMap(profileRepository::findByEmail)
             .map(p -> HttpResponse.ok(new ModelAndView<>(VIEW_EDIT, updateModel(p))))
@@ -66,7 +66,7 @@ class ProfileController {
     }
 
     @PostForm(uri = PATH_UPDATE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
-    HttpResponse<?> profileUpdate(@Nullable Authentication authentication,
+    HttpResponse<?> profileUpdate(@NonNull @NotNull Authentication authentication,
                                   @NonNull @NotNull @Valid @Body ProfileUpdate profileUpdate,
                                   @Nullable Tenant tenant) {
         return authenticationHelper.getEmailAttribute(authentication)
