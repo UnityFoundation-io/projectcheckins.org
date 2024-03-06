@@ -8,8 +8,6 @@ import io.micronaut.multitenancy.Tenant;
 import io.micronaut.security.authentication.Authentication;
 import jakarta.inject.Singleton;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.TimeZone;
@@ -43,8 +41,8 @@ class EclipseStoreProfileRepository implements ProfileRepository {
   }
 
   private Optional<UserEntity> findFirst(Authentication authentication) {
-    final Object email = authentication.getAttributes().get("email");
-    return rootProvider.root().getUsers().stream().filter(u -> u.getEmail().equals(email)).findFirst();
+    final String name = authentication.getName();
+    return rootProvider.root().getUsers().stream().filter(u -> u.getId().equals(name)).findFirst();
   }
 
   private UserEntity updateEntity(UserEntity entity, ProfileUpdate profileUpdate) {

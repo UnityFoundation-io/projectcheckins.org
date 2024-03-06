@@ -5,13 +5,11 @@ import static java.time.DayOfWeek.SUNDAY;
 import static java.util.Collections.emptyList;
 import static java.util.TimeZone.getDefault;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.authentication.ClientAuthentication;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.exceptions.ProfileNotFoundException;
 import org.projectcheckins.core.forms.ProfileUpdate;
@@ -21,13 +19,12 @@ import org.projectcheckins.security.UserSave;
 class EclipseStoreProfileRepositoryTest {
 
   @Test
-  void testCrud(EclipseStoreUser storeUser, EclipseStoreProfileRepository profileRepository) {
+  void testCrud(EclipseStoreUser storeUser, EclipseStoreProfileRepository profileRepository) throws Exception {
     final String email = "email@example.com";
-    final Authentication wrongAuth = new ClientAuthentication(email, Map.of("email", "wrong@example.com"));
-    final Authentication rightAuth = new ClientAuthentication(email, Map.of("email", email));
-    assertThatCode(() -> storeUser.register(new UserSave(
-        email, "encodedPassword", emptyList(), getDefault(), MONDAY, true)))
-            .doesNotThrowAnyException();
+    final String userId = storeUser.register(new UserSave(
+        email, "encodedPassword", emptyList(), getDefault(), MONDAY, true));
+    final Authentication wrongAuth = new ClientAuthentication("wrong-id", null);
+    final Authentication rightAuth = new ClientAuthentication(userId, null);
     assertThat(profileRepository.findByAuthentication(rightAuth))
         .hasValueSatisfying(p -> assertThat(p)
             .hasFieldOrPropertyWithValue("firstDayOfWeek", MONDAY)
