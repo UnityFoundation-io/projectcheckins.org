@@ -5,6 +5,7 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.eclipsestore.RootProvider;
 import io.micronaut.eclipsestore.annotations.StoreParams;
 import io.micronaut.multitenancy.Tenant;
+import io.micronaut.security.authentication.Authentication;
 import jakarta.inject.Singleton;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -27,13 +28,13 @@ class EclipseStoreProfileRepository implements ProfileRepository {
 
   @Override
   @NonNull
-  public Optional<Profile> findByEmail(@NotBlank @Email String email, @Nullable Tenant tenant) {
-    return findFirst(email).map(this::fromEntity);
+  public Optional<Profile> findByAuthentication(@NotNull Authentication authentication, @Nullable Tenant tenant) {
+    return findFirst(authentication).map(this::fromEntity);
   }
 
   @Override
-  public void update(@NotBlank @Email String email, @NotNull @Valid ProfileUpdate profileUpdate, @Nullable Tenant tenant) {
-    final UserEntity entity = findFirst(email).orElseThrow(ProfileNotFoundException::new);
+  public void update(@NotNull Authentication authentication, @NotNull @Valid ProfileUpdate profileUpdate, @Nullable Tenant tenant) {
+    final UserEntity entity = findFirst(authentication).orElseThrow(ProfileNotFoundException::new);
     save(updateEntity(entity, profileUpdate));
   }
 
@@ -41,7 +42,8 @@ class EclipseStoreProfileRepository implements ProfileRepository {
   public void save(UserEntity user) {
   }
 
-  private Optional<UserEntity> findFirst(String email) {
+  private Optional<UserEntity> findFirst(Authentication authentication) {
+    final Object email = authentication.getAttributes().get("email");
     return rootProvider.root().getUsers().stream().filter(u -> u.getEmail().equals(email)).findFirst();
   }
 

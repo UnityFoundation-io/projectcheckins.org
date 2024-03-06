@@ -17,13 +17,12 @@ import io.micronaut.http.client.BlockingHttpClient;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
 import io.micronaut.multitenancy.Tenant;
+import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.authentication.AuthenticationRequest;
 import io.micronaut.security.authentication.AuthenticationResponse;
 import io.micronaut.security.authentication.provider.HttpRequestAuthenticationProvider;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Singleton;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import java.time.DayOfWeek;
 import java.util.Map;
 import java.util.Optional;
@@ -76,15 +75,12 @@ class ProfileControllerTest {
   static class ProfileRepositoryMock implements ProfileRepository {
 
     @Override
-    public Optional<Profile> findByEmail(String email, Tenant tenant) {
-      if (email.equals("email@example.com")) {
-        return Optional.of(new Profile(TimeZone.getDefault().getID(), DayOfWeek.MONDAY, true));
-      }
-      return Optional.empty();
+    public Optional<Profile> findByAuthentication(Authentication authentication, Tenant tenant) {
+      return Optional.of(new Profile(TimeZone.getDefault().getID(), DayOfWeek.MONDAY, true));
     }
 
     @Override
-    public void update(@NotBlank @Email String email, ProfileUpdate profileUpdate, Tenant tenant) {
+    public void update(Authentication authentication, ProfileUpdate profileUpdate, Tenant tenant) {
 
     }
   }

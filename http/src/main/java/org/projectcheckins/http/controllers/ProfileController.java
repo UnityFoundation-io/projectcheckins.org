@@ -41,26 +41,22 @@ class ProfileController {
 
     private final FormGenerator formGenerator;
     private final ProfileRepository profileRepository;
-    private final AuthenticationHelper authenticationHelper;
 
-    ProfileController(FormGenerator formGenerator, ProfileRepository profileRepository, AuthenticationHelper authenticationHelper) {
+    ProfileController(FormGenerator formGenerator, ProfileRepository profileRepository) {
         this.formGenerator = formGenerator;
         this.profileRepository = profileRepository;
-        this.authenticationHelper = authenticationHelper;
     }
 
     @GetHtml(uri = PATH_SHOW, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_SHOW)
     HttpResponse<?> profileShow(@NonNull @NotNull Authentication authentication, @Nullable Tenant tenant) {
-        return authenticationHelper.getEmailAttribute(authentication)
-            .flatMap(profileRepository::findByEmail)
+        return profileRepository.findByAuthentication(authentication)
             .map(p -> HttpResponse.ok(Map.of(MODEL_PROFILE, p)))
             .orElseGet(NotFoundController::notFoundRedirect);
     }
 
     @GetHtml(uri = PATH_EDIT, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_EDIT)
     HttpResponse<?> profileEdit(@NonNull @NotNull Authentication authentication, @Nullable Tenant tenant) {
-        return authenticationHelper.getEmailAttribute(authentication)
-            .flatMap(profileRepository::findByEmail)
+        return profileRepository.findByAuthentication(authentication)
             .map(p -> HttpResponse.ok(new ModelAndView<>(VIEW_EDIT, updateModel(p))))
             .orElseGet(NotFoundController::notFoundRedirect);
     }
@@ -69,13 +65,7 @@ class ProfileController {
     HttpResponse<?> profileUpdate(@NonNull @NotNull Authentication authentication,
                                   @NonNull @NotNull @Valid @Body ProfileUpdate profileUpdate,
                                   @Nullable Tenant tenant) {
-        return authenticationHelper.getEmailAttribute(authentication)
-            .map(email -> update(email, profileUpdate, tenant))
-            .orElseGet(NotFoundController::notFoundRedirect);
-    }
-
-    private HttpResponse<?> update(String email, ProfileUpdate profileUpdate, Tenant tenant) {
-        profileRepository.update(email, profileUpdate, tenant);
+        profileRepository.update(authentication, profileUpdate, tenant);
         return HttpResponse.seeOther(URI.create(PATH_SHOW));
     }
 
