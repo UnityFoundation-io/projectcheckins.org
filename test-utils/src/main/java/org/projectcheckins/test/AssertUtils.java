@@ -66,7 +66,7 @@ public final class AssertUtils {
     }
 
     public static Predicate<HttpResponse<?>> location(String location) {
-        return location(x -> location.equals(x));
+        return location(location::equals);
     }
 
     public static Predicate<HttpResponse<?>> redirection(Predicate<String> expected) {
