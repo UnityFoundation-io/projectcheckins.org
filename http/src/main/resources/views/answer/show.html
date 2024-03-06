@@ -9,6 +9,7 @@
     <th:block th:if="${breadcrumbs}">
         <nav th:replace="~{bootstrap/_breadcrumbs :: breadcrumbs(${breadcrumbs})}"></nav>
     </th:block>
+    <a th:href="@{|/question/${question.id}/answer/${answer.id}/edit|}" th:text="#{answer.edit}"></a>
     <article th:replace="~{answer/_show :: answer(${answer})}"></article>
 </main>
 </body>

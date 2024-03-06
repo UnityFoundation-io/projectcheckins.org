@@ -134,9 +134,13 @@ class AnswerController {
 
     @GetHtml(uri = PATH_SHOW, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_SHOW)
     HttpResponse<?> answerShow(@NotBlank @PathVariable String questionId, @PathVariable @NotBlank String id, @Nullable Tenant tenant) {
-        // TODO: Should we check that question IDs match?
+        Optional<Element> questionOptional = questionRepository.findElementById(questionId, tenant);
+        if (questionOptional.isEmpty()) {
+            return HttpResponse.notFound();
+        }
+        Element element = questionOptional.get();
         return answerRepository.findById(id, tenant)
-            .map(answer -> (HttpResponse) HttpResponse.ok(Map.of(MODEL_ANSWER, answer)))
+            .map(answer -> (HttpResponse) HttpResponse.ok(Map.of(QuestionController.MODEL_QUESTION, element, MODEL_ANSWER, answer)))
             .orElseGet(NotFoundController.NOT_FOUND_REDIRECT);
     }
 
@@ -147,9 +151,13 @@ class AnswerController {
     HttpResponse<?> answerEdit(@PathVariable @NotBlank String questionId,
                                @PathVariable @NotBlank String id,
                                @Nullable Tenant tenant) {
-        // TODO: Should we check that question IDs match?
+        Optional<Element> questionOptional = questionRepository.findElementById(questionId, tenant);
+        if (questionOptional.isEmpty()) {
+            return HttpResponse.notFound();
+        }
+        Element element = questionOptional.get();
         return answerRepository.findAnswerUpdate(questionId, id, tenant)
-            .map(answerUpdate -> (HttpResponse) HttpResponse.ok(new ModelAndView<>(VIEW_EDIT, updateModel(answerUpdate))))
+            .map(answerUpdate -> (HttpResponse) HttpResponse.ok(new ModelAndView<>(VIEW_EDIT, updateModel(element, answerUpdate))))
             .orElseGet(NotFoundController.NOT_FOUND_REDIRECT);
     }
 
@@ -158,8 +166,10 @@ class AnswerController {
                                    @PathVariable @NotBlank String id,
                                    @NonNull @NotNull @Valid @Body AnswerUpdate answerUpdate,
                                    @Nullable Tenant tenant) {
-        // TODO: Should we check that question IDs match?
         if (!id.equals(answerUpdate.id())) {
+            return HttpResponse.unprocessableEntity();
+        }
+        if (!questionId.equals(answerUpdate.questionId())) {
             return HttpResponse.unprocessableEntity();
         }
         answerRepository.update(answerUpdate, tenant);
@@ -176,8 +186,8 @@ class AnswerController {
     }
 
     @NonNull
-    private Map<String, Object> updateModel(@NonNull AnswerUpdate answerUpdate) {
+    private Map<String, Object> updateModel(@NonNull Element element, @NonNull AnswerUpdate answerUpdate) {
         Form form = formGenerator.generate(PATH_SHOW_BUILDER.apply(answerUpdate.questionId(), answerUpdate.id()).toString(), answerUpdate);
-        return Map.of(ApiConstants.MODEL_FORM, form);
+        return Map.of(ApiConstants.MODEL_FORM, form, QuestionController.MODEL_QUESTION, element);
     }
 }

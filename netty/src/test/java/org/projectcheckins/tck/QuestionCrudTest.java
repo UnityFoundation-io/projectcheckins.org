@@ -17,6 +17,7 @@ import org.projectcheckins.test.BrowserRequest;
 import java.util.Map;
 import java.util.Optional;
 
+@Property(name = "micronaut.http.client.follow-redirects", value = StringUtils.FALSE)
 @Property(name = "micronaut.security.filter.enabled", value = StringUtils.FALSE)
 @MicronautTest
 class QuestionCrudTest {

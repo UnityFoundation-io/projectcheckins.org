@@ -8,6 +8,7 @@ import io.micronaut.security.authentication.Authentication;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.forms.AnswerSave;
+import org.projectcheckins.core.forms.Format;
 
 class AnswerEntityTest {
 
@@ -18,9 +19,9 @@ class AnswerEntityTest {
     final LocalDate answerDate = LocalDate.now();
     final String text = "Lorem ipsum";
     final String userId = "Admin";
-    final AnswerSave answerSave = new AnswerSave(questionId, answerDate, text);
+    final AnswerSave answerSave = new AnswerSave(questionId, Format.MARKDOWN, answerDate, text);
     final Authentication auth = Authentication.build(userId, emptyList(), emptyMap());
-    final AnswerEntity entity = AnswerEntity.fromAnswer(answerId, answerSave, auth);
+    final AnswerEntity entity = EclipseStoreAnswerRepository.fromAnswer(answerId, answerSave, auth);
     assertThat(entity)
         .hasFieldOrPropertyWithValue("id", answerId)
         .hasFieldOrPropertyWithValue("questionId", questionId)

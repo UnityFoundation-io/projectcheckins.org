@@ -14,7 +14,7 @@
     <h1 th:text="${question.title}"></h1>
 
     <form th:replace="~{fieldset/form :: form(${form})}"></form>
-    <div th:replace="~{answer/_list :: _list(${answers})}"></div>
+    <div th:replace="~{answer/_list :: answers(${answers})}"></div>
 </main>
 </body>
 </html>

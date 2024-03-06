@@ -1,8 +1,8 @@
 package org.projectcheckins.http.exceptions;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.projectcheckins.http.AssertUtils.htmlBody;
-import static org.projectcheckins.http.AssertUtils.status;
+import static org.projectcheckins.test.AssertUtils.htmlBody;
+import static org.projectcheckins.test.AssertUtils.status;
 
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Requires;
@@ -22,7 +22,7 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.annotations.GetHtml;
 import org.projectcheckins.core.exceptions.AnswerNotFoundException;
-import org.projectcheckins.http.BrowserRequest;
+import org.projectcheckins.test.BrowserRequest;
 
 @MicronautTest
 @Property(name = "spec.name", value = "AnswerNotFoundHandlerTest")

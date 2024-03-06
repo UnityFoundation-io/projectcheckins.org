@@ -2,7 +2,7 @@ package org.projectcheckins.http.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.projectcheckins.http.AssertUtils.redirection;
+import static org.projectcheckins.test.AssertUtils.redirection;
 
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Replaces;
@@ -39,29 +39,32 @@ import org.projectcheckins.core.idgeneration.IdGenerator;
 import org.projectcheckins.core.models.Element;
 import org.projectcheckins.core.repositories.AnswerRepository;
 import org.projectcheckins.core.repositories.QuestionRepository;
-import org.projectcheckins.http.BrowserRequest;
+import org.projectcheckins.core.repositories.SecondaryAnswerRepository;
+import org.projectcheckins.core.repositories.SecondaryQuestionRepository;
+import org.projectcheckins.test.AbstractAuthenticationFetcher;
+import org.projectcheckins.test.BrowserRequest;
 
 @Property(name = "micronaut.http.client.follow-redirects", value = StringUtils.FALSE)
-@Property(name = "micronaut.security.filter.enabled", value = StringUtils.FALSE)
 @Property(name = "spec.name", value = "AnswerControllerFormTest")
 @MicronautTest
 class AnswerControllerFormTest {
 
     private static final String QUESTION_ID = "xxx";
+    private static final String TEXT = "Lorem ipsum";
 
     @Test
-    void crud(@Client("/") HttpClient httpClient, AnswerRepository answerRepository) {
+    void crud(@Client("/") HttpClient httpClient, AnswerRepository answerRepository, AuthenticationFetcherMock authenticationFetcherMock) {
+        authenticationFetcherMock.setAuthentication(Authentication.build("xxx", Collections.emptyList(), Collections.singletonMap("email", "delamos@unityfoundation.io")));
         BlockingHttpClient client = httpClient.toBlocking();
-        String text = "Lorem ipsum";
         URI saveUri = UriBuilder.of("/question").path(QUESTION_ID).path("answer").path("save").build();
         URI listUri = UriBuilder.of("/question").path(QUESTION_ID).path("answer").path("list").build();
         HttpResponse<?> saveResponse = client.exchange(BrowserRequest.POST(saveUri.toString(), Map.of(
-            "questionId", "xxx", "answerDate", "2024-01-01", "text", text)));
+            "questionId", "xxx", "answerDate", "2024-01-01", "text", TEXT)));
         assertThat(saveResponse)
             .matches(redirection(listUri.toString()));
 
         assertThatThrownBy(() -> client.exchange(BrowserRequest.POST(saveUri.toString(), Map.of(
-            "questionId", "different", "answerDate", "2024-01-01", "text", text))))
+            "questionId", "different", "answerDate", "2024-01-01", "text", TEXT))))
             .isInstanceOf(HttpClientResponseException.class)
             .extracting(e -> ((HttpClientResponseException)e).getStatus())
             .isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
@@ -71,11 +74,11 @@ class AnswerControllerFormTest {
 
         URI editUri =UriBuilder.of("/question").path(QUESTION_ID).path("answer").path(answerId).path("edit").build();
         assertThat(client.retrieve(BrowserRequest.GET(showUri), String.class))
-            .contains(text)
+            .contains(TEXT)
             .contains(editUri.toString());
 
         assertThat(client.retrieve(BrowserRequest.GET(editUri), String.class))
-            .contains(text);
+            .contains(TEXT);
 
         String updatedText = "Hello world";
         URI updateUri =UriBuilder.of("/question").path(QUESTION_ID).path("answer").path(answerId).path("update").build();
@@ -84,7 +87,7 @@ class AnswerControllerFormTest {
             .matches(redirection(s -> s.equals(showUri.toString())));
 
         assertThat(client.retrieve(BrowserRequest.GET("/question/xxx/answer/yyy/edit"), String.class))
-            .doesNotContain(text)
+            .doesNotContain(TEXT)
             .contains(updatedText);
 
         assertThatThrownBy(() -> client.exchange(BrowserRequest.POST(updateUri.toString(), Map.of(
@@ -103,8 +106,13 @@ class AnswerControllerFormTest {
 
     @Requires(property = "spec.name", value = "AnswerControllerFormTest")
     @Singleton
-    @Replaces(QuestionRepository.class)
-    static class QuestionRepositoryMock implements QuestionRepository {
+    static class AuthenticationFetcherMock extends AbstractAuthenticationFetcher {
+    }
+
+    @Requires(property = "spec.name", value = "AnswerControllerFormTest")
+    @Singleton
+    @Replaces(SecondaryQuestionRepository.class)
+    static class QuestionRepositoryMock extends SecondaryQuestionRepository {
 
         private final IdGenerator idGenerator;
 
@@ -118,26 +126,6 @@ class AnswerControllerFormTest {
         }
 
         @Override
-        public Optional<Question> findById(String id, Tenant tenant) {
-            return Optional.empty();
-        }
-
-        @Override
-        public void update(QuestionUpdate questionUpdate, Tenant tenant) {
-
-        }
-
-        @Override
-        public List<Question> findAll(Tenant tenant) {
-            return Collections.emptyList();
-        }
-
-        @Override
-        public void deleteById(String id, Tenant tenant) {
-
-        }
-
-        @Override
         public Optional<Element> findElementById(String questionId, Tenant tenant) {
             if (questionId.equals(QUESTION_ID)) {
                 return Optional.of(new Element(QUESTION_ID, "What are working on?"));
@@ -148,18 +136,12 @@ class AnswerControllerFormTest {
 
     @Requires(property = "spec.name", value = "AnswerControllerFormTest")
     @Singleton
-    @Replaces(AnswerRepository.class)
-    static class AnswerRepositoryMock implements AnswerRepository {
+    @Replaces(SecondaryAnswerRepository.class)
+    static class AnswerRepositoryMock extends SecondaryAnswerRepository {
 
         Map<String, Answer> answers = new HashMap<>();
 
         @NonNull
-        public Optional<AnswerUpdate> findAnswerUpdate(@NotBlank String questionId,
-                                                       @NotBlank String id,
-                                                       @Nullable Tenant tenant) {
-            return Optional.empty();
-        }
-
         @Override
         public Optional<Answer> findById(String answerId, @Nullable Tenant tenant) {
             return Optional.ofNullable(answers.get(answerId));
@@ -191,11 +173,8 @@ class AnswerControllerFormTest {
         }
 
         @Override
-        public boolean hasAnswered(@NotBlank String questionId,
-                                   @NotNull @PastOrPresent LocalDate answerDate,
-                                   @NonNull @NotNull Authentication authentication,
-                                   @Nullable Tenant tenant) {
-            return false;
+        public Optional<AnswerUpdate> findAnswerUpdate(String questionId, String id, @Nullable Tenant tenant) {
+            return Optional.of(new AnswerUpdate(questionId, id, Format.MARKDOWN, LocalDate.now(), answers.get(id).html()));
         }
     }
 }

@@ -1,9 +1,5 @@
 package org.projectcheckins.http.controllers;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.projectcheckins.test.AssertUtils.redirection;
-
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
@@ -19,29 +15,34 @@ import io.micronaut.http.client.annotation.Client;
 import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.http.uri.UriBuilder;
 import io.micronaut.multitenancy.Tenant;
+import io.micronaut.security.authentication.Authentication;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Singleton;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.Test;
-import org.projectcheckins.core.forms.Question;
-import org.projectcheckins.core.forms.QuestionSave;
-import org.projectcheckins.core.forms.QuestionUpdate;
-import org.projectcheckins.core.models.Element;
+import org.projectcheckins.core.forms.*;
 import org.projectcheckins.core.repositories.QuestionRepository;
+import org.projectcheckins.core.repositories.SecondaryAnswerRepository;
+import org.projectcheckins.core.repositories.SecondaryQuestionRepository;
+import org.projectcheckins.test.AbstractAuthenticationFetcher;
 import org.projectcheckins.test.BrowserRequest;
 
 import java.net.URI;
 import java.util.*;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.projectcheckins.test.AssertUtils.redirection;
+
 @Property(name = "micronaut.http.client.follow-redirects", value = StringUtils.FALSE)
-@Property(name = "micronaut.security.filter.enabled", value = StringUtils.FALSE)
 @Property(name = "spec.name", value = "QuestionControllerFormTest")
 @MicronautTest
 class QuestionControllerFormTest {
     @Test
-    void crud(@Client("/") HttpClient httpClient, QuestionRepository questionRepository) {
+    void crud(@Client("/") HttpClient httpClient, QuestionRepository questionRepository, AuthenticationFetcherMock authenticationFetcherMock) {
+        authenticationFetcherMock.setAuthentication(Authentication.build("xxx", Collections.emptyList(), Collections.singletonMap("email", "delamos@unityfoundation.io")));
         BlockingHttpClient client = httpClient.toBlocking();
         String title = "What are working on?";
         HttpResponse<?> saveResponse = client.exchange(BrowserRequest.POST("/question/save", Map.of("title", title)));
@@ -86,8 +87,24 @@ class QuestionControllerFormTest {
 
     @Requires(property = "spec.name", value = "QuestionControllerFormTest")
     @Singleton
-    @Replaces(QuestionRepository.class)
-    static class QuestionRepositoryMock implements QuestionRepository {
+    static class AuthenticationFetcherMock extends AbstractAuthenticationFetcher {
+    }
+
+    @Requires(property = "spec.name", value = "QuestionControllerFormTest")
+    @Singleton
+    @Replaces(SecondaryAnswerRepository.class)
+    static class AnswerRepositoryMock extends SecondaryAnswerRepository {
+
+        @Override
+        public List<Answer> findByQuestionId(@NonNull String questionId, @Nullable Tenant tenant) {
+            return Collections.emptyList();
+        }
+    }
+
+    @Requires(property = "spec.name", value = "QuestionControllerFormTest")
+    @Singleton
+    @Replaces(SecondaryQuestionRepository.class)
+    static class QuestionRepositoryMock extends SecondaryQuestionRepository {
 
         Map<String, String> titleById = new HashMap<>();
 
@@ -122,11 +139,16 @@ class QuestionControllerFormTest {
         public void deleteById(@NotBlank String id, @Nullable Tenant tenant) {
             titleById.remove(id);
         }
+    }
+
+    @Requires(property = "spec.name", value = "QuestionControllerFormTest")
+    @Singleton
+    @Replaces(ProfileRepository.class)
+    static class ProfileRepositoryMock implements ProfileRepository {
 
         @Override
-        @NonNull
-        public Optional<Element> findElementById(@NotBlank String id, @Nullable Tenant tenant) {
-            return Optional.empty();
+        public Format findPreferedFormat(Authentication authentication) {
+            return Format.MARKDOWN;
         }
     }
 }

@@ -1,9 +1,9 @@
 package org.projectcheckins.http.controllers;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.projectcheckins.http.AssertUtils.htmlBody;
-import static org.projectcheckins.http.AssertUtils.htmlPage;
-import static org.projectcheckins.http.AssertUtils.redirection;
+import static org.projectcheckins.test.AssertUtils.htmlBody;
+import static org.projectcheckins.test.AssertUtils.htmlPage;
+import static org.projectcheckins.test.AssertUtils.redirection;
 
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Replaces;
@@ -16,6 +16,7 @@ import io.micronaut.http.client.annotation.Client;
 import io.micronaut.multitenancy.Tenant;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import io.micronaut.views.fields.annotations.InputHidden;
 import jakarta.annotation.Nullable;
 import jakarta.inject.Singleton;
 import java.time.LocalDate;
@@ -31,7 +32,9 @@ import org.projectcheckins.core.forms.*;
 import org.projectcheckins.core.models.Element;
 import org.projectcheckins.core.repositories.AnswerRepository;
 import org.projectcheckins.core.repositories.QuestionRepository;
-import org.projectcheckins.http.BrowserRequest;
+import org.projectcheckins.core.repositories.SecondaryAnswerRepository;
+import org.projectcheckins.core.repositories.SecondaryQuestionRepository;
+import org.projectcheckins.test.BrowserRequest;
 
 @Property(name = "micronaut.security.filter.enabled", value = StringUtils.FALSE)
 @Property(name = "micronaut.http.client.follow-redirects", value = StringUtils.FALSE)
@@ -44,9 +47,6 @@ class AnswerControllerTest {
     @Test
     void crud(@Client("/") HttpClient httpClient) {
         BlockingHttpClient client = httpClient.toBlocking();
-        assertThat(client.exchange(BrowserRequest.GET("/question/" + QUESTION_ID + "/answer/list"), String.class))
-            .matches(htmlPage());
-
         assertThat(client.exchange(BrowserRequest.GET("/question/" + QUESTION_ID + "/answer/yyy/edit"), String.class))
             .matches(htmlPage());
 
@@ -59,34 +59,8 @@ class AnswerControllerTest {
 
     @Requires(property = "spec.name", value = "AnswerControllerTest")
     @Singleton
-    @Replaces(QuestionRepository.class)
-    static class QuestionRepositoryMock implements QuestionRepository {
-
-        @Override
-        public String save(QuestionSave questionSave, Tenant tenant) {
-            return null;
-        }
-
-        @Override
-        public Optional<Question> findById(String id, Tenant tenant) {
-            return Optional.empty();
-        }
-
-        @Override
-        public void update(QuestionUpdate questionUpdate, Tenant tenant) {
-
-        }
-
-        @Override
-        public List<Question> findAll(Tenant tenant) {
-            return null;
-        }
-
-        @Override
-        public void deleteById(String id, Tenant tenant) {
-
-        }
-
+    @Replaces(SecondaryQuestionRepository.class)
+    static class QuestionRepositoryMock extends SecondaryQuestionRepository {
         @Override
         public Optional<Element> findElementById(String questionId, Tenant tenant) {
             if (questionId.equals(QUESTION_ID)) {
@@ -98,49 +72,27 @@ class AnswerControllerTest {
 
     @Requires(property = "spec.name", value = "AnswerControllerTest")
     @Singleton
-    @Replaces(AnswerRepository.class)
-    static class AnswerRepositoryMock implements AnswerRepository {
+    @Replaces(SecondaryAnswerRepository.class)
+    static class AnswerRepositoryMock extends SecondaryAnswerRepository {
+        @Override
         @NonNull
-        public Optional<AnswerUpdate> findAnswerUpdate(@NotBlank String questionId,
-                                                       @NotBlank String id,
-                                                       @Nullable Tenant tenant) {
+        public Optional<AnswerUpdate> findAnswerUpdate(@NonNull String questionId, @NonNull String id, @Nullable Tenant tenant) {
+            if (id.equals("yyy")) {
+                return Optional.of(new AnswerUpdate(questionId,
+                        id,
+                        Format.MARKDOWN,
+                        LocalDate.now(),
+                        "bla bla bla"));
+            }
             return Optional.empty();
         }
 
         @Override
         public Optional<Answer> findById(String answerId, @Nullable Tenant tenant) {
             if (answerId.equals("yyy")) {
-                return Optional.of(new Answer("yyy", "xxx",new Element("zzz", "user"), LocalDate.now(), "Lorem ipsum"));
+                return Optional.of(new Answer("yyy", "xxx", new Element("zzz", "user"), LocalDate.now(), "Lorem ipsum"));
             }
             return Optional.empty();
-        }
-
-        @Override
-        public List<Answer> findByQuestionId(String questionId, @Nullable Tenant tenant) {
-            return Collections.emptyList();
-        }
-
-        @Override
-        public String save(AnswerSave answerSave, @Nullable Authentication authentication, @Nullable Tenant tenant) {
-            return "yyy";
-        }
-
-        @Override
-        public void update(AnswerUpdate answerUpdate, @Nullable Tenant tenant) {
-
-        }
-
-        @Override
-        public void deleteById(String id, @Nullable Tenant tenant) {
-
-        }
-
-        @Override
-        public boolean hasAnswered(@NotBlank String questionId,
-                                   @NotNull @PastOrPresent LocalDate answerDate,
-                                   @NonNull @NotNull Authentication authentication,
-                                   @Nullable Tenant tenant) {
-            return false;
         }
     }
 }
