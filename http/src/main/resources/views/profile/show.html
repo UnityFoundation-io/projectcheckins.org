@@ -8,11 +8,22 @@
 <main>
     <a th:href="@{|/profile/edit|}" th:text="#{profile.edit}"></a>
 
-    <h1 th:text="${profile.id}"></h1>
-    <h2 th:text="${profile.email}"></h2>
-    <h4 th:text="${profile.timeZone}"></h4>
-    <h5 th:text="${profile.firstDayOfWeek}"></h5>
-    <h6 th:text="${profile.timeFormat}"></h6>
+    <table class="table">
+        <thead>
+        <tr>
+            <th th:text="#{title.timeZone}">
+            <th th:text="#{title.firstDayOfWeek}">
+            <th th:text="#{title.timeFormat}">
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td th:text="${profile.timeZone}">
+            <td th:text="${profile.firstDayOfWeek}">
+            <td th:text="${profile.timeFormat}">
+        </tr>
+        </tbody>
+    </table>
 </main>
 </body>
 </html>
