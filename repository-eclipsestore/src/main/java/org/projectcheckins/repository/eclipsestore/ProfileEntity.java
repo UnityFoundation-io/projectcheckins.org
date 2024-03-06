@@ -5,7 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.DayOfWeek;
 import java.util.TimeZone;
-import org.projectcheckins.core.forms.Appearance;
 import org.projectcheckins.core.forms.TimeFormat;
 
 public class ProfileEntity {
@@ -16,9 +15,6 @@ public class ProfileEntity {
   @NotBlank
   @Email
   private String email;
-
-  @NotNull
-  private Appearance appearance;
 
   @NotNull
   private TimeZone timeZone;
@@ -43,14 +39,6 @@ public class ProfileEntity {
 
   public void setEmail(String email) {
     this.email = email;
-  }
-
-  public Appearance getAppearance() {
-    return appearance;
-  }
-
-  public void setAppearance(Appearance appearance) {
-    this.appearance = appearance;
   }
 
   public TimeZone getTimeZone() {

@@ -9,7 +9,6 @@ import java.util.TimeZone;
 
 @Serdeable
 public record ProfileSave(@NotBlank @Email String email,
-                          @NotNull Appearance appearance,
                           @NotNull TimeZone timeZone,
                           @NotNull DayOfWeek firstDayOfWeek,
                           @NotNull TimeFormat timeFormat) {

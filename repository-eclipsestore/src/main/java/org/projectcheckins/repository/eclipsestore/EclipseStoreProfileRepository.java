@@ -88,7 +88,6 @@ class EclipseStoreProfileRepository implements ProfileRepository {
     String id = idGenerator.generate();
     entity.setId(id);
     entity.setEmail(profileSave.email());
-    entity.setAppearance(profileSave.appearance());
     entity.setTimeZone(profileSave.timeZone());
     entity.setFirstDayOfWeek(profileSave.firstDayOfWeek());
     entity.setTimeFormat(profileSave.timeFormat());
@@ -96,7 +95,6 @@ class EclipseStoreProfileRepository implements ProfileRepository {
   }
 
   private ProfileEntity updateEntity(ProfileEntity entity, ProfileUpdate profileUpdate) {
-    entity.setAppearance(profileUpdate.appearance());
     entity.setTimeZone(TimeZone.getTimeZone(profileUpdate.timeZone()));
     entity.setFirstDayOfWeek(profileUpdate.firstDayOfWeek());
     entity.setTimeFormat(profileUpdate.timeFormat());
@@ -107,7 +105,6 @@ class EclipseStoreProfileRepository implements ProfileRepository {
     return new Profile(
         entity.getId(),
         entity.getEmail(),
-        entity.getAppearance(),
         entity.getTimeZone().getID(),
         entity.getFirstDayOfWeek(),
         entity.getTimeFormat()

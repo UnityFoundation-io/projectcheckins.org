@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
 import org.junit.jupiter.api.Test;
-import org.projectcheckins.core.forms.Appearance;
 import org.projectcheckins.core.forms.Profile;
 import org.projectcheckins.core.forms.ProfileSave;
 import org.projectcheckins.core.forms.ProfileUpdate;
@@ -51,7 +50,6 @@ class ProfileControllerTest {
 
     assertThat(client.exchange(BrowserRequest.POST("/profile/update", Map.of(
         "id", "ID",
-        "appearance", Appearance.ALWAYS_LIGHT.name(),
         "timeZone", TimeZone.getDefault().getID(),
         "firstDayOfWeek", DayOfWeek.MONDAY.name(),
         "timeFormat", TimeFormat.USE_24_HOUR_CLOCK.name()))))
@@ -82,7 +80,6 @@ class ProfileControllerTest {
       if (id.equals("ID")) {
         return Optional.of(new Profile("ID",
             "email@example.com",
-            Appearance.ALWAYS_DARK,
             TimeZone.getDefault().getID(),
             DayOfWeek.MONDAY,
             TimeFormat.USE_24_HOUR_CLOCK));
@@ -95,7 +92,6 @@ class ProfileControllerTest {
       if (email.equals("email@example.com")) {
         return Optional.of(new Profile("ID",
             "email@example.com",
-            Appearance.ALWAYS_DARK,
             TimeZone.getDefault().getID(),
             DayOfWeek.MONDAY,
             TimeFormat.USE_24_HOUR_CLOCK));

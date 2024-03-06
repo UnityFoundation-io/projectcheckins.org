@@ -79,7 +79,6 @@ class ProfileController {
     private Map<String, Object> updateModel(@NonNull Profile profile) {
         return Map.of(ApiConstants.MODEL_FORM, formGenerator.generate(PATH_UPDATE, new ProfileUpdate(
             profile.id(),
-            profile.appearance(),
             profile.timeZone(),
             profile.firstDayOfWeek(),
             profile.timeFormat())));

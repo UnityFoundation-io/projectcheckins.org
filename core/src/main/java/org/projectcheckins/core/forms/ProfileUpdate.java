@@ -9,7 +9,6 @@ import java.time.DayOfWeek;
 
 @Serdeable
 public record ProfileUpdate(@NotBlank @InputHidden String id,
-                            @NotNull Appearance appearance,
                             @NotNull @Select(fetcher = TimeZoneFetcher.class) String timeZone,
                             @NotNull DayOfWeek firstDayOfWeek,
                             @NotNull TimeFormat timeFormat) {

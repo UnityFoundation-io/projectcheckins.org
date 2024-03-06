@@ -9,7 +9,6 @@ import java.time.DayOfWeek;
 @Serdeable
 public record Profile(@NotBlank String id,
                       @NotBlank @Email String email,
-                      @NotNull Appearance appearance,
                       @NotBlank String timeZone,
                       @NotNull DayOfWeek firstDayOfWeek,
                       @NotNull TimeFormat timeFormat) {
