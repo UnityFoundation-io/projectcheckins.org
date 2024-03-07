@@ -8,5 +8,5 @@ import java.time.DayOfWeek;
 @Serdeable
 public record Profile(@NotBlank String timeZone,
                       @NotNull DayOfWeek firstDayOfWeek,
-                      boolean using24HourClock) {
+                      @NotNull TimeFormat timeFormat) {
 }

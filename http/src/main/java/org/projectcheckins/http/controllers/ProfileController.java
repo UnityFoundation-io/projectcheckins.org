@@ -73,6 +73,6 @@ class ProfileController {
         return Map.of(ApiConstants.MODEL_FORM, formGenerator.generate(PATH_UPDATE, new ProfileUpdate(
             profile.timeZone(),
             profile.firstDayOfWeek(),
-            profile.using24HourClock())));
+            profile.timeFormat())));
     }
 }

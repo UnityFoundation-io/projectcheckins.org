@@ -48,7 +48,7 @@ class EclipseStoreProfileRepository implements ProfileRepository {
   private UserEntity updateEntity(UserEntity entity, ProfileUpdate profileUpdate) {
     entity.setTimeZone(TimeZone.getTimeZone(profileUpdate.timeZone()));
     entity.setFirstDayOfWeek(profileUpdate.firstDayOfWeek());
-    entity.setUsing24HourClock(profileUpdate.using24HourClock());
+    entity.setTimeFormat(profileUpdate.timeFormat());
     return entity;
   }
 
@@ -56,7 +56,7 @@ class EclipseStoreProfileRepository implements ProfileRepository {
     return new Profile(
         entity.getTimeZone().getID(),
         entity.getFirstDayOfWeek(),
-        entity.isUsing24HourClock()
+        entity.getTimeFormat()
     );
   }
 }

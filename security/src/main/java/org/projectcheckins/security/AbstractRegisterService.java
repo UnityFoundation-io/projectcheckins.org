@@ -31,6 +31,6 @@ public abstract class AbstractRegisterService implements RegisterService {
                            @NonNull @NotBlank String rawPassword,
                            @NonNull List<String> authorities) throws UserAlreadyExistsException {
         final String encodedPassword = passwordEncoder.encode(rawPassword);
-        return register(new UserSave(username, encodedPassword, authorities, TimeZone.getDefault(), DayOfWeek.SUNDAY, false));
+        return register(new UserSave(username, encodedPassword, authorities));
     }
 }

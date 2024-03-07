@@ -11,8 +11,5 @@ import java.util.TimeZone;
 @Serdeable
 public record UserSave(@NonNull @NotBlank String email,
                        @NonNull @NotBlank String encodedPassword,
-                       @NonNull List<String> authorities,
-                       @NonNull TimeZone timeZone,
-                       @NonNull DayOfWeek firstDayOfWeek,
-                       boolean using24HourClock) {
+                       @NonNull List<String> authorities) {
 }

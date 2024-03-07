@@ -11,16 +11,16 @@
     <table class="table">
         <thead>
         <tr>
-            <th th:text="#{title.timeZone}">
-            <th th:text="#{title.firstDayOfWeek}">
-            <th th:text="#{title.using24HourClock}">
+            <th th:text="#{profile.timeZone}">
+            <th th:text="#{profile.firstDayOfWeek}">
+            <th th:text="#{profile.timeFormat}">
         </tr>
         </thead>
         <tbody>
         <tr>
             <td th:text="${profile.timeZone}">
             <td th:text="${profile.firstDayOfWeek}">
-            <td th:text="${profile.using24HourClock}">
+            <td><span th:replace="~{profile/_timeFormat :: timeFormat(${timeFormat})}"></span></td>
         </tr>
         </tbody>
     </table>

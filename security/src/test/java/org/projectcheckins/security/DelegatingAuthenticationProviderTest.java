@@ -112,21 +112,6 @@ class DelegatingAuthenticationProviderTest {
                     public String getPassword() {
                         return encodedPassword;
                     }
-
-                    @Override
-                    public TimeZone getTimeZone() {
-                        return TimeZone.getDefault();
-                    }
-
-                    @Override
-                    public DayOfWeek getFirstDayOfWeek() {
-                        return DayOfWeek.MONDAY;
-                    }
-
-                    @Override
-                    public boolean isUsing24HourClock() {
-                        return true;
-                    }
                 });
             }
             return Optional.empty();

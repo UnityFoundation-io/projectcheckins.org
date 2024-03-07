@@ -16,31 +16,31 @@ import org.junit.jupiter.api.Test;
 class UserSaveTest {
     @Test
     void usernameIsRequired(Validator validator) {
-        assertThat(validator.validate(new UserSave(null, "encodedpassword", emptyList(), getDefault(), MONDAY, true)))
+        assertThat(validator.validate(new UserSave(null, "encodedpassword", emptyList())))
             .isNotEmpty();
-        assertThat(validator.validate(new UserSave("", "encodedpassword", emptyList(), getDefault(), MONDAY, true)))
+        assertThat(validator.validate(new UserSave("", "encodedpassword", emptyList())))
             .anyMatch(x -> x.getPropertyPath().toString().equals("email") && x.getMessage().equals("must not be blank"));
-        assertThat(validator.validate(new UserSave("manolo", "encodedpassword", emptyList(), getDefault(), MONDAY, true)))
+        assertThat(validator.validate(new UserSave("manolo", "encodedpassword", emptyList())))
             .isEmpty();
     }
 
     @Test
     void passwordIsRequired(Validator validator) {
-        assertThat(validator.validate(new UserSave("manolo", null, emptyList(), getDefault(), MONDAY, true)))
+        assertThat(validator.validate(new UserSave("manolo", null, emptyList())))
             .isNotEmpty();
-        assertThat(validator.validate(new UserSave("manolo", "", emptyList(), getDefault(), MONDAY, true)))
+        assertThat(validator.validate(new UserSave("manolo", "", emptyList())))
             .anyMatch(x -> x.getPropertyPath().toString().equals("encodedPassword") && x.getMessage().equals("must not be blank"));
     }
 
     @Test
     void timeZoneIsRequired(Validator validator) {
-        assertThat(validator.validate(new UserSave("manolo", null, emptyList(), null, MONDAY, true)))
+        assertThat(validator.validate(new UserSave("manolo", null, emptyList())))
             .isNotEmpty();
     }
 
     @Test
     void firstDayOfWeekIsRequired(Validator validator) {
-        assertThat(validator.validate(new UserSave("manolo", null, emptyList(), getDefault(), null, true)))
+        assertThat(validator.validate(new UserSave("manolo", null, emptyList())))
             .isNotEmpty();
     }
 

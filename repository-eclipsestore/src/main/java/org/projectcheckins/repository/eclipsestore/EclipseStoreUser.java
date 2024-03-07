@@ -8,6 +8,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import java.time.DayOfWeek;
 import java.util.TimeZone;
+
+import org.projectcheckins.core.configuration.ProfileConfiguration;
 import org.projectcheckins.core.idgeneration.IdGenerator;
 import org.projectcheckins.email.EmailConfirmationRepository;
 import org.projectcheckins.security.*;
@@ -17,12 +19,15 @@ import java.util.Optional;
 
 @Singleton
 class EclipseStoreUser extends AbstractRegisterService implements UserFetcher, EmailConfirmationRepository {
+    private final ProfileConfiguration profileConfiguration;
     private final RootProvider<Data> rootProvider;
     private final IdGenerator idGenerator;
     protected EclipseStoreUser(PasswordEncoder passwordEncoder,
+                               ProfileConfiguration profileConfiguration,
                                RootProvider<Data> rootProvider,
                                IdGenerator idGenerator) {
         super(passwordEncoder);
+        this.profileConfiguration = profileConfiguration;
         this.rootProvider = rootProvider;
         this.idGenerator = idGenerator;
     }
@@ -61,12 +66,12 @@ class EclipseStoreUser extends AbstractRegisterService implements UserFetcher, E
     private UserEntity entityOf(@NonNull UserSave userSave) {
         return new UserEntity(
             null,
-            userSave.email(),
-            userSave.encodedPassword(),
-            userSave.authorities(),
-            userSave.timeZone(),
-            userSave.firstDayOfWeek(),
-            userSave.using24HourClock()
+                userSave.email(),
+                userSave.encodedPassword(),
+                userSave.authorities(),
+                profileConfiguration.getTimeZone(),
+                profileConfiguration.getFirstDayOfWeek(),
+                profileConfiguration.getTimeFormat()
         );
     }
 
@@ -100,21 +105,6 @@ class EclipseStoreUser extends AbstractRegisterService implements UserFetcher, E
             @Override
             public String getPassword() {
                 return user.getEncodedPassword();
-            }
-
-            @Override
-            public TimeZone getTimeZone() {
-                return user.getTimeZone();
-            }
-
-            @Override
-            public DayOfWeek getFirstDayOfWeek() {
-                return user.getFirstDayOfWeek();
-            }
-
-            @Override
-            public boolean isUsing24HourClock() {
-                return user.isUsing24HourClock();
             }
         };
     }

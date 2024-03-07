@@ -5,6 +5,8 @@ import io.micronaut.core.annotation.NonNull;
 import jakarta.validation.constraints.NotBlank;
 
 import jakarta.validation.constraints.NotNull;
+import org.projectcheckins.core.forms.TimeFormat;
+
 import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,16 +30,22 @@ public class UserEntity {
     @NotNull
     private DayOfWeek firstDayOfWeek;
 
-    private boolean using24HourClock;
+    private TimeFormat timeFormat;
 
-    public UserEntity(String id, String email, String encodedPassword, List<String> authorities, TimeZone timeZone, DayOfWeek firstDayOfWeek, boolean using24HourClock) {
+    public UserEntity(String id,
+                      String email,
+                      String encodedPassword,
+                      List<String> authorities,
+                      TimeZone timeZone,
+                      DayOfWeek firstDayOfWeek,
+                      TimeFormat timeFormat) {
         this.id = id;
         this.email = email;
         this.encodedPassword = encodedPassword;
         this.authorities = authorities;
         this.timeZone = timeZone;
         this.firstDayOfWeek = firstDayOfWeek;
-        this.using24HourClock = using24HourClock;
+        this.timeFormat = timeFormat;
     }
 
     public String getId() {
@@ -96,11 +104,11 @@ public class UserEntity {
         this.firstDayOfWeek = firstDayOfWeek;
     }
 
-    public boolean isUsing24HourClock() {
-        return using24HourClock;
+    public TimeFormat getTimeFormat() {
+        return timeFormat;
     }
 
-    public void setUsing24HourClock(boolean using24HourClock) {
-        this.using24HourClock = using24HourClock;
+    public void setTimeFormat(TimeFormat timeFormat) {
+        this.timeFormat = timeFormat;
     }
 }
