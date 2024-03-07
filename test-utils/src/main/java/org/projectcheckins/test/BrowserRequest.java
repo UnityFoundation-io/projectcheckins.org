@@ -12,15 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 public final class BrowserRequest {
-    private static final String COOKIE_SESSION = "SESSION";
-
     private BrowserRequest() {
-    }
-
-    public static String login(BlockingHttpClient client, String username, String password) {
-        HttpResponse<String> response = client.exchange(HttpRequest.POST("/login", new UsernamePasswordCredentials(username, password)).contentType(MediaType.APPLICATION_FORM_URLENCODED));
-        Optional<Cookie> session = response.getCookie("SESSION");
-        return session.map(Cookie::getValue).orElseThrow(() -> new IllegalStateException("No session cookie found"));
     }
 
     public static <T> MutableHttpRequest<T> POST(String uri, T body) {
@@ -40,10 +32,6 @@ public final class BrowserRequest {
 
     public static MutableHttpRequest<?> GET(String uri, Map<CharSequence, CharSequence> headers) {
         return GET(uri).headers(headers);
-    }
-
-    public static MutableHttpRequest<?> GET(@NotNull String uri, @NotNull String sessionId) {
-        return GET(uri).cookie(Cookie.of(COOKIE_SESSION, sessionId));
     }
 
     public static MutableHttpRequest<?> GET(URI uri) {
