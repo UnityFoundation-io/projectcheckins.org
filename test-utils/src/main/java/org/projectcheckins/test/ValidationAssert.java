@@ -7,38 +7,33 @@ import org.assertj.core.api.Assertions;
 
 import java.util.Set;
 
-public class ValidationAssert extends AbstractAssert<ValidationAssert, Object> {
+public class ValidationAssert<T> extends AbstractAssert<ValidationAssert<T>, Set<ConstraintViolation<T>>> {
 
-    private final Validator validator;
-
-    public ValidationAssert(Validator validator, Object actual) {
-        super(actual, ValidationAssert.class);
-        this.validator = validator;
+    public ValidationAssert(Set<ConstraintViolation<T>> violations) {
+        super(violations, ValidationAssert.class);
     }
 
-    public static ValidationAssert assertThat(Validator validator, Object actual) {
-        return new ValidationAssert(validator, actual);
+    public static <T> ValidationAssert<T> assertThat(Set<ConstraintViolation<T>> violations) {
+        return new ValidationAssert<>(violations);
     }
 
-    public ValidationAssert fieldNotBlank(String name) {
+    public ValidationAssert <T> fieldNotBlank(String name) {
         expectedViolationMessage(name, "must not be blank");
         return this;
     }
 
-    public ValidationAssert isValid() {
-        Set<ConstraintViolation<Object>> violations = validator.validate(actual);
-        Assertions.assertThat(violations).isEmpty();
+    public ValidationAssert<T> isValid() {
+        Assertions.assertThat(actual).isEmpty();
         return this;
     }
 
-    public ValidationAssert fieldNotNull(String name) {
+    public ValidationAssert<T> hasNotNullViolation(String name) {
         expectedViolationMessage(name, "must not be null");
         return this;
     }
 
     private void expectedViolationMessage(String name, String message) {
-        Set<ConstraintViolation<Object>> violations = validator.validate(actual);
-        Assertions.assertThat(violations)
+        Assertions.assertThat(actual)
                 .anyMatch(x -> x.getPropertyPath().toString().equals(name))
                 .extracting(ConstraintViolation::getMessage)
                 .first()

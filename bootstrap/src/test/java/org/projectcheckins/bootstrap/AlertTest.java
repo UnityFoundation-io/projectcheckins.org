@@ -18,8 +18,8 @@ import static org.assertj.core.api.Assertions.*;
 class AlertTest {
     @Test
     void messageCannotBeNull(Validator validator, AlertTestValidator testValidator) {
-        assertThat(validator, Alert.danger(null))
-                .fieldNotNull("message");
+        assertThat(validator.validate(Alert.danger(null)))
+                .hasNotNullViolation("message");
         String message = null;
         assertThatThrownBy(() -> testValidator.validate(new Alert(message, AlertVariant.DANGER, true)))
                 .isInstanceOf(ConstraintViolationException.class);

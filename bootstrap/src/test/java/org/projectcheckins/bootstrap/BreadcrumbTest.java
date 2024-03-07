@@ -11,13 +11,13 @@ class BreadcrumbTest {
 
     @Test
     void labelNotNull(Validator validator) {
-        assertThat(validator, new Breadcrumb(null, null))
-                .fieldNotNull("label");
+        assertThat(validator.validate(new Breadcrumb(null, null)))
+                .hasNotNullViolation("label");
     }
 
     @Test
     void validBreadcrumb(Validator validator) {
-        assertThat(validator, new Breadcrumb(Message.of("Hello World")))
+        assertThat(validator.validate(new Breadcrumb(Message.of("Hello World"))))
                 .isValid();
     }
 }
