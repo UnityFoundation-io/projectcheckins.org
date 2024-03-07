@@ -57,7 +57,7 @@ class ProfileController {
 
     @GetHtml(uri = PATH_EDIT, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_EDIT)
     HttpResponse<?> profileEdit(@NonNull @NotNull Authentication authentication, @Nullable Tenant tenant) {
-        return profileRepository.findByAuthentication(authentication)
+        return profileRepository.findByAuthentication(authentication, tenant)
             .map(p -> HttpResponse.ok(new ModelAndView<>(VIEW_EDIT, updateModel(p))))
             .orElseGet(NotFoundController::notFoundRedirect);
     }
