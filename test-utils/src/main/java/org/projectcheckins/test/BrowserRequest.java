@@ -1,15 +1,12 @@
 package org.projectcheckins.test;
 
-import io.micronaut.http.*;
-import io.micronaut.http.client.BlockingHttpClient;
-import io.micronaut.http.cookie.Cookie;
-import io.micronaut.security.authentication.UsernamePasswordCredentials;
-import jakarta.validation.constraints.NotNull;
+import io.micronaut.http.HttpRequestFactory;
+import io.micronaut.http.MediaType;
+import io.micronaut.http.MutableHttpRequest;
 
 import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 public final class BrowserRequest {
     private BrowserRequest() {
