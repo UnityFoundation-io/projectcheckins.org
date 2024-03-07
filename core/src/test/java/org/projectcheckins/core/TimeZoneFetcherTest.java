@@ -17,7 +17,7 @@ class TimeZoneFetcherTest {
     final TimeZone tz = getDefault();
     final String expectedValue = tz.getID();
     final String expectedMessage = format("%s (%s)", expectedValue, tz.getDisplayName());
-    assertThat(timeZoneFetcher.generate(String.class))
+    assertThat(timeZoneFetcher.generate(TimeZone.class))
         .anySatisfy(x -> assertThat(x)
             .hasFieldOrPropertyWithValue("value", expectedValue)
             .extracting(Option::label)

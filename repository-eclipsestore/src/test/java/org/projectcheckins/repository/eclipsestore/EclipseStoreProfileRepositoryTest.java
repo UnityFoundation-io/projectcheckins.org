@@ -32,13 +32,13 @@ class EclipseStoreProfileRepositoryTest {
             .hasFieldOrPropertyWithValue("firstDayOfWeek", MONDAY)
             .hasFieldOrPropertyWithValue("timeFormat", TimeFormat.TWENTY_FOUR_HOUR_CLOCK));
 
-    profileRepository.update(rightAuth, new ProfileUpdate(TimeZone.getDefault().getID(), SUNDAY, TimeFormat.TWELVE_HOUR_CLOCK));
+    profileRepository.update(rightAuth, new ProfileUpdate(TimeZone.getDefault(), SUNDAY, TimeFormat.TWELVE_HOUR_CLOCK));
     assertThat(profileRepository.findByAuthentication(rightAuth))
         .hasValueSatisfying(p -> assertThat(p)
             .hasFieldOrPropertyWithValue("firstDayOfWeek", SUNDAY)
             .hasFieldOrPropertyWithValue("timeFormat", TimeFormat.TWELVE_HOUR_CLOCK));
 
-    assertThatThrownBy(() -> profileRepository.update(wrongAuth, new ProfileUpdate(TimeZone.getDefault().getID(), SUNDAY, TimeFormat.TWENTY_FOUR_HOUR_CLOCK)))
+    assertThatThrownBy(() -> profileRepository.update(wrongAuth, new ProfileUpdate(TimeZone.getDefault(), SUNDAY, TimeFormat.TWENTY_FOUR_HOUR_CLOCK)))
         .isInstanceOf(ProfileNotFoundException.class);
   }
 }

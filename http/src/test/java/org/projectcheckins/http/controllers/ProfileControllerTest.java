@@ -76,7 +76,7 @@ class ProfileControllerTest {
 
     @Override
     public Optional<Profile> findByAuthentication(Authentication authentication, Tenant tenant) {
-      return Optional.of(new Profile(TimeZone.getDefault().getID(), DayOfWeek.MONDAY, TimeFormat.TWENTY_FOUR_HOUR_CLOCK));
+      return Optional.of(new Profile(TimeZone.getDefault(), DayOfWeek.MONDAY, TimeFormat.TWENTY_FOUR_HOUR_CLOCK));
     }
 
     @Override
