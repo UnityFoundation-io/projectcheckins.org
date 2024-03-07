@@ -14,7 +14,8 @@ class ProfileTest {
 
     @Test
     void fieldsCannotBeNull(Validator validator) {
-        assertThat(validator.validate(new Profile(null, null, null)))
+        assertThat(validator.validate(new Profile("email", null, null, null)))
+                .hasMalformedEmailViolation("email")
                 .hasNotNullViolation("timeZone")
                 .hasNotNullViolation("firstDayOfWeek")
                 .hasNotNullViolation("timeFormat");

@@ -54,6 +54,7 @@ class EclipseStoreProfileRepository implements ProfileRepository {
 
   private Profile fromEntity(UserEntity entity) {
     return new Profile(
+            entity.getEmail(),
         entity.getTimeZone(),
         entity.getFirstDayOfWeek(),
         entity.getTimeFormat()

@@ -8,7 +8,6 @@ import java.util.TimeZone;
 
 @ConfigurationProperties("projectcheckins.profile")
 public class ProfileConfigurationProperties implements ProfileConfiguration {
-
     private static final DayOfWeek DEFAULT_FIRST_DAY_OF_WEEK = DayOfWeek.MONDAY;
     private static final TimeZone DEFAULT_TIME_ZONE = TimeZone.getDefault();
     private static final TimeFormat DEFAULT_TIME_FORMAT = TimeFormat.TWENTY_FOUR_HOUR_CLOCK;

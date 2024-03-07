@@ -10,6 +10,10 @@
     <table class="table">
         <tbody>
         <tr>
+            <th th:text="#{profile.email}"></th>
+            <td th:text="${profile.email}"></td>
+        </tr>
+        <tr>
             <th th:text="#{profile.timeZone}"></th>
             <td th:text="${timeZoneFormatter.format(profile.timeZone)}"></td>
         </tr>
@@ -19,7 +23,7 @@
         </tr>
         <tr>
              <th th:text="#{profile.timeFormat}">
-            <td><span th:replace="~{profile/_timeFormat :: timeFormat(${timeFormat})}"></span></td>
+            <td><span th:replace="~{profile/_timeFormat :: timeFormat(${profile.timeFormat})}"></span></td>
         </tr>
         </tbody>
     </table>

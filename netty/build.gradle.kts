@@ -42,3 +42,13 @@ micronaut {
         annotations("org.projectcheckins.*")
     }
 }
+ext {
+    set("jvmArgsExports", "--add-exports=java.base/jdk.internal.misc=ALL-UNNAMED")
+}
+tasks.withType<Test> {
+    jvmArgs(ext.get("jvmArgsExports"))
+    useJUnitPlatform()
+}
+tasks.withType<JavaExec> {
+    jvmArgs(ext.get("jvmArgsExports"))
+}
