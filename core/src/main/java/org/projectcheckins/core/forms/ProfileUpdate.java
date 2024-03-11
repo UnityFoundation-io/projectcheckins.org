@@ -11,5 +11,5 @@ import java.util.TimeZone;
 @Serdeable
 public record ProfileUpdate(@NotNull @Select(fetcher = TimeZoneFetcher.class) TimeZone timeZone,
                             @NotNull DayOfWeek firstDayOfWeek,
-                            @Select TimeFormat timeFormat) {
+                            TimeFormat timeFormat) {
 }
