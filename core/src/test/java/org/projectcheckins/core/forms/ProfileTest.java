@@ -6,6 +6,9 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 
+import java.time.DayOfWeek;
+import java.util.TimeZone;
+
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.projectcheckins.test.ValidationAssert.*;
 
@@ -19,6 +22,12 @@ class ProfileTest {
                 .hasNotNullViolation("timeZone")
                 .hasNotNullViolation("firstDayOfWeek")
                 .hasNotNullViolation("timeFormat");
+    }
+
+    @Test
+    void validProfile(Validator validator) {
+        assertThat(validator.validate(new Profile("delamos@unityfoundation.io", TimeZone.getDefault(), DayOfWeek.MONDAY, TimeFormat.TWENTY_FOUR_HOUR_CLOCK, null, null)))
+                .isValid();
     }
 
     @Test
