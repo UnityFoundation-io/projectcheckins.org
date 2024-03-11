@@ -10,8 +10,8 @@ import java.time.DayOfWeek;
 import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.projectcheckins.test.ValidationAssert.*;
-
+import static org.projectcheckins.test.ValidationAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 @MicronautTest(startApplication = false)
 class ProfileTest {
 
@@ -28,6 +28,13 @@ class ProfileTest {
     void validProfile(Validator validator) {
         assertThat(validator.validate(new Profile("delamos@unityfoundation.io", TimeZone.getDefault(), DayOfWeek.MONDAY, TimeFormat.TWENTY_FOUR_HOUR_CLOCK, null, null)))
                 .isValid();
+    }
+
+    @Test
+    void fullName() {
+        assertThat(new Profile("delamos@unityfoundation.io", TimeZone.getDefault(), DayOfWeek.MONDAY, TimeFormat.TWENTY_FOUR_HOUR_CLOCK, "Sergio", "del Amo"))
+                .extracting(Profile::getFullName)
+                .isEqualTo("Sergio del Amo");
     }
 
     @Test
