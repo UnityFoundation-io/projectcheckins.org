@@ -126,7 +126,11 @@ class QuestionController {
 
     @NonNull
     private Map<String, Object> updateModel(@NonNull Question question) {
-        Form form = formGenerator.generate(PATH_UPDATE_BUILDER.apply(question.id()).toString(), new QuestionUpdate(question.id(), question.title()));
+        Form form = formGenerator.generate(PATH_UPDATE_BUILDER.apply(question.id()).toString(), new QuestionUpdate(
+            question.id(),
+            question.title(),
+            question.schedule(),
+            question.timeZone()));
         return Map.of(ApiConstants.MODEL_FORM, form);
     }
 
