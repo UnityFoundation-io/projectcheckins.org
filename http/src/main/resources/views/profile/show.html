@@ -22,8 +22,16 @@
             <td th:text="${profile.firstDayOfWeek}"></td>
         </tr>
         <tr>
-             <th th:text="#{profile.timeFormat}">
+            <th th:text="#{profile.timeFormat}">
             <td><span th:replace="~{profile/_timeFormat :: timeFormat(${profile.timeFormat})}"></span></td>
+        </tr>
+        <tr>
+            <th th:text="#{profile.firstName}"></th>
+            <td th:text="${profile.firstName}"></td>
+        </tr>
+        <tr>
+            <th th:text="#{profile.lastName}"></th>
+            <td th:text="${profile.lastName}"></td>
         </tr>
         </tbody>
     </table>
