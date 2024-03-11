@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.forms.QuestionUpdate;
 import java.util.TimeZone;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.projectcheckins.test.ValidationAssert.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 @MicronautTest
@@ -17,34 +17,32 @@ class QuestionUpdateTest {
     @Test
     void idCannotBeBlank(Validator validator) {
         assertThat(validator.validate(new QuestionUpdate(null, "What are you working on", "schedule", TimeZone.getDefault())))
-            .isNotEmpty();
+            .fieldNotBlank("id");
         assertThat(validator.validate(new QuestionUpdate("", "What are you working on", "schedule", TimeZone.getDefault())))
-            .anyMatch(x -> x.getPropertyPath().toString().equals("id") && x.getMessage().equals("must not be blank"));
+            .fieldNotBlank("id");
         assertThat(validator.validate(new QuestionUpdate("xxx", "What are you working on", "schedule", TimeZone.getDefault())))
-            .isEmpty();
+            .isValid();
     }
 
     @Test
     void titleCannotBeBlank(Validator validator) {
         assertThat(validator.validate(new QuestionUpdate("xxx", null, "schedule", TimeZone.getDefault())))
-            .isNotEmpty();
+            .fieldNotBlank("title");
         assertThat(validator.validate(new QuestionUpdate("xxx", "", "schedule", TimeZone.getDefault())))
-            .anyMatch(x -> x.getPropertyPath().toString().equals("title") && x.getMessage().equals("must not be blank"));
-        assertThat(validator.validate(new QuestionUpdate("xxx", "What are you working on", "schedule", TimeZone.getDefault())))
-            .isEmpty();
+            .fieldNotBlank("title");
     }
 
     @Test
     void scheduleCannotBeBlank(Validator validator) {
         assertThat(validator.validate(new QuestionUpdate("xxx", "What are you working on", null, TimeZone.getDefault())))
-            .isNotEmpty();
+            .fieldNotBlank("schedule");
         assertThat(validator.validate(new QuestionUpdate("xxx", "What are you working on", "", TimeZone.getDefault())))
-            .anyMatch(x -> x.getPropertyPath().toString().equals("schedule") && x.getMessage().equals("must not be blank"));
+            .fieldNotBlank("schedule");
     }
     @Test
     void timeZoneCannotBeNull(Validator validator) {
         assertThat(validator.validate(new QuestionUpdate("xxx", "What are you working on", "schedule", null)))
-            .anyMatch(x -> x.getPropertyPath().toString().equals("timeZone") && x.getMessage().equals("must not be null"));
+            .hasNotNullViolation("timeZone");
     }
 
     @Test

@@ -1,6 +1,6 @@
 package org.projectcheckins.core;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.projectcheckins.test.ValidationAssert.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 import io.micronaut.core.type.Argument;
@@ -17,25 +17,25 @@ class QuestionSaveTest {
     @Test
     void titleIsRequired(Validator validator) {
         assertThat(validator.validate(new QuestionSave(null, "schedule", TimeZone.getDefault())))
-            .isNotEmpty();
+            .fieldNotBlank("title");
         assertThat(validator.validate(new QuestionSave("", "schedule", TimeZone.getDefault())))
-            .anyMatch(x -> x.getPropertyPath().toString().equals("title") && x.getMessage().equals("must not be blank"));
+            .fieldNotBlank("title");
         assertThat(validator.validate(new QuestionSave("What are you working on", "schedule", TimeZone.getDefault())))
-            .isEmpty();
+            .isValid();
     }
 
     @Test
     void scheduleIsRequired(Validator validator) {
         assertThat(validator.validate(new QuestionSave("What are you working on", null, TimeZone.getDefault())))
-            .isNotEmpty();
+            .fieldNotBlank("schedule");
         assertThat(validator.validate(new QuestionSave("What are you working on", "", TimeZone.getDefault())))
-            .anyMatch(x -> x.getPropertyPath().toString().equals("schedule") && x.getMessage().equals("must not be blank"));
+            .fieldNotBlank("schedule");
     }
 
     @Test
     void timeZoneIsRequired(Validator validator) {
         assertThat(validator.validate(new QuestionSave("What are you working on", "schedule", null)))
-                .anyMatch(x -> x.getPropertyPath().toString().equals("timeZone") && x.getMessage().equals("must not be null"));
+                .hasNotNullViolation("timeZone");
     }
 
     @Test
