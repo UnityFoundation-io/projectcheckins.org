@@ -31,6 +31,7 @@ import org.projectcheckins.test.BrowserRequest;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 
 @Property(name = "micronaut.security.filter.enabled", value = StringUtils.FALSE)
 @Property(name = "micronaut.http.client.follow-redirects", value = StringUtils.FALSE)
@@ -74,7 +75,7 @@ class QuestionControllerTest {
         @NonNull
         public Optional<Question> findById(@NotBlank String id, @Nullable Tenant tenant) {
             if (id.equals("xxx")) {
-                return Optional.of(new Question("xxx", "What are working on?"));
+                return Optional.of(new Question("xxx", "What are working on?", "schedule", TimeZone.getDefault(), null));
             }
             return Optional.empty();
         }
