@@ -13,13 +13,6 @@ public final class FullNameUtils {
     @NonNull
     public static String getFullName(@Nullable String firstName,
                                      @Nullable String lastName) {
-        List<String> parts = new ArrayList<>();
-        if (firstName != null) {
-            parts.add(firstName);
-        }
-        if (lastName != null) {
-            parts.add(lastName);
-        }
-        return String.join(" ", parts);
+        return Stream.of(firstName, lastName).filter(Objects::nonNull).collect(Collectors.joining(" "));
     }
 }
