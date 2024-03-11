@@ -11,6 +11,7 @@ import io.micronaut.security.authentication.ClientAuthentication;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.exceptions.ProfileNotFoundException;
+import org.projectcheckins.core.forms.Format;
 import org.projectcheckins.core.forms.ProfileUpdate;
 import org.projectcheckins.core.forms.TimeFormat;
 import org.projectcheckins.security.UserSave;
@@ -32,7 +33,7 @@ class EclipseStoreProfileRepositoryTest {
             .hasFieldOrPropertyWithValue("firstDayOfWeek", MONDAY)
             .hasFieldOrPropertyWithValue("timeFormat", TimeFormat.TWENTY_FOUR_HOUR_CLOCK));
 
-    profileRepository.update(rightAuth, new ProfileUpdate(TimeZone.getDefault(), SUNDAY, TimeFormat.TWELVE_HOUR_CLOCK, "first name", "last name"));
+    profileRepository.update(rightAuth, new ProfileUpdate(TimeZone.getDefault(), SUNDAY, TimeFormat.TWELVE_HOUR_CLOCK, Format.MARKDOWN, "first name", "last name"));
     assertThat(profileRepository.findByAuthentication(rightAuth))
         .hasValueSatisfying(p -> assertThat(p)
             .hasFieldOrPropertyWithValue("firstDayOfWeek", SUNDAY)
@@ -40,7 +41,7 @@ class EclipseStoreProfileRepositoryTest {
             .hasFieldOrPropertyWithValue("firstName", "first name")
             .hasFieldOrPropertyWithValue("lastName", "last name"));
 
-    assertThatThrownBy(() -> profileRepository.update(wrongAuth, new ProfileUpdate(TimeZone.getDefault(), SUNDAY, TimeFormat.TWENTY_FOUR_HOUR_CLOCK, "first name", "last name")))
+    assertThatThrownBy(() -> profileRepository.update(wrongAuth, new ProfileUpdate(TimeZone.getDefault(), SUNDAY, TimeFormat.TWENTY_FOUR_HOUR_CLOCK,  Format.MARKDOWN,"first name", "last name")))
         .isInstanceOf(ProfileNotFoundException.class);
   }
 }
