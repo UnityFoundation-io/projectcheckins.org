@@ -1,8 +1,5 @@
 package org.projectcheckins.security;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static java.util.function.Predicate.not;
-
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.NonNull;
@@ -13,13 +10,14 @@ import io.micronaut.security.authentication.UsernamePasswordCredentials;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Singleton;
 import jakarta.validation.constraints.NotBlank;
-import java.time.DayOfWeek;
-import java.util.TimeZone;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static java.util.function.Predicate.not;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @Property(name = "spec.name", value = "DelegatingAuthenticationProviderTest")
 @MicronautTest(startApplication = false)

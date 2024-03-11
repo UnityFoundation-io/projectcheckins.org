@@ -6,9 +6,6 @@ import io.micronaut.eclipsestore.annotations.StoreParams;
 import jakarta.inject.Singleton;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import java.time.DayOfWeek;
-import java.util.TimeZone;
-
 import org.projectcheckins.core.configuration.ProfileConfiguration;
 import org.projectcheckins.core.idgeneration.IdGenerator;
 import org.projectcheckins.email.EmailConfirmationRepository;

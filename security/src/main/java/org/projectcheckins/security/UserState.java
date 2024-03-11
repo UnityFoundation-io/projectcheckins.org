@@ -1,8 +1,5 @@
 package org.projectcheckins.security;
 
-import java.time.DayOfWeek;
-import java.util.TimeZone;
-
 public interface UserState {
 
     String getId();
