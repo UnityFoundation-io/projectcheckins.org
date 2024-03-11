@@ -9,6 +9,7 @@ import io.micronaut.multitenancy.Tenant;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.views.ModelAndView;
+import io.micronaut.views.fields.Form;
 import io.micronaut.views.fields.FormGenerator;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -49,14 +50,14 @@ class ProfileController {
 
     @GetHtml(uri = PATH_SHOW, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_SHOW)
     HttpResponse<?> profileShow(@NonNull @NotNull Authentication authentication, @Nullable Tenant tenant) {
-        return profileRepository.findByAuthentication(authentication)
+        return profileRepository.findByAuthentication(authentication, tenant)
             .map(p -> HttpResponse.ok(Map.of(MODEL_PROFILE, p)))
             .orElseGet(NotFoundController::notFoundRedirect);
     }
 
     @GetHtml(uri = PATH_EDIT, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_EDIT)
     HttpResponse<?> profileEdit(@NonNull @NotNull Authentication authentication, @Nullable Tenant tenant) {
-        return profileRepository.findByAuthentication(authentication)
+        return profileRepository.findByAuthentication(authentication, tenant)
             .map(p -> HttpResponse.ok(new ModelAndView<>(VIEW_EDIT, updateModel(p))))
             .orElseGet(NotFoundController::notFoundRedirect);
     }
@@ -70,9 +71,10 @@ class ProfileController {
     }
 
     private Map<String, Object> updateModel(@NonNull Profile profile) {
-        return Map.of(ApiConstants.MODEL_FORM, formGenerator.generate(PATH_UPDATE, new ProfileUpdate(
-            profile.timeZone(),
-            profile.firstDayOfWeek(),
-            profile.using24HourClock())));
+        Form form = formGenerator.generate(PATH_UPDATE, new ProfileUpdate(
+                profile.timeZone(),
+                profile.firstDayOfWeek(),
+                profile.timeFormat()));
+        return Map.of(ApiConstants.MODEL_FORM, form);
     }
 }

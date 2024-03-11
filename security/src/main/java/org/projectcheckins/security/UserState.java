@@ -12,10 +12,4 @@ public interface UserState {
     String getEmail();
 
     String getPassword();
-
-    TimeZone getTimeZone();
-
-    DayOfWeek getFirstDayOfWeek();
-
-    boolean isUsing24HourClock();
 }

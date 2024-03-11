@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Objects;
 
 public final class BrowserRequest {
-
     private BrowserRequest() {
     }
 

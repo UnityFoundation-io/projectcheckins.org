@@ -30,10 +30,10 @@ import java.util.TimeZone;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.forms.Profile;
 import org.projectcheckins.core.forms.ProfileUpdate;
+import org.projectcheckins.core.forms.TimeFormat;
 import org.projectcheckins.core.repositories.ProfileRepository;
 import org.projectcheckins.test.BrowserRequest;
 
-@Property(name = "micronaut.security.filter.enabled", value = StringUtils.TRUE)
 @Property(name = "micronaut.http.client.follow-redirects", value = StringUtils.FALSE)
 @Property(name = "spec.name", value = "ProfileControllerTest")
 @MicronautTest
@@ -56,7 +56,7 @@ class ProfileControllerTest {
     assertThat(client.exchange(BrowserRequest.POST("/profile/update", auth, Map.of(
         "timeZone", TimeZone.getDefault().getID(),
         "firstDayOfWeek", DayOfWeek.MONDAY.name(),
-        "using24HourClock", true))))
+        "timeFormat", TimeFormat.TWENTY_FOUR_HOUR_CLOCK))))
         .matches(redirection("/profile/show"));
   }
 
@@ -76,7 +76,7 @@ class ProfileControllerTest {
 
     @Override
     public Optional<Profile> findByAuthentication(Authentication authentication, Tenant tenant) {
-      return Optional.of(new Profile(TimeZone.getDefault().getID(), DayOfWeek.MONDAY, true));
+      return Optional.of(new Profile(authentication.getAttributes().get("email").toString(), TimeZone.getDefault(), DayOfWeek.MONDAY, TimeFormat.TWENTY_FOUR_HOUR_CLOCK));
     }
 
     @Override

@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.DayOfWeek;
 import java.util.TimeZone;
 import org.junit.jupiter.api.Test;
+import org.projectcheckins.core.forms.TimeFormat;
 
 import java.util.Collections;
 
@@ -12,7 +13,7 @@ class UserEntityTest {
 
     @Test
     void settersAndGetters() {
-        UserEntity user = new UserEntity("id", "email@projectcheckins.org", "password", Collections.emptyList(), TimeZone.getDefault(), DayOfWeek.SUNDAY, false);
+        UserEntity user = new UserEntity("id", "email@projectcheckins.org", "password", Collections.emptyList(), TimeZone.getDefault(), DayOfWeek.SUNDAY, TimeFormat.TWELVE_HOUR_CLOCK);
         assertThat(user)
             .hasFieldOrPropertyWithValue("id", "id")
             .hasFieldOrPropertyWithValue("email", "email@projectcheckins.org")
@@ -21,7 +22,7 @@ class UserEntityTest {
             .satisfies(u -> assertThat(u.getAuthorities()).isEmpty())
             .hasFieldOrPropertyWithValue("timeZone", TimeZone.getDefault())
             .hasFieldOrPropertyWithValue("firstDayOfWeek", DayOfWeek.SUNDAY)
-            .hasFieldOrPropertyWithValue("using24HourClock", false);
+            .hasFieldOrPropertyWithValue("timeFormat", TimeFormat.TWELVE_HOUR_CLOCK);
 
         user.setId("newId");
         user.setEmail("newEmail@projectcheckins.org");
@@ -30,7 +31,7 @@ class UserEntityTest {
         user.setAuthorities(Collections.singletonList("ROLE_USER"));
         user.setTimeZone(TimeZone.getTimeZone("Europe/Madrid"));
         user.setFirstDayOfWeek(DayOfWeek.MONDAY);
-        user.setUsing24HourClock(true);
+        user.setTimeFormat(TimeFormat.TWENTY_FOUR_HOUR_CLOCK);
 
         assertThat(user)
             .hasFieldOrPropertyWithValue("id", "newId")
@@ -40,7 +41,7 @@ class UserEntityTest {
             .satisfies(u -> assertThat(u.getAuthorities()).containsExactly("ROLE_USER"))
             .hasFieldOrPropertyWithValue("timeZone", TimeZone.getTimeZone("Europe/Madrid"))
             .hasFieldOrPropertyWithValue("firstDayOfWeek", DayOfWeek.MONDAY)
-            .hasFieldOrPropertyWithValue("using24HourClock", true);
+            .hasFieldOrPropertyWithValue("timeFormat", TimeFormat.TWENTY_FOUR_HOUR_CLOCK);
     }
 
 }
