@@ -16,4 +16,9 @@ public record Profile(@NonNull @NotBlank @Email String email,
                       @NotNull TimeFormat timeFormat,
                       @Nullable String firstName,
                       @Nullable String lastName) {
+
+    @NonNull
+    public String getFullName() {
+        return FullNameUtils.getFullName(firstName, lastName);
+    }
 }

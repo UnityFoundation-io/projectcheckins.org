@@ -57,9 +57,13 @@ class ProfileControllerTest {
         "timeZone", TimeZone.getDefault().getID(),
         "firstDayOfWeek", DayOfWeek.MONDAY.name(),
         "timeFormat", TimeFormat.TWENTY_FOUR_HOUR_CLOCK,
-        "firstName", "first name",
-        "lastName", "last name"))))
+        "firstName", "Guillermo",
+        "lastName", "Calvo"))))
         .matches(redirection("/profile/show"));
+
+      assertThat(client.exchange(BrowserRequest.GET("/profile/show", auth), String.class))
+              .matches(htmlPage())
+              .matches(htmlBody("Guillermo Calvo"));
   }
 
   @Requires(property = "spec.name", value = "ProfileControllerTest")
