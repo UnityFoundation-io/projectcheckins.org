@@ -23,6 +23,7 @@ import jakarta.validation.constraints.NotNull;
 import org.projectcheckins.bootstrap.Breadcrumb;
 import org.projectcheckins.core.forms.*;
 import org.projectcheckins.core.repositories.AnswerRepository;
+import org.projectcheckins.core.repositories.ProfileRepository;
 import org.projectcheckins.core.repositories.QuestionRepository;
 
 import java.net.URI;
@@ -116,8 +117,9 @@ class QuestionController {
                                  @NonNull Authentication authentication,
                                  @Nullable Tenant tenant) {
         return questionRepository.findById(id, tenant)
-                .map(question -> (HttpResponse) HttpResponse.ok(showModel(question, authentication, tenant)))
-                .orElseGet(NotFoundController.NOT_FOUND_REDIRECT);
+                .map(question -> HttpResponse.ok(Map.of(MODEL_QUESTION, question)))
+                .orElseGet(NotFoundController::notFoundRedirect);
+
     }
 
     @Hidden
@@ -127,8 +129,8 @@ class QuestionController {
     HttpResponse<?> questionEdit(@PathVariable @NotBlank String id,
                                  @Nullable Tenant tenant) {
         return questionRepository.findById(id, tenant)
-                .map(question -> (HttpResponse) HttpResponse.ok(new ModelAndView<>(VIEW_EDIT, updateModel(question))))
-                .orElseGet(NotFoundController.NOT_FOUND_REDIRECT);
+                .map(question -> HttpResponse.ok(new ModelAndView<>(VIEW_EDIT, updateModel(question))))
+                .orElseGet(NotFoundController::notFoundRedirect);
     }
 
     @PostForm(uri = PATH_UPDATE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)

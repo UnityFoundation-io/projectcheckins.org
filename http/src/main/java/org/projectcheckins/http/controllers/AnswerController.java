@@ -141,7 +141,7 @@ class AnswerController {
         Element element = questionOptional.get();
         return answerRepository.findById(id, tenant)
             .map(answer -> (HttpResponse) HttpResponse.ok(Map.of(QuestionController.MODEL_QUESTION, element, MODEL_ANSWER, answer)))
-            .orElseGet(NotFoundController.NOT_FOUND_REDIRECT);
+            .orElseGet(NotFoundController::notFoundRedirect);
     }
 
     @Hidden
@@ -157,8 +157,8 @@ class AnswerController {
         }
         Element element = questionOptional.get();
         return answerRepository.findAnswerUpdate(questionId, id, tenant)
-            .map(answerUpdate -> (HttpResponse) HttpResponse.ok(new ModelAndView<>(VIEW_EDIT, updateModel(element, answerUpdate))))
-            .orElseGet(NotFoundController.NOT_FOUND_REDIRECT);
+                .map(answerUpdate -> (HttpResponse) HttpResponse.ok(new ModelAndView<>(VIEW_EDIT, updateModel(element, answerUpdate))))
+                .orElseGet(NotFoundController::notFoundRedirect);
     }
 
     @PostForm(uri = PATH_UPDATE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)

@@ -23,9 +23,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.forms.*;
-import org.projectcheckins.core.repositories.QuestionRepository;
-import org.projectcheckins.core.repositories.SecondaryAnswerRepository;
-import org.projectcheckins.core.repositories.SecondaryQuestionRepository;
+import org.projectcheckins.core.repositories.*;
 import org.projectcheckins.test.AbstractAuthenticationFetcher;
 import org.projectcheckins.test.BrowserRequest;
 
@@ -143,11 +141,11 @@ class QuestionControllerFormTest {
 
     @Requires(property = "spec.name", value = "QuestionControllerFormTest")
     @Singleton
-    @Replaces(ProfileRepository.class)
-    static class ProfileRepositoryMock implements ProfileRepository {
-
+    @Replaces(SecondaryProfileRepository.class)
+    static class ProfileRepositoryMock extends SecondaryProfileRepository {
         @Override
-        public Format findPreferedFormat(Authentication authentication) {
+        @NonNull
+        public Format findPreferedFormat(@NonNull @NotNull Authentication authentication) {
             return Format.MARKDOWN;
         }
     }

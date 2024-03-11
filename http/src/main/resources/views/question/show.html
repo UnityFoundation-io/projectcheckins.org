@@ -13,7 +13,9 @@
     <a th:href="@{|/question/${question.id}/edit|}" th:text="#{question.edit}"></a>
     <h1 th:text="${question.title}"></h1>
 
-    <form th:replace="~{fieldset/form :: form(${form})}"></form>
+    <th:block th:if="${form}">
+        <form th:replace="~{fieldset/form :: form(${form})}"></form>
+    </th:block>
     <div th:replace="~{answer/_list :: answers(${answers})}"></div>
 </main>
 </body>

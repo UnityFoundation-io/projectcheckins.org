@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test;
 import org.projectcheckins.test.BrowserRequest;
 
 @Property(name = "micronaut.security.redirect.unauthorized.url", value = "/unauthorized")
-@Property(name = "micronaut.security.authentication", value = "bearer")
 @Property(name = "micronaut.http.client.follow-redirects", value = StringUtils.FALSE)
 @MicronautTest
 class QuestionControllerSecurityTest {

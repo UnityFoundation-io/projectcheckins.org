@@ -26,6 +26,12 @@ public interface AnswerRepository {
     List<Answer> findByQuestionId(@NotBlank String questionId, @Nullable Tenant tenant);
 
     @NonNull
+    default String save(@NonNull @NotNull @Valid AnswerSave answerSave,
+                @NonNull Authentication authentication) {
+        return save(answerSave, authentication, null);
+    }
+
+    @NonNull
     String save(@NonNull @NotNull @Valid AnswerSave answerSave,
                 @NonNull Authentication authentication,
                 @Nullable Tenant tenant);

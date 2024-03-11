@@ -17,7 +17,6 @@ import io.micronaut.http.client.annotation.Client;
 import io.micronaut.http.uri.UriBuilder;
 import io.micronaut.multitenancy.Tenant;
 import io.micronaut.security.authentication.Authentication;
-import io.micronaut.security.filters.AuthenticationFetcher;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Singleton;
 import jakarta.validation.Valid;
@@ -146,17 +145,6 @@ class QuestionControllerTest {
         @NonNull
         public Optional<Element> findElementById(@NotBlank String id, @Nullable Tenant tenant) {
             return Optional.empty();
-        }
-    }
-
-    @Requires(property = "spec.name", value = "QuestionControllerTest")
-    @Singleton
-    @Replaces(ProfileRepository.class)
-    static class ProfileRepositoryMock implements ProfileRepository {
-
-        @Override
-        public Format findPreferedFormat(Authentication authentication) {
-            return Format.MARKDOWN;
         }
     }
 }
