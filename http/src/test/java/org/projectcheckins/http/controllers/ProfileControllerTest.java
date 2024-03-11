@@ -56,7 +56,7 @@ class ProfileControllerTest {
     assertThat(client.exchange(BrowserRequest.POST("/profile/update", auth, Map.of(
         "timeZone", TimeZone.getDefault().getID(),
         "firstDayOfWeek", DayOfWeek.MONDAY.name(),
-        "using24HourClock", TimeFormat.TWENTY_FOUR_HOUR_CLOCK))))
+        "timeFormat", TimeFormat.TWENTY_FOUR_HOUR_CLOCK))))
         .matches(redirection("/profile/show"));
   }
 
