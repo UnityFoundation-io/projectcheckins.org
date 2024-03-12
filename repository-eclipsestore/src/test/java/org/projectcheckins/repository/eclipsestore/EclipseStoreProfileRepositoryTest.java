@@ -38,6 +38,7 @@ class EclipseStoreProfileRepositoryTest {
         .hasValueSatisfying(p -> assertThat(p)
             .hasFieldOrPropertyWithValue("firstDayOfWeek", SUNDAY)
             .hasFieldOrPropertyWithValue("timeFormat", TimeFormat.TWELVE_HOUR_CLOCK)
+            .hasFieldOrPropertyWithValue("format", Format.MARKDOWN)
             .hasFieldOrPropertyWithValue("firstName", "first name")
             .hasFieldOrPropertyWithValue("lastName", "last name"));
 
