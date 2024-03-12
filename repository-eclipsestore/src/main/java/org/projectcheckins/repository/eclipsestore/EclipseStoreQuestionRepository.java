@@ -38,7 +38,6 @@ class EclipseStoreQuestionRepository implements QuestionRepository {
         entity.setId(id);
         entity.setTitle(questionSave.title());
         entity.setSchedule(questionSave.schedule());
-        entity.setTimeZone(questionSave.timeZone());
         rootProvider.root().getQuestions().add(entity);
         save(rootProvider.root().getQuestions());
         return id;
@@ -56,7 +55,6 @@ class EclipseStoreQuestionRepository implements QuestionRepository {
         QuestionEntity question = findEntityById(questionUpdate.id()).orElseThrow(QuestionNotFoundException::new);
         question.setTitle(questionUpdate.title());
         question.setSchedule(questionUpdate.schedule());
-        question.setTimeZone(questionUpdate.timeZone());
         save(question);
     }
 
@@ -75,9 +73,7 @@ class EclipseStoreQuestionRepository implements QuestionRepository {
         return new Question(
             entity.getId(),
             entity.getTitle(),
-            entity.getSchedule(),
-            entity.getTimeZone(),
-            entity.getNextExecution());
+            entity.getSchedule());
     }
 
     public Optional<QuestionEntity> findEntityById(String id) {

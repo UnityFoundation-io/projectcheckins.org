@@ -6,7 +6,6 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.forms.QuestionSave;
 import org.projectcheckins.core.forms.QuestionUpdate;
-import java.util.TimeZone;
 
 @MicronautTest
 class EclipseStoreQuestionRepositoryTest {
@@ -15,7 +14,7 @@ class EclipseStoreQuestionRepositoryTest {
     void testCrud(EclipseStoreQuestionRepository questionRepository) {
 
         String title = "What are working on?";
-        String id = questionRepository.save(new QuestionSave(title, "schedule", TimeZone.getDefault()));
+        String id = questionRepository.save(new QuestionSave(title, "schedule"));
         assertThat(questionRepository.findAll())
             .anyMatch(q -> q.title().equals(title));
 
@@ -24,7 +23,7 @@ class EclipseStoreQuestionRepositoryTest {
             .hasValueSatisfying(q -> q.title().equals(title));
 
         String updatedTitle = "What are you working on this week?";
-        questionRepository.update(new QuestionUpdate(id, updatedTitle, "schedule", TimeZone.getDefault()));
+        questionRepository.update(new QuestionUpdate(id, updatedTitle, "schedule"));
         assertThat(questionRepository.findById(id))
             .isNotEmpty()
             .hasValueSatisfying(q -> q.title().equals(updatedTitle));

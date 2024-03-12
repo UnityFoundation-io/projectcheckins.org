@@ -9,33 +9,26 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.validation.validator.Validator;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.forms.QuestionSave;
-import java.util.TimeZone;
 
 @MicronautTest
 class QuestionSaveTest {
 
     @Test
     void titleIsRequired(Validator validator) {
-        assertThat(validator.validate(new QuestionSave(null, "schedule", TimeZone.getDefault())))
+        assertThat(validator.validate(new QuestionSave(null, "schedule")))
             .fieldNotBlank("title");
-        assertThat(validator.validate(new QuestionSave("", "schedule", TimeZone.getDefault())))
+        assertThat(validator.validate(new QuestionSave("", "schedule")))
             .fieldNotBlank("title");
-        assertThat(validator.validate(new QuestionSave("What are you working on", "schedule", TimeZone.getDefault())))
+        assertThat(validator.validate(new QuestionSave("What are you working on", "schedule")))
             .isValid();
     }
 
     @Test
     void scheduleIsRequired(Validator validator) {
-        assertThat(validator.validate(new QuestionSave("What are you working on", null, TimeZone.getDefault())))
+        assertThat(validator.validate(new QuestionSave("What are you working on", null)))
             .fieldNotBlank("schedule");
-        assertThat(validator.validate(new QuestionSave("What are you working on", "", TimeZone.getDefault())))
+        assertThat(validator.validate(new QuestionSave("What are you working on", "")))
             .fieldNotBlank("schedule");
-    }
-
-    @Test
-    void timeZoneIsRequired(Validator validator) {
-        assertThat(validator.validate(new QuestionSave("What are you working on", "schedule", null)))
-                .hasNotNullViolation("timeZone");
     }
 
     @Test

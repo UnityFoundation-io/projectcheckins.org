@@ -9,41 +9,34 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.validation.validator.Validator;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.forms.Question;
-import java.util.TimeZone;
 
 @MicronautTest
 class QuestionTest {
 
     @Test
     void idCannotBeBlank(Validator validator) {
-        assertThat(validator.validate(new Question(null, "What are you working on", "schedule", TimeZone.getDefault(), null)))
+        assertThat(validator.validate(new Question(null, "What are you working on", "schedule")))
             .fieldNotBlank("id");
-        assertThat(validator.validate(new Question("", "What are you working on", "schedule", TimeZone.getDefault(), null)))
+        assertThat(validator.validate(new Question("", "What are you working on", "schedule")))
             .fieldNotBlank("id");
-        assertThat(validator.validate(new Question("xxx", "What are you working on", "schedule", TimeZone.getDefault(), null)))
+        assertThat(validator.validate(new Question("xxx", "What are you working on", "schedule")))
             .isValid();
     }
 
     @Test
     void titleCannotBeBlank(Validator validator) {
-        assertThat(validator.validate(new Question("xxx", null, "schedule", TimeZone.getDefault(), null)))
+        assertThat(validator.validate(new Question("xxx", null, "schedule")))
             .fieldNotBlank("title");
-        assertThat(validator.validate(new Question("xxx", "", "schedule", TimeZone.getDefault(), null)))
+        assertThat(validator.validate(new Question("xxx", "", "schedule")))
             .fieldNotBlank("title");
     }
 
     @Test
     void scheduleCannotBeBlank(Validator validator) {
-        assertThat(validator.validate(new Question("xxx", "What are you working on", null, TimeZone.getDefault(), null)))
+        assertThat(validator.validate(new Question("xxx", "What are you working on", null)))
                 .fieldNotBlank("schedule");
-        assertThat(validator.validate(new Question("xxx", "What are you working on", "", TimeZone.getDefault(), null)))
+        assertThat(validator.validate(new Question("xxx", "What are you working on", "")))
                 .fieldNotBlank("schedule");
-    }
-
-    @Test
-    void timeZoneCannotBeNull(Validator validator) {
-        assertThat(validator.validate(new Question("xxx", "What are you working on", "schedule", null, null)))
-                .hasNotNullViolation("timeZone");
     }
 
     @Test

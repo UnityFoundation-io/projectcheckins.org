@@ -45,8 +45,7 @@ class QuestionControllerFormTest {
         String title = "What are working on?";
         HttpResponse<?> saveResponse = client.exchange(BrowserRequest.POST("/question/save", Map.of(
                 "title", title,
-                "schedule", "schedule",
-                "timeZone", TimeZone.getDefault().getID())));
+                "schedule", "schedule")));
         assertThat(saveResponse)
             .matches(redirection(s -> s.startsWith("/question") && s.endsWith("/show")));
 
@@ -70,8 +69,7 @@ class QuestionControllerFormTest {
         assertThat(client.exchange(BrowserRequest.POST(updateUri.toString(), Map.of(
                 "id", id,
                 "title", updatedTitle,
-                "schedule", "schedule",
-                "timeZone", TimeZone.getDefault().getID()))))
+                "schedule", "schedule"))))
             .matches(redirection(s -> s.equals("/question/" + id + "/show")));
 
         assertThat(client.retrieve(BrowserRequest.GET(UriBuilder.of("/question").path(id).path("edit").build()), String.class))
@@ -101,7 +99,7 @@ class QuestionControllerFormTest {
         @NonNull
         public String save(@NotNull @Valid QuestionSave questionSave, @Nullable Tenant tenant) {
             String id = "xxx";
-            questions.put(id, new Question(id, questionSave.title(), questionSave.schedule(), questionSave.timeZone(), null));
+            questions.put(id, new Question(id, questionSave.title(), questionSave.schedule()));
             return id;
         }
 
@@ -114,7 +112,7 @@ class QuestionControllerFormTest {
         @Override
         public void update(@NotNull @Valid QuestionUpdate questionUpdate, @Nullable Tenant tenant) {
             if (questions.containsKey(questionUpdate.id())) {
-                questions.put(questionUpdate.id(), new Question(questionUpdate.id(), questionUpdate.title(), questionUpdate.schedule(), questionUpdate.timeZone(), null));
+                questions.put(questionUpdate.id(), new Question(questionUpdate.id(), questionUpdate.title(), questionUpdate.schedule()));
             }
         }
 
