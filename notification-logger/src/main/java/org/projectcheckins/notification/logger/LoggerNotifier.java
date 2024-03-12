@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class LoggerNotifier implements Notifier {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoggerNotifier.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LoggerNotifier.class);
 
     /**
      * Logs a notification about a question to a user profile.
@@ -23,6 +23,6 @@ public class LoggerNotifier implements Notifier {
      */
     @Override
     public void notify(Question question, Profile profile) {
-        logger.info("Asking user: {} question: {}", profile.getFullName(), question.title());
+        LOG.info("Asking user: {} question: {}", profile.getFullName(), question.title());
     }
 }
