@@ -66,7 +66,7 @@ class ProfileControllerTest {
       assertThat(client.exchange(BrowserRequest.GET("/profile/show", auth), String.class))
               .matches(htmlPage())
               .matches(htmlBody("Guillermo Calvo"))
-              .matches(htmlBody("WYSWYG"));
+              .matches(htmlBody("Rich Text"));
   }
 
   @Requires(property = "spec.name", value = "ProfileControllerTest")
