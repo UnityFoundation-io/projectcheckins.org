@@ -42,6 +42,6 @@ class EclipseStoreProfileRepositoryTest {
             .hasFieldOrPropertyWithValue("firstName", "first name")
             .hasFieldOrPropertyWithValue("lastName", "last name"));
     assertThatThrownBy(() -> profileRepository.update(wrongAuth, new ProfileUpdate(TimeZone.getDefault(), SUNDAY, TimeFormat.TWENTY_FOUR_HOUR_CLOCK,  Format.MARKDOWN,"first name", "last name")))
-        .isInstanceOf(ProfileNotFoundException.class);
+        .isInstanceOf(UserNotFoundException.class);
   }
 }
