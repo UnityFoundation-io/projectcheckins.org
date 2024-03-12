@@ -10,7 +10,7 @@ import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.authentication.ClientAuthentication;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import org.junit.jupiter.api.Test;
-import org.projectcheckins.core.exceptions.ProfileNotFoundException;
+import org.projectcheckins.core.exceptions.UserNotFoundException;
 import org.projectcheckins.core.forms.Format;
 import org.projectcheckins.core.forms.ProfileUpdate;
 import org.projectcheckins.core.forms.TimeFormat;
@@ -41,7 +41,6 @@ class EclipseStoreProfileRepositoryTest {
             .hasFieldOrPropertyWithValue("format", Format.MARKDOWN)
             .hasFieldOrPropertyWithValue("firstName", "first name")
             .hasFieldOrPropertyWithValue("lastName", "last name"));
-
     assertThatThrownBy(() -> profileRepository.update(wrongAuth, new ProfileUpdate(TimeZone.getDefault(), SUNDAY, TimeFormat.TWENTY_FOUR_HOUR_CLOCK,  Format.MARKDOWN,"first name", "last name")))
         .isInstanceOf(ProfileNotFoundException.class);
   }
