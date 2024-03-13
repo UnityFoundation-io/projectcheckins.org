@@ -30,7 +30,7 @@ class AnswerSaveFormGeneratorImpl implements AnswerSaveFormGenerator {
 
     @Override
     @NonNull
-    public Form generate(@NotNull @NotNull Function<Format, String> actionFunction, @NotNull Authentication authentication) {
+    public Form generate(@NotNull Function<Format, String> actionFunction, @NotNull Authentication authentication) {
         Format preferedFormat = profileRepository.findByAuthentication(authentication).map(Profile::format).orElseThrow(UserNotFoundException::new);
         return formGenerator.generate(actionFunction.apply(preferedFormat), FORMAT_TO_CLASS.get(preferedFormat));
     }
