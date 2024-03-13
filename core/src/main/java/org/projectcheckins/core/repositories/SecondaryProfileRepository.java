@@ -1,6 +1,8 @@
 package org.projectcheckins.core.repositories;
 
+import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Secondary;
+import io.micronaut.context.env.Environment;
 import io.micronaut.multitenancy.Tenant;
 import io.micronaut.security.authentication.Authentication;
 import jakarta.inject.Singleton;
@@ -9,6 +11,7 @@ import org.projectcheckins.core.forms.ProfileUpdate;
 
 import java.util.Optional;
 
+@Requires(env = Environment.TEST)
 @Secondary
 @Singleton
 public class SecondaryProfileRepository implements ProfileRepository {
