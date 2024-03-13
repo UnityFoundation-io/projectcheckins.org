@@ -16,7 +16,6 @@ class AnswerMarkdownSaveTest {
     void validation(Validator validator)  {
         assertThat(validator.validate(new AnswerMarkdownSave(null, null, null)))
                 .hasNotNullViolation("questionId")
-
                 .hasNotNullViolation("answerDate")
                 .hasNotNullViolation("markdown");
 
