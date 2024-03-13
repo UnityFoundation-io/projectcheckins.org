@@ -77,7 +77,8 @@ class QuestionController {
     private final AnswerSaveFormGenerator answerSaveFormGenerator;
 
     QuestionController(FormGenerator formGenerator,
-                       QuestionRepository questionRepository, AnswerSaveFormGenerator answerSaveFormGenerator) {
+                       QuestionRepository questionRepository,
+                       AnswerSaveFormGenerator answerSaveFormGenerator) {
         this.formGenerator = formGenerator;
         this.questionRepository = questionRepository;
         this.answerSaveFormGenerator = answerSaveFormGenerator;
