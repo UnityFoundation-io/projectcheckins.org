@@ -74,7 +74,10 @@ class ProfileController {
         Form form = formGenerator.generate(PATH_UPDATE, new ProfileUpdate(
                 profile.timeZone(),
                 profile.firstDayOfWeek(),
+                profile.beginningOfDay(),
+                profile.endOfDay(),
                 profile.timeFormat(),
+                profile.format(),
                 profile.firstName(),
                 profile.lastName()));
         return Map.of(ApiConstants.MODEL_FORM, form);

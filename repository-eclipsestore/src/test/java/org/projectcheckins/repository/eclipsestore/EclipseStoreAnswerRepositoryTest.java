@@ -23,7 +23,7 @@ class EclipseStoreAnswerRepositoryTest {
                   EclipseStoreAnswerRepository answerRepository) throws UserAlreadyExistsException {
 
         String text = "Lorem ipsum";
-        String questionId = questionRepository.save(new QuestionSave("What are you working on?"));
+        String questionId = questionRepository.save(new QuestionSave("What are you working on?", "0 9 * * 1"));
         String userId = registerService.register("delamos@unityfoundation.io", "secret");
         String id = answerRepository.save(new AnswerSave(questionId, Format.MARKDOWN, LocalDate.now(), text), Authentication.build(userId), null);
         assertThat(answerRepository.findByQuestionId(questionId, null))

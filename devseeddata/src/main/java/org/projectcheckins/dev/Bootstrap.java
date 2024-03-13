@@ -53,7 +53,7 @@ public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
     public void onApplicationEvent(ServerStartupEvent event) {
         String sergioId = addUser("delamos@unityfoundation.io");
 
-        String questionWhatAreYouWorkingOnThisWeekId = questionRepository.save(new QuestionSave("What are you working on this week?"));
+        String questionWhatAreYouWorkingOnThisWeekId = questionRepository.save(new QuestionSave("What are you working on this week?", "0 9 * * 1"));
 
         Authentication sergio = Authentication.build(sergioId);
         answerRepository.save(new AnswerSave(questionWhatAreYouWorkingOnThisWeekId,

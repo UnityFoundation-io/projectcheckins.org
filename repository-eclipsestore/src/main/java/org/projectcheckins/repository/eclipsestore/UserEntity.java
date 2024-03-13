@@ -10,6 +10,7 @@ import org.projectcheckins.core.forms.Format;
 import org.projectcheckins.core.forms.TimeFormat;
 
 import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
@@ -33,7 +34,16 @@ public class UserEntity {
     private DayOfWeek firstDayOfWeek;
 
     @NotNull
+    private LocalTime beginningOfDay;
+
+    @NotNull
+    private LocalTime endOfDay;
+
+    @NotNull
     private TimeFormat timeFormat;
+
+    @NotNull
+    private Format format;
 
     @Nullable
     private String firstName;
@@ -41,15 +51,14 @@ public class UserEntity {
     @Nullable
     private String lastName;
 
-    @NotNull
-    private Format format;
-
     public UserEntity(String id,
                       String email,
                       String encodedPassword,
                       List<String> authorities,
                       TimeZone timeZone,
                       DayOfWeek firstDayOfWeek,
+                      LocalTime beginningOfDay,
+                      LocalTime endOfDay,
                       TimeFormat timeFormat,
                       Format format,
                       String firstName,
@@ -60,6 +69,8 @@ public class UserEntity {
         this.authorities = authorities;
         this.timeZone = timeZone;
         this.firstDayOfWeek = firstDayOfWeek;
+        this.beginningOfDay = beginningOfDay;
+        this.endOfDay = endOfDay;
         this.timeFormat = timeFormat;
         this.format = format;
         this.firstName = firstName;
@@ -120,6 +131,22 @@ public class UserEntity {
 
     public void setFirstDayOfWeek(DayOfWeek firstDayOfWeek) {
         this.firstDayOfWeek = firstDayOfWeek;
+    }
+
+    public LocalTime getBeginningOfDay() {
+        return beginningOfDay;
+    }
+
+    public void setBeginningOfDay(LocalTime beginningOfDay) {
+        this.beginningOfDay = beginningOfDay;
+    }
+
+    public LocalTime getEndOfDay() {
+        return endOfDay;
+    }
+
+    public void setEndOfDay(LocalTime endOfDay) {
+        this.endOfDay = endOfDay;
     }
 
     public TimeFormat getTimeFormat() {

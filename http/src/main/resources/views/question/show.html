@@ -12,11 +12,18 @@
     <a href="/question/list" th:text="#{question.list}"></a>
     <a th:href="@{|/question/${question.id}/edit|}" th:text="#{question.edit}"></a>
     <h1 th:text="${question.title}"></h1>
-
     <th:block th:if="${form}">
         <form th:replace="~{fieldset/form :: form(${form})}"></form>
     </th:block>
     <div th:replace="~{answer/_list :: answers(${answers})}"></div>
+    <table class="table">
+        <tbody>
+        <tr>
+            <th th:text="#{question.schedule}"></th>
+            <td th:text="${question.schedule}"></td>
+        </tr>
+        </tbody>
+    </table>
 </main>
 </body>
 </html>

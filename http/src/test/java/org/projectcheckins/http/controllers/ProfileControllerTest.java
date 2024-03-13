@@ -24,6 +24,7 @@ import io.micronaut.security.authentication.provider.HttpRequestAuthenticationPr
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Singleton;
 import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
@@ -31,6 +32,7 @@ import java.util.TimeZone;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.Test;
+import org.projectcheckins.core.forms.Format;
 import org.projectcheckins.core.forms.Profile;
 import org.projectcheckins.core.forms.ProfileUpdate;
 import org.projectcheckins.core.forms.TimeFormat;
@@ -60,14 +62,18 @@ class ProfileControllerTest {
     assertThat(client.exchange(BrowserRequest.POST("/profile/update", auth, Map.of(
         "timeZone", TimeZone.getDefault().getID(),
         "firstDayOfWeek", DayOfWeek.MONDAY.name(),
+        "beginningOfDay", "09:00",
+        "endOfDay", "16:30",
         "timeFormat", TimeFormat.TWENTY_FOUR_HOUR_CLOCK,
+            "format", Format.WYSIWYG,
         "firstName", "Guillermo",
         "lastName", "Calvo"))))
         .matches(redirection("/profile/show"));
 
       assertThat(client.exchange(BrowserRequest.GET("/profile/show", auth), String.class))
               .matches(htmlPage())
-              .matches(htmlBody("Guillermo Calvo"));
+              .matches(htmlBody("Guillermo Calvo"))
+              .matches(htmlBody("Rich Text"));
   }
 
   @Requires(property = "spec.name", value = "ProfileControllerTest")
@@ -86,7 +92,18 @@ class ProfileControllerTest {
 
     @Override
     public Optional<Profile> findByAuthentication(Authentication authentication, Tenant tenant) {
-      return Optional.of(new Profile("xxx", authentication.getAttributes().get("email").toString(), TimeZone.getDefault(), DayOfWeek.MONDAY, TimeFormat.TWENTY_FOUR_HOUR_CLOCK, "first name", "last name"));
+      return Optional.of(new Profile(
+              "xxx",
+              authentication.getAttributes().get("email").toString(),
+              TimeZone.getDefault(),
+              DayOfWeek.MONDAY,
+              LocalTime.of(9, 0),
+              LocalTime.of(16, 30),
+              TimeFormat.TWENTY_FOUR_HOUR_CLOCK,
+              Format.MARKDOWN,
+              "first name",
+              "last name"
+      ));
     }
 
       @Override

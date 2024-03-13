@@ -16,6 +16,9 @@ public class QuestionEntity {
     @NonNull
     private List<AnswerEntity> answers = new ArrayList<>();
 
+    @NotBlank
+    private String schedule;
+
     public String getId() {
         return id;
     }
@@ -34,5 +37,13 @@ public class QuestionEntity {
 
     public List<AnswerEntity> getAnswers() {
         return answers;
+    }
+
+    public String getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(String schedule) {
+        this.schedule = schedule;
     }
 }

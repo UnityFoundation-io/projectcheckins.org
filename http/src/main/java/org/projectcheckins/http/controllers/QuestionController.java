@@ -153,7 +153,10 @@ class QuestionController {
 
     @NonNull
     private Map<String, Object> updateModel(@NonNull Question question) {
-        Form form = formGenerator.generate(PATH_UPDATE_BUILDER.apply(question.id()).toString(), new QuestionUpdate(question.id(), question.title()));
+        Form form = formGenerator.generate(PATH_UPDATE_BUILDER.apply(question.id()).toString(), new QuestionUpdate(
+                question.id(),
+                question.title(),
+                question.schedule()));
         return Map.of(ApiConstants.MODEL_BREADCRUMBS, BREADCRUMBS_QUESTION_EDIT.apply(question.id(), question.title()),
                 ApiConstants.MODEL_FORM, form);
     }

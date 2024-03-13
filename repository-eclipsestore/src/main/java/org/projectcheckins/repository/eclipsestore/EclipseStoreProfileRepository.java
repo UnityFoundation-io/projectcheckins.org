@@ -9,11 +9,12 @@ import io.micronaut.security.authentication.Authentication;
 import jakarta.inject.Singleton;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.projectcheckins.core.exceptions.UserNotFoundException;
 import org.projectcheckins.core.forms.Format;
 import org.projectcheckins.core.forms.Profile;
 import org.projectcheckins.core.forms.ProfileUpdate;
 import org.projectcheckins.core.repositories.ProfileRepository;
-import org.projectcheckins.core.exceptions.UserNotFoundException;
+
 import java.util.Optional;
 
 @Singleton
@@ -36,15 +37,15 @@ class EclipseStoreProfileRepository implements ProfileRepository {
     }
 
     @Override
-    @NonNull
-    public Optional<Profile> findByAuthentication(@NotNull Authentication authentication, @Nullable Tenant tenant) {
-        return findById(authentication.getName()).map(this::fromEntity);
-    }
-
-    @Override
     public void update(@NotNull Authentication authentication, @NotNull @Valid ProfileUpdate profileUpdate, @Nullable Tenant tenant) {
         final UserEntity entity = findById(authentication.getName()).orElseThrow(UserNotFoundException::new);
         save(updateEntity(entity, profileUpdate));
+    }
+
+    @Override
+    @NonNull
+    public Optional<Profile> findByAuthentication(@NotNull Authentication authentication, @Nullable Tenant tenant) {
+        return findById(authentication.getName()).map(this::fromEntity);
     }
 
     @StoreParams("user")
@@ -59,6 +60,8 @@ class EclipseStoreProfileRepository implements ProfileRepository {
     private UserEntity updateEntity(UserEntity entity, ProfileUpdate profileUpdate) {
         entity.setTimeZone(profileUpdate.timeZone());
         entity.setFirstDayOfWeek(profileUpdate.firstDayOfWeek());
+        entity.setBeginningOfDay(profileUpdate.beginningOfDay());
+        entity.setEndOfDay(profileUpdate.endOfDay());
         entity.setTimeFormat(profileUpdate.timeFormat());
         entity.setFirstName(profileUpdate.firstName());
         entity.setLastName(profileUpdate.lastName());
@@ -71,7 +74,10 @@ class EclipseStoreProfileRepository implements ProfileRepository {
                 entity.getEmail(),
                 entity.getTimeZone(),
                 entity.getFirstDayOfWeek(),
+                entity.getBeginningOfDay(),
+                entity.getEndOfDay(),
                 entity.getTimeFormat(),
+                entity.getFormat(),
                 entity.getFirstName(),
                 entity.getLastName()
         );
