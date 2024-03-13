@@ -10,5 +10,5 @@ import java.util.function.Function;
 @FunctionalInterface
 public interface AnswerSaveFormGenerator {
     @NonNull
-    Form generate(@NotNull @NotNull Function<Format, String> actionFunction, @NotNull Authentication authentication);
+    Form generate(@NotNull Function<Format, String> actionFunction, @NotNull Authentication authentication);
 }
