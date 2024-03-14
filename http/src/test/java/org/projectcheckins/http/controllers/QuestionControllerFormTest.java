@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.projectcheckins.test.AbstractAuthenticationFetcher.SDELAMO;
 import static org.projectcheckins.test.AssertUtils.redirection;
+import static org.projectcheckins.test.HttpClientResponseExceptionAssert.*;
 
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Replaces;
@@ -36,6 +37,7 @@ import org.projectcheckins.core.repositories.QuestionRepository;
 import org.projectcheckins.core.repositories.SecondaryProfileRepository;
 import org.projectcheckins.test.AbstractAuthenticationFetcher;
 import org.projectcheckins.test.BrowserRequest;
+import org.projectcheckins.test.HttpClientResponseExceptionAssert;
 import org.reactivestreams.Publisher;
 
 import java.net.URI;
@@ -63,7 +65,7 @@ class QuestionControllerFormTest {
                     LocalTime.of(9, 0),
                     LocalTime.of(16, 30),
                     TimeFormat.TWENTY_FOUR_HOUR_CLOCK,
-                    Format.MARKDOWN,
+                    Format.WYSIWYG,
                     null,
                     null));
         }
@@ -109,10 +111,8 @@ class QuestionControllerFormTest {
             .doesNotContain(title)
             .contains(updatedTitle);
 
-        assertThatThrownBy(() -> client.exchange(BrowserRequest.POST(updateUri.toString(), Map.of("id", "yyy", "title", "What are working on?", "schedule", "schedule", "timeZone", TimeZone.getDefault().getID()))))
-            .isInstanceOf(HttpClientResponseException.class)
-            .extracting(e -> ((HttpClientResponseException)e).getStatus())
-            .isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+        assertThatThrowsHttpClientResponseException(() -> client.exchange(BrowserRequest.POST(updateUri.toString(), Map.of("id", "yyy", "title", "What are working on?", "schedule", "schedule", "timeZone", TimeZone.getDefault().getID()))))
+                .hasStatus(HttpStatus.UNPROCESSABLE_ENTITY);
 
         URI deleteUri = UriBuilder.of("/question").path(id).path("delete").build();
         assertThat(client.exchange(BrowserRequest.POST(deleteUri.toString(), Collections.emptyMap())))

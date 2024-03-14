@@ -5,6 +5,7 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpRequest;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.http.client.BlockingHttpClient;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
@@ -20,6 +21,7 @@ import org.projectcheckins.core.forms.Format;
 import org.projectcheckins.core.repositories.SecondaryAnswerRepository;
 import org.projectcheckins.test.AbstractAuthenticationFetcher;
 import org.projectcheckins.test.BrowserRequest;
+import org.projectcheckins.test.HttpClientResponseExceptionAssert;
 
 import java.net.URI;
 import java.time.LocalDate;
@@ -48,10 +50,19 @@ class AnswerControllerTest {
                                     - HTMX integration
                                     - Project checkins
                         """;
-        URI markdownUri = UriBuilder.of("/question").path(questionId).path("answer").path("markdown").build();
+
+
         Map<String, Object> body = Map.of("questionId", questionId,
                 "answerDate", "2024-03-11",
                 "markdown", markdown);
+
+        URI bogusMarkdownUri = UriBuilder.of("/question").path("bogus").path("answer").path("markdown").build();
+        HttpRequest<?> bogusMarkdownRequest = BrowserRequest.POST(bogusMarkdownUri.toString(), body);
+        HttpClientResponseExceptionAssert.assertThatThrowsHttpClientResponseException(() -> client.exchange(bogusMarkdownRequest))
+                .hasStatus(HttpStatus.UNPROCESSABLE_ENTITY);
+
+
+        URI markdownUri = UriBuilder.of("/question").path(questionId).path("answer").path("markdown").build();
         HttpRequest<?> request = BrowserRequest.POST(markdownUri.toString(), body);
         assertDoesNotThrow(() -> client.exchange(request));
 
@@ -62,11 +73,17 @@ class AnswerControllerTest {
                                     <li>Project checkins</li>
                                     </ul>
                         """;
-        URI htmlUri = UriBuilder.of("/question").path(questionId).path("answer").path("wysiwyg").build();
-        Map<String, Object> bodyHtml = Map.of("questionId", questionId,
+        URI wysiwygUri = UriBuilder.of("/question").path(questionId).path("answer").path("wysiwyg").build();
+        Map<String, Object> bodyWysiwyg = Map.of("questionId", questionId,
                 "answerDate", "2024-03-11",
                 "html", html);
-        HttpRequest<?> wysiwygRequest = BrowserRequest.POST(htmlUri.toString(), bodyHtml);
+
+        URI bogusWysiwygUri = UriBuilder.of("/question").path("bogus").path("answer").path("wysiwyg").build();
+        HttpRequest<?> bogusWysiwygRequest = BrowserRequest.POST(bogusWysiwygUri.toString(), bodyWysiwyg);
+        HttpClientResponseExceptionAssert.assertThatThrowsHttpClientResponseException(() -> client.exchange(bogusWysiwygRequest))
+                .hasStatus(HttpStatus.UNPROCESSABLE_ENTITY);
+
+        HttpRequest<?> wysiwygRequest = BrowserRequest.POST(wysiwygUri.toString(), bodyWysiwyg);
         assertDoesNotThrow(() -> client.exchange(wysiwygRequest));
         LocalDate expectedAnswerDate = LocalDate.of(2024, 3, 11);
         assertThat(answerRepositoryMock.getAnswers())

@@ -8,8 +8,11 @@ import io.micronaut.security.authentication.Authentication;
 import jakarta.inject.Singleton;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import org.projectcheckins.annotations.Generated;
 import org.projectcheckins.core.forms.AnswerSave;
 
+
+@Generated // "ignore for jacoco"
 @Requires(env = Environment.TEST)
 @Secondary
 @Singleton
