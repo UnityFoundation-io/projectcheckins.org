@@ -28,7 +28,6 @@ import org.projectcheckins.core.repositories.QuestionRepository;
 
 import java.net.URI;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @Controller
