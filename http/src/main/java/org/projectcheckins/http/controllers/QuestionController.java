@@ -31,9 +31,6 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static org.projectcheckins.core.forms.Format.MARKDOWN;
-import static org.projectcheckins.core.forms.Format.WYSIWYG;
-
 @Controller
 class QuestionController {
 
