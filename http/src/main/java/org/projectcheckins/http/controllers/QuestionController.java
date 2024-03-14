@@ -69,7 +69,7 @@ class QuestionController {
 
     // DELETE
     private static final String PATH_DELETE = PATH + ApiConstants.PATH_DELETE;
-    public static final String ANSWER_FORM = "answerForm";
+    private static final String ANSWER_FORM = "answerForm";
 
     private final FormGenerator formGenerator;
     private final QuestionRepository questionRepository;
