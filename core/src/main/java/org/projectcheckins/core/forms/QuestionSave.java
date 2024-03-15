@@ -11,7 +11,7 @@ import java.util.List;
 @Serdeable
 public record QuestionSave(@NotBlank String title,
                            @NotNull HowOften howOften,
-                           @NotNull @Size(min = 1, max = 7) List<DayOfWeek> days,
+                           @NotEmpty Set<DayOfWeek> days,
                            @NotNull TimeOfDay timeOfDay) {
 
 }
