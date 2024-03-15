@@ -11,7 +11,7 @@ import org.projectcheckins.core.forms.TimeOfDay;
 
 import java.time.DayOfWeek;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 import static org.projectcheckins.test.ValidationAssert.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -26,11 +26,11 @@ class QuestionUpdateTest {
                 .hasNotNullViolation("howOften")
                 .hasNotNullViolation("days")
                 .hasNotNullViolation("timeOfDay");
-        assertThat(validator.validate(new QuestionUpdate("", "", null, Collections.emptyList(), null)))
+        assertThat(validator.validate(new QuestionUpdate("", "", null, Collections.emptySet(), null)))
                 .hasNotBlankViolation("id")
                 .hasNotBlankViolation("title")
-                .hasSizeViolation("days", 1, 7);
-        assertThat(validator.validate(new QuestionUpdate("xxx", "What are you working on", HowOften.DAILY_ON, List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY), TimeOfDay.END)))
+                .hasNotEmptyViolation("days");
+        assertThat(validator.validate(new QuestionUpdate("xxx", "What are you working on", HowOften.DAILY_ON, Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY), TimeOfDay.END)))
                 .isValid();
     }
 

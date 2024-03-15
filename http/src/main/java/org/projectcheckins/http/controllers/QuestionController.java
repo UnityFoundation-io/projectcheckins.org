@@ -15,7 +15,6 @@ import io.micronaut.core.annotation.NonNull;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.uri.UriBuilder;
 import io.micronaut.security.rules.SecurityRule;
-import io.micronaut.views.fields.FormGenerator;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -150,10 +149,10 @@ class QuestionController {
                 question.title(),
                 question.howOften(),
                 question.timeOfDay(),
-                question.howOften() == HowOften.DAILY_ON ? question.days() : Collections.singletonList(DayOfWeek.MONDAY),
-                question.howOften() == HowOften.ONCE_A_WEEK ? question.days().getFirst() : DayOfWeek.MONDAY,
-                question.howOften() == HowOften.EVERY_OTHER_WEEK ? question.days().getFirst() : DayOfWeek.MONDAY,
-                question.howOften() == HowOften.ONCE_A_MONTH_ON_THE_FIRST ? question.days().getFirst() : DayOfWeek.MONDAY);
+                question.howOften() == HowOften.DAILY_ON ? question.days() : Collections.singleton(DayOfWeek.MONDAY),
+                question.howOften() == HowOften.ONCE_A_WEEK ? question.days().stream().findFirst().orElseThrow() : DayOfWeek.MONDAY,
+                question.howOften() == HowOften.EVERY_OTHER_WEEK ? question.days().stream().findFirst().orElseThrow() : DayOfWeek.MONDAY,
+                question.howOften() == HowOften.ONCE_A_MONTH_ON_THE_FIRST ? question.days().stream().findFirst().orElseThrow() : DayOfWeek.MONDAY);
         return Map.of(MODEL_QUESTION, question, MODEL_FIELDSET, fieldset);
     }
 

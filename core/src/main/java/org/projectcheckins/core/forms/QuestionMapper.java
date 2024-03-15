@@ -15,9 +15,9 @@ class QuestionMapper implements QuestionSaveMapper, QuestionUpdateMapper {
     public QuestionUpdate toQuestionUpdate(@NonNull @NotNull @Valid QuestionUpdateForm form) {
         return new QuestionUpdate(form.id(), form.title(), form.howOften(), switch (form.howOften()) {
             case DAILY_ON -> form.dailyOnDay();
-            case EVERY_OTHER_WEEK -> Collections.singletonList(form.everyOtherWeekDay());
-            case ONCE_A_WEEK -> Collections.singletonList(form.onceAWeekDay());
-            case ONCE_A_MONTH_ON_THE_FIRST -> Collections.singletonList(form.onceAMonthOnTheFirstDay());
+            case EVERY_OTHER_WEEK -> Collections.singleton(form.everyOtherWeekDay());
+            case ONCE_A_WEEK -> Collections.singleton(form.onceAWeekDay());
+            case ONCE_A_MONTH_ON_THE_FIRST -> Collections.singleton(form.onceAMonthOnTheFirstDay());
         }, form.timeOfDay());
     }
 
@@ -26,9 +26,9 @@ class QuestionMapper implements QuestionSaveMapper, QuestionUpdateMapper {
     public QuestionSave toQuestionSave(@NonNull @NotNull @Valid QuestionSaveForm form) {
         return new QuestionSave(form.title(), form.howOften(), switch (form.howOften()) {
             case DAILY_ON -> form.dailyOnDay();
-            case EVERY_OTHER_WEEK -> Collections.singletonList(form.everyOtherWeekDay());
-            case ONCE_A_WEEK -> Collections.singletonList(form.onceAWeekDay());
-            case ONCE_A_MONTH_ON_THE_FIRST -> Collections.singletonList(form.onceAMonthOnTheFirstDay());
+            case EVERY_OTHER_WEEK -> Collections.singleton(form.everyOtherWeekDay());
+            case ONCE_A_WEEK -> Collections.singleton(form.onceAWeekDay());
+            case ONCE_A_MONTH_ON_THE_FIRST -> Collections.singleton(form.onceAMonthOnTheFirstDay());
         }, form.timeOfDay());
     }
 }

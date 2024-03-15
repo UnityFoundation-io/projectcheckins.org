@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +24,7 @@ class LoggerNotifierTest {
     @Test
     void notify(LoggerNotifier notifier) {
         final Question question = new QuestionRecord("id", "title", HowOften.DAILY_ON,
-                List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY),
+                Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY),
                 TimeOfDay.END);
         final Profile profile = new ProfileRecord("email@example.com", TimeZone.getDefault(), DayOfWeek.MONDAY, LocalTime.of(9, 9), LocalTime.of(16, 0), TimeFormat.TWENTY_FOUR_HOUR_CLOCK, Format.MARKDOWN, "Guillermo", "Calvo");
         final ListAppender<ILoggingEvent> listAppender = new ListAppender<>();

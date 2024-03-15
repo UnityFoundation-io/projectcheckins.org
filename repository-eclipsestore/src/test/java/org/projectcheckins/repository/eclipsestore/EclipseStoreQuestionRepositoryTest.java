@@ -10,7 +10,7 @@ import org.projectcheckins.core.forms.QuestionUpdate;
 import org.projectcheckins.core.forms.TimeOfDay;
 
 import java.time.DayOfWeek;
-import java.util.List;
+import java.util.Set;
 
 @MicronautTest
 class EclipseStoreQuestionRepositoryTest {
@@ -20,7 +20,7 @@ class EclipseStoreQuestionRepositoryTest {
 
         String title = "What are working on?";
         String id = questionRepository.save(new QuestionSave(title, HowOften.DAILY_ON,
-                List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY),
+                Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY),
                 TimeOfDay.END));
         assertThat(questionRepository.findAll())
             .anyMatch(q -> q.title().equals(title));
@@ -31,7 +31,7 @@ class EclipseStoreQuestionRepositoryTest {
 
         String updatedTitle = "What are you working on this week?";
         questionRepository.update(new QuestionUpdate(id, updatedTitle, HowOften.DAILY_ON,
-                List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY),
+                Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY),
                 TimeOfDay.END));
         assertThat(questionRepository.findById(id))
             .isNotEmpty()

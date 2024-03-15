@@ -1,7 +1,6 @@
 package org.projectcheckins.test;
 
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validator;
 import org.assertj.core.api.AbstractAssert;
 import org.assertj.core.api.Assertions;
 
@@ -42,8 +41,8 @@ public class ValidationAssert<T> extends AbstractAssert<ValidationAssert<T>, Set
         return this;
     }
 
-    public ValidationAssert<T> hasSizeViolation(String name, int min, int max) {
-        expectedViolationMessage(name, "size must be between " + min + " and " + max);
+    public ValidationAssert<T> hasNotEmptyViolation(String name) {
+        expectedViolationMessage(name, "must not be empty");
         return this;
     }
 

@@ -14,7 +14,7 @@ import org.projectcheckins.core.forms.TimeOfDay;
 
 import java.time.DayOfWeek;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 
 @MicronautTest
 class QuestionSaveTest {
@@ -26,10 +26,10 @@ class QuestionSaveTest {
                 .hasNotNullViolation("howOften")
                 .hasNotNullViolation("days")
                 .hasNotNullViolation("timeOfDay");
-        assertThat(validator.validate(new QuestionSave("", null, Collections.emptyList(), null)))
+        assertThat(validator.validate(new QuestionSave("", null, Collections.emptySet(), null)))
                 .hasNotBlankViolation("title")
-                .hasSizeViolation("days", 1, 7);
-        assertThat(validator.validate(new QuestionSave("What are you working on", HowOften.DAILY_ON, List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY), TimeOfDay.END)))
+                .hasNotEmptyViolation("days");
+        assertThat(validator.validate(new QuestionSave("What are you working on", HowOften.DAILY_ON, Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY), TimeOfDay.END)))
             .isValid();
     }
 

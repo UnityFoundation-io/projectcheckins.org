@@ -2,14 +2,14 @@ package org.projectcheckins.repository.eclipsestore;
 
 import io.micronaut.core.annotation.NonNull;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import org.projectcheckins.core.api.Question;
 import org.projectcheckins.core.forms.HowOften;
 import org.projectcheckins.core.forms.TimeOfDay;
 
 import java.time.DayOfWeek;
-import java.util.List;
+import java.util.Set;
 
 public class QuestionEntity implements Question {
     @NotBlank
@@ -48,8 +48,8 @@ public class QuestionEntity implements Question {
     }
 
     @Override
-    @NonNull
-    public List<DayOfWeek> days() {
+    @NotEmpty
+    public Set<DayOfWeek> days() {
         return days;
     }
 
@@ -67,7 +67,7 @@ public class QuestionEntity implements Question {
         this.howOften = howOften;
     }
 
-    public void days(@NonNull List<DayOfWeek> days) {
+    public void days(@NotEmpty Set<DayOfWeek> days) {
         this.days = days;
     }
 
