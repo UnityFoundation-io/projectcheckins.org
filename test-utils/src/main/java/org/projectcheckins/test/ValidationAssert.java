@@ -42,10 +42,17 @@ public class ValidationAssert<T> extends AbstractAssert<ValidationAssert<T>, Set
         return this;
     }
 
+    public ValidationAssert<T> hasSizeViolation(String name, int min, int max) {
+        expectedViolationMessage(name, "size must be between " + min + " and " + max);
+        return this;
+    }
+
     private void expectedViolationMessage(String name, String message) {
         Assertions.assertThat(actual)
                 .anyMatch(x -> x.getPropertyPath().toString().equals(name))
                 .extracting(ConstraintViolation::getMessage)
                 .anyMatch(message::equals);
     }
+
+
 }

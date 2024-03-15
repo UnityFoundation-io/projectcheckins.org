@@ -18,9 +18,7 @@ import jakarta.inject.Singleton;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.api.Profile;
 import org.projectcheckins.core.api.Question;
-import org.projectcheckins.core.forms.Format;
-import org.projectcheckins.core.forms.ProfileRecord;
-import org.projectcheckins.core.forms.TimeFormat;
+import org.projectcheckins.core.forms.*;
 import org.projectcheckins.core.repositories.QuestionRepository;
 import org.projectcheckins.core.repositories.SecondaryProfileRepository;
 import org.projectcheckins.security.RegisterService;
@@ -30,10 +28,7 @@ import org.projectcheckins.test.BrowserRequest;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TimeZone;
+import java.util.*;
 
 @MicronautTest
 @Property(name = "spec.name", value = "QuestionCrudTest")
@@ -55,8 +50,10 @@ class QuestionCrudTest {
         BlockingHttpClient client = httpClient.toBlocking();
         HttpRequest<?> request = BrowserRequest.POST("/question/save", Map.of(
                 "title", "What are working on?",
-                "schedule", "schedule",
-                "timeZone", TimeZone.getDefault().getID()));
+                "howOften", HowOften.DAILY_ON,
+                        "dailyOnDay", List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY),
+                        "timeOfDay", TimeOfDay.END
+                ));
         assertThatCode(() -> client.exchange(request))
             .doesNotThrowAnyException();
         Optional<? extends Question> questionOptional = questionRepository.findAll()

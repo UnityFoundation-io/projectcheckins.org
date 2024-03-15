@@ -8,27 +8,29 @@ import io.micronaut.serde.SerdeIntrospections;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.micronaut.validation.validator.Validator;
 import org.junit.jupiter.api.Test;
+import org.projectcheckins.core.forms.HowOften;
 import org.projectcheckins.core.forms.QuestionSave;
+import org.projectcheckins.core.forms.TimeOfDay;
+
+import java.time.DayOfWeek;
+import java.util.Collections;
+import java.util.List;
 
 @MicronautTest
 class QuestionSaveTest {
 
     @Test
-    void titleIsRequired(Validator validator) {
-        assertThat(validator.validate(new QuestionSave(null, "schedule")))
-            .fieldNotBlank("title");
-        assertThat(validator.validate(new QuestionSave("", "schedule")))
-            .fieldNotBlank("title");
-        assertThat(validator.validate(new QuestionSave("What are you working on", "schedule")))
+    void questionSaveValidation(Validator validator) {
+        assertThat(validator.validate(new QuestionSave(null, null, null, null)))
+                .hasNotBlankViolation("title")
+                .hasNotNullViolation("howOften")
+                .hasNotNullViolation("days")
+                .hasNotNullViolation("timeOfDay");
+        assertThat(validator.validate(new QuestionSave("", null, Collections.emptyList(), null)))
+                .hasNotBlankViolation("title")
+                .hasSizeViolation("days", 1, 7);
+        assertThat(validator.validate(new QuestionSave("What are you working on", HowOften.DAILY_ON, List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY), TimeOfDay.END)))
             .isValid();
-    }
-
-    @Test
-    void scheduleIsRequired(Validator validator) {
-        assertThat(validator.validate(new QuestionSave("What are you working on", null)))
-            .fieldNotBlank("schedule");
-        assertThat(validator.validate(new QuestionSave("What are you working on", "")))
-            .fieldNotBlank("schedule");
     }
 
     @Test

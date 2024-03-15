@@ -20,13 +20,12 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.projectcheckins.core.api.Question;
-import org.projectcheckins.core.forms.AnswerSaveFormGenerator;
-import org.projectcheckins.core.forms.Format;
-import org.projectcheckins.core.forms.QuestionSave;
-import org.projectcheckins.core.forms.QuestionUpdate;
+import org.projectcheckins.core.forms.*;
 import org.projectcheckins.core.repositories.QuestionRepository;
 
 import java.net.URI;
+import java.time.DayOfWeek;
+import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -66,18 +65,23 @@ class QuestionController {
     // DELETE
     private static final String PATH_DELETE = PATH + ApiConstants.PATH_DELETE;
     private static final String ANSWER_FORM = "answerForm";
+    public static final String MODEL_FIELDSET = "fieldset";
 
-    private final FormGenerator formGenerator;
     private final QuestionRepository questionRepository;
 
     private final AnswerSaveFormGenerator answerSaveFormGenerator;
 
-    QuestionController(FormGenerator formGenerator,
-                       QuestionRepository questionRepository,
-                       AnswerSaveFormGenerator answerSaveFormGenerator) {
-        this.formGenerator = formGenerator;
+    private final QuestionSaveMapper questionSaveMapper;
+    private final QuestionUpdateMapper questionUpdateMapper;
+
+    QuestionController(QuestionRepository questionRepository,
+                       AnswerSaveFormGenerator answerSaveFormGenerator,
+                       QuestionSaveMapper questionSaveMapper,
+                       QuestionUpdateMapper questionUpdateMapper) {
         this.questionRepository = questionRepository;
         this.answerSaveFormGenerator = answerSaveFormGenerator;
+        this.questionSaveMapper = questionSaveMapper;
+        this.questionUpdateMapper = questionUpdateMapper;
     }
 
     @GetHtml(uri = PATH_LIST, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_LIST)
@@ -87,11 +91,12 @@ class QuestionController {
 
     @GetHtml(uri = PATH_CREATE, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_CREATE)
     Map<String, Object> questionCreate() {
-        return Map.of(ApiConstants.MODEL_FORM, formGenerator.generate(PATH_SAVE, QuestionSave.class));
+        return Map.of(MODEL_FIELDSET, new QuestionSaveForm(null));
     }
     @PostForm(uri = PATH_SAVE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
-    HttpResponse<?> questionSave(@NonNull @NotNull @Valid @Body QuestionSave questionSave,
+    HttpResponse<?> questionSave(@NonNull @NotNull @Valid @Body QuestionSaveForm form,
                                  @Nullable Tenant tenant) {
+        QuestionSave questionSave = questionSaveMapper.toQuestionSave(form);
         String id = questionRepository.save(questionSave, tenant);
         return HttpResponse.seeOther(PATH_SHOW_BUILDER.apply(id));
     }
@@ -122,11 +127,12 @@ class QuestionController {
 
     @PostForm(uri = PATH_UPDATE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
     HttpResponse<?> questionUpdate(@PathVariable @NotBlank String id,
-                                   @NonNull @NotNull @Valid @Body QuestionUpdate questionUpdate,
+                                   @NonNull @NotNull @Valid @Body QuestionUpdateForm form,
                                    @Nullable Tenant tenant) {
-        if (!id.equals(questionUpdate.id())) {
+        if (!id.equals(form.id())) {
             return HttpResponse.unprocessableEntity();
         }
+        QuestionUpdate questionUpdate = questionUpdateMapper.toQuestionUpdate(form);
         questionRepository.update(questionUpdate, tenant);
         return HttpResponse.seeOther(PATH_SHOW_BUILDER.apply(id));
     }
@@ -140,11 +146,15 @@ class QuestionController {
 
     @NonNull
     private Map<String, Object> updateModel(@NonNull Question question) {
-        Form form = formGenerator.generate(PATH_UPDATE_BUILDER.apply(question.id()).toString(), new QuestionUpdate(
-            question.id(),
-            question.title(),
-            question.schedule()));
-        return Map.of(ApiConstants.MODEL_FORM, form);
+        QuestionUpdateForm fieldset = new QuestionUpdateForm(question.id(),
+                question.title(),
+                question.howOften(),
+                question.timeOfDay(),
+                question.howOften() == HowOften.DAILY_ON ? question.days() : Collections.singletonList(DayOfWeek.MONDAY),
+                question.howOften() == HowOften.ONCE_A_WEEK ? question.days().getFirst() : DayOfWeek.MONDAY,
+                question.howOften() == HowOften.EVERY_OTHER_WEEK ? question.days().getFirst() : DayOfWeek.MONDAY,
+                question.howOften() == HowOften.ONCE_A_MONTH_ON_THE_FIRST ? question.days().getFirst() : DayOfWeek.MONDAY);
+        return Map.of(MODEL_QUESTION, question, MODEL_FIELDSET, fieldset);
     }
 
 }
