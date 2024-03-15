@@ -70,17 +70,10 @@ class QuestionController {
 
     private final AnswerSaveFormGenerator answerSaveFormGenerator;
 
-    private final QuestionSaveMapper questionSaveMapper;
-    private final QuestionUpdateMapper questionUpdateMapper;
-
     QuestionController(QuestionRepository questionRepository,
-                       AnswerSaveFormGenerator answerSaveFormGenerator,
-                       QuestionSaveMapper questionSaveMapper,
-                       QuestionUpdateMapper questionUpdateMapper) {
+                       AnswerSaveFormGenerator answerSaveFormGenerator) {
         this.questionRepository = questionRepository;
         this.answerSaveFormGenerator = answerSaveFormGenerator;
-        this.questionSaveMapper = questionSaveMapper;
-        this.questionUpdateMapper = questionUpdateMapper;
     }
 
     @GetHtml(uri = PATH_LIST, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_LIST)
@@ -95,8 +88,7 @@ class QuestionController {
     @PostForm(uri = PATH_SAVE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
     HttpResponse<?> questionSave(@NonNull @NotNull @Valid @Body QuestionSaveForm form,
                                  @Nullable Tenant tenant) {
-        QuestionSave questionSave = questionSaveMapper.toQuestionSave(form);
-        String id = questionRepository.save(questionSave, tenant);
+        String id = questionRepository.save(form, tenant);
         return HttpResponse.seeOther(PATH_SHOW_BUILDER.apply(id));
     }
 
@@ -131,8 +123,7 @@ class QuestionController {
         if (!id.equals(form.id())) {
             return HttpResponse.unprocessableEntity();
         }
-        QuestionUpdate questionUpdate = questionUpdateMapper.toQuestionUpdate(form);
-        questionRepository.update(questionUpdate, tenant);
+        questionRepository.update(form, tenant);
         return HttpResponse.seeOther(PATH_SHOW_BUILDER.apply(id));
     }
  
