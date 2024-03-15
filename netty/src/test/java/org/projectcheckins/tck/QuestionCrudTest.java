@@ -8,6 +8,7 @@ import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpRequest;
+import io.micronaut.http.HttpResponse;
 import io.micronaut.http.client.BlockingHttpClient;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
@@ -48,12 +49,10 @@ class QuestionCrudTest {
         Authentication authentication = Authentication.build(userId, Collections.emptyList(), Collections.singletonMap("email", email));
         authenticationFetcher.setAuthentication(authentication);
         BlockingHttpClient client = httpClient.toBlocking();
-        HttpRequest<?> request = BrowserRequest.POST("/question/save", Map.of(
-                "title", "What are working on?",
-                "howOften", HowOften.DAILY_ON,
-                        "dailyOnDay", List.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY),
-                        "timeOfDay", TimeOfDay.END
-                ));
+
+        String title = "What are working on?";
+        String body = "title="+title+"&howOften=DAILY_ON&dailyOnDay=MONDAY&dailyOnDay=TUESDAY&dailyOnDay=WEDNESDAY&dailyOnDay=THURSDAY&dailyOnDay=FRIDAY&timeOfDay=END";
+        HttpRequest<?> request = BrowserRequest.POST("/question/save", body);
         assertThatCode(() -> client.exchange(request))
             .doesNotThrowAnyException();
         Optional<? extends Question> questionOptional = questionRepository.findAll()
