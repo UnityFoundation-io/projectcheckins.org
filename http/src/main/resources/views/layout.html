@@ -26,11 +26,6 @@
 
         Stimulus.register("questionform", class extends Controller {
             static targets = ["dailyOnDayPicker", "onceAWeekDayPicker", "everyOtherWeekDayPicker", "onceAMonthOnTheFirstDayPicker"]
-
-            connect() {
-                console.log("Hello World");
-            }
-
             hide(el) {
                 el.classList.add("d-none")
                 el.classList.remove("d-block")
