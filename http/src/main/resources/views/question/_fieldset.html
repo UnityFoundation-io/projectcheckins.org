@@ -1,11 +1,11 @@
 <th:block th:fragment="fieldset(fieldset)" xmlns:th="http://www.thymeleaf.org">
 <div data-controller="questionform">
     <div class="mb-3">
-        <label for="title" class="form-label">Title</label>
+        <label for="title" class="form-label" th:text="#{question.title}"></label>
         <input type="text" class="form-control" id="title" name="title" th:value="${fieldset.title}"/>
     </div>
     <div class="row">
-        <p><label>How often do you want to ask?</label></p>
+        <p><label th:text="#{howOften}"></label></p>
         <div class="form-check">
             <input class="form-check-input" type="radio" name="howOften"  th:checked="${fieldset.howOften == @org.projectcheckins.core.forms.HowOften@DAILY_ON}" id="howOftenDailyOn" value="DAILY_ON"
                    data-action="click->questionform#dailyOn" checked>
@@ -213,7 +213,7 @@
         </div>
     </div>
     <div class="row mt-3">
-        <p><label>At what time of day?</label></p>
+        <p><label th:text="#{timeOfDay}"></label></p>
         <div class="form-check">
             <input class="form-check-input" type="radio" name="timeOfDay" id="timeOfDayBeginning" value="BEGINNING" th:checked="${fieldset.timeOfDay == @org.projectcheckins.core.forms.TimeOfDay@BEGINNING}">
             <label class="form-check-label" for="timeOfDayBeginning">Beginning of the day</label>
