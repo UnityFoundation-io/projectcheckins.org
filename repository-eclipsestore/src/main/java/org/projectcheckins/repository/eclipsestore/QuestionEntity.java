@@ -21,9 +21,8 @@ public class QuestionEntity implements Question {
     @NotNull
     private HowOften howOften;
 
-    @NotNull
-    @Size(min = 1, max = 7)
-    private List<DayOfWeek> days;
+    @NotEmpty
+    private Set<DayOfWeek> days;
 
     @NotNull
     private TimeOfDay timeOfDay;
