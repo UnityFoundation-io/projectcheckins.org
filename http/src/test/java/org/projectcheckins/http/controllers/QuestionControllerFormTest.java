@@ -80,7 +80,7 @@ class QuestionControllerFormTest {
         authenticationFetcher.setAuthentication(SDELAMO);
         BlockingHttpClient client = httpClient.toBlocking();
         String title = "What are you working on?";
-        HttpResponse<?> saveResponse = client.exchange(BrowserRequest.POST("/question/save", "title="+title+"&howOften=DAILY_ON&dailyOnDay=MONDAY&dailyOnDay=TUESDAY&dailyOnDay=WEDNESDAY&dailyOnDay=THURSDAY&dailyOnDay=FRIDAY&timeOfDay=END"));
+        HttpResponse<?> saveResponse = client.exchange(BrowserRequest.POST("/question/save", "title="+title+"&howOften=DAILY_ON&manyDays=MONDAY&manyDays=TUESDAY&manyDays=WEDNESDAY&manyDays=THURSDAY&manyDays=FRIDAY&timeOfDay=END"));
         assertThat(saveResponse)
             .matches(redirection(s -> s.startsWith("/question") && s.endsWith("/show")));
 
@@ -101,7 +101,7 @@ class QuestionControllerFormTest {
 
         String updatedTitle = "What did you do today?";
         URI updateUri = UriBuilder.of("/question").path(id).path("update").build();
-        String updateBody = "id=" + id + "&title="+updatedTitle+"&howOften=DAILY_ON&dailyOnDay=MONDAY&dailyOnDay=TUESDAY&dailyOnDay=WEDNESDAY&dailyOnDay=THURSDAY&dailyOnDay=FRIDAY&timeOfDay=END";
+        String updateBody = "id=" + id + "&title="+updatedTitle+"&howOften=DAILY_ON&manyDays=MONDAY&manyDays=TUESDAY&manyDays=WEDNESDAY&manyDays=THURSDAY&manyDays=FRIDAY&timeOfDay=END";
 
         assertThat(client.exchange(BrowserRequest.POST(updateUri.toString(), updateBody)))
             .matches(redirection(s -> s.equals("/question/" + id + "/show")));
@@ -110,7 +110,7 @@ class QuestionControllerFormTest {
             .doesNotContain(title)
             .contains(updatedTitle);
 
-        String updateBodyWithNotMatchingId = "id=yyy&title="+title+"&howOften=DAILY_ON&dailyOnDay=MONDAY&dailyOnDay=TUESDAY&dailyOnDay=WEDNESDAY&dailyOnDay=THURSDAY&dailyOnDay=FRIDAY&timeOfDay=END";
+        String updateBodyWithNotMatchingId = "id=yyy&title="+title+"&howOften=DAILY_ON&manyDays=MONDAY&manyDays=TUESDAY&manyDays=WEDNESDAY&manyDays=THURSDAY&manyDays=FRIDAY&timeOfDay=END";
 
         assertThatThrowsHttpClientResponseException(() -> client.exchange(BrowserRequest.POST(updateUri.toString(), updateBodyWithNotMatchingId)))
                 .hasStatus(HttpStatus.UNPROCESSABLE_ENTITY);

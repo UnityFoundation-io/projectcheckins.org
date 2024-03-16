@@ -15,22 +15,18 @@ import java.util.Set;
 public record QuestionSaveForm(@NotBlank String title,
                                @NotNull HowOften howOften,
                                @NotNull TimeOfDay timeOfDay,
-                               @NotEmpty Set<DayOfWeek> dailyOnDay,
-                               @Nullable DayOfWeek onceAWeekDay,
-                               @Nullable DayOfWeek everyOtherWeekDay,
-                               @Nullable DayOfWeek onceAMonthOnTheFirstDay) implements QuestionSave {
+                               @NotEmpty Set<DayOfWeek> manyDays,
+                               @Nullable DayOfWeek oneDay) implements QuestionSave {
 
     public QuestionSaveForm(String title) {
-        this(title, HowOften.DAILY_ON, TimeOfDay.END, Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY), DayOfWeek.MONDAY, DayOfWeek.MONDAY, DayOfWeek.MONDAY);
+        this(title, HowOften.DAILY_ON, TimeOfDay.END, Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY), DayOfWeek.MONDAY);
     }
 
     @Override
     public Set<DayOfWeek> days() {
         return switch (howOften) {
-            case DAILY_ON -> dailyOnDay;
-            case EVERY_OTHER_WEEK -> Collections.singleton(everyOtherWeekDay);
-            case ONCE_A_WEEK -> Collections.singleton(onceAWeekDay);
-            case ONCE_A_MONTH_ON_THE_FIRST -> Collections.singleton(onceAMonthOnTheFirstDay);
+            case DAILY_ON -> manyDays;
+            default -> Collections.singleton(oneDay);
         };
     }
 }

@@ -21,15 +21,15 @@ class QuestionSaveFormTest {
 
     @Test
     void questionSaveValidation(Validator validator) {
-        assertThat(validator.validate(new QuestionSaveForm(null, null, null, null, null, null, null)))
+        assertThat(validator.validate(new QuestionSaveForm(null, null, null, null, null)))
                 .hasNotBlankViolation("title")
                 .hasNotNullViolation("howOften")
-                .hasNotNullViolation("dailyOnDay")
+                .hasNotNullViolation("manyDays")
                 .hasNotNullViolation("timeOfDay");
-        assertThat(validator.validate(new QuestionSaveForm("", null, null, Collections.emptySet(), null, null, null)))
+        assertThat(validator.validate(new QuestionSaveForm("", null, null, Collections.emptySet(), null)))
                 .hasNotBlankViolation("title")
-                .hasNotEmptyViolation("dailyOnDay");
-        assertThat(validator.validate(new QuestionSaveForm("What are you working on", HowOften.DAILY_ON, TimeOfDay.END, Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY), null, null, null)))
+                .hasNotEmptyViolation("manyDays");
+        assertThat(validator.validate(new QuestionSaveForm("What are you working on", HowOften.DAILY_ON, TimeOfDay.END, Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY), null)))
             .isValid();
     }
 

@@ -25,7 +25,7 @@
         window.Stimulus = Application.start()
 
         Stimulus.register("questionform", class extends Controller {
-            static targets = ["dailyOnDayPicker", "onceAWeekDayPicker", "everyOtherWeekDayPicker", "onceAMonthOnTheFirstDayPicker"]
+            static targets = ["manyDaysPicker", "oneDayPicker"]
             hide(el) {
                 el.classList.add("d-none")
                 el.classList.remove("d-block")
@@ -38,33 +38,26 @@
 
             dailyOn() {
                 console.log("Daily On");
-                this.show(this.dailyOnDayPickerTarget);
-                this.hide(this.onceAWeekDayPickerTarget);
-                this.hide(this.everyOtherWeekDayPickerTarget);
-                this.hide(this.onceAMonthOnTheFirstDayPickerTarget);
+                this.show(this.manyDaysPickerTarget);
+                this.hide(this.oneDayPickerTarget);
             }
 
             onceWeek() {
                 console.log("Once a Week");
-                this.hide(this.dailyOnDayPickerTarget);
-                this.show(this.onceAWeekDayPickerTarget);
-                this.hide(this.everyOtherWeekDayPickerTarget);
-                this.hide(this.onceAMonthOnTheFirstDayPickerTarget);
+                this.hide(this.manyDaysPickerTarget);
+                this.show(this.oneDayPickerTarget);
             }
 
             everyOtherWeek() {
                 console.log("Every Other Week");
-                this.hide(this.dailyOnDayPickerTarget);
-                this.hide(this.onceAWeekDayPickerTarget);
-                this.show(this.everyOtherWeekDayPickerTarget);
-                this.hide(this.onceAMonthOnTheFirstDayPickerTarget);
+                this.hide(this.manyDaysPickerTarget);
+                this.show(this.oneDayPickerTarget);
             }
 
             onceAMonthOnTheFirst() {
-                this.hide(this.dailyOnDayPickerTarget);
-                this.hide(this.onceAWeekDayPickerTarget);
-                this.hide(this.everyOtherWeekDayPickerTarget);
-                this.show(this.onceAMonthOnTheFirstDayPickerTarget);
+                console.log("Once A Month");
+                this.hide(this.manyDaysPickerTarget);
+                this.show(this.oneDayPickerTarget);
             }
         })
     </script>

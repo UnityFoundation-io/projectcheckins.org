@@ -20,17 +20,17 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 class QuestionUpdateFormTest {
     @Test
     void questionUpdateValidation(Validator validator) {
-        assertThat(validator.validate(new QuestionUpdateForm(null, null, null, null, null, null, null, null)))
+        assertThat(validator.validate(new QuestionUpdateForm(null, null, null, null, null, null)))
                 .hasNotBlankViolation("id")
                 .hasNotBlankViolation("title")
                 .hasNotNullViolation("howOften")
-                .hasNotNullViolation("dailyOnDay")
+                .hasNotNullViolation("manyDays")
                 .hasNotNullViolation("timeOfDay");
-        assertThat(validator.validate(new QuestionUpdateForm("", "", null, null, Collections.emptySet(), null, null, null)))
+        assertThat(validator.validate(new QuestionUpdateForm("", "", null, null, Collections.emptySet(), null)))
                 .hasNotBlankViolation("id")
                 .hasNotBlankViolation("title")
-                .hasNotEmptyViolation("dailyOnDay");
-        assertThat(validator.validate(new QuestionUpdateForm("xxx", "What are you working on", HowOften.DAILY_ON, TimeOfDay.END, Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY), null, null, null)))
+                .hasNotEmptyViolation("manyDays");
+        assertThat(validator.validate(new QuestionUpdateForm("xxx", "What are you working on", HowOften.DAILY_ON, TimeOfDay.END, Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY), null)))
                 .isValid();
     }
 

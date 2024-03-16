@@ -17,17 +17,13 @@ public record QuestionUpdateForm(@NonNull String id,
                                  @NotBlank String title,
                                  @NotNull HowOften howOften,
                                  @NotNull TimeOfDay timeOfDay,
-                                 @NotEmpty Set<DayOfWeek> dailyOnDay,
-                                 @Nullable DayOfWeek onceAWeekDay,
-                                 @Nullable DayOfWeek everyOtherWeekDay,
-                                 @Nullable DayOfWeek onceAMonthOnTheFirstDay) implements QuestionUpdate {
+                                 @NotEmpty Set<DayOfWeek> manyDays,
+                                 @Nullable DayOfWeek oneDay) implements QuestionUpdate {
     @Override
     public Set<DayOfWeek> days() {
         return switch (howOften) {
-            case DAILY_ON -> dailyOnDay;
-            case EVERY_OTHER_WEEK -> Collections.singleton(everyOtherWeekDay);
-            case ONCE_A_WEEK -> Collections.singleton(onceAWeekDay);
-            case ONCE_A_MONTH_ON_THE_FIRST -> Collections.singleton(onceAMonthOnTheFirstDay);
+            case DAILY_ON -> manyDays;
+            default -> Collections.singleton(oneDay);
         };
     }
 }

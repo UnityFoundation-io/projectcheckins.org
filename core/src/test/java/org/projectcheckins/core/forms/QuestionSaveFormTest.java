@@ -15,11 +15,11 @@ class QuestionSaveFormTest {
     void questionSaveFormValidation(Validator validator) {
         assertThat(validator.validate(new QuestionSaveForm("What did you do today, and what will you work on tomorrow?")))
                 .isValid();
-        assertThat(validator.validate(new QuestionSaveForm(null, null, null, null, null, null, null)))
+        assertThat(validator.validate(new QuestionSaveForm(null, null, null, null, null)))
                 .hasNotBlankViolation("title")
                 .hasNotNullViolation("howOften")
                 .hasNotNullViolation("timeOfDay");
-        assertThat(validator.validate(new QuestionSaveForm("", null, null, null, null, null, null)))
+        assertThat(validator.validate(new QuestionSaveForm("", null, null, null, null)))
                 .hasNotBlankViolation("title");
 
     }

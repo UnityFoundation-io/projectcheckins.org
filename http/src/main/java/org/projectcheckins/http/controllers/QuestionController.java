@@ -141,9 +141,7 @@ class QuestionController {
                 question.howOften(),
                 question.timeOfDay(),
                 question.howOften() == HowOften.DAILY_ON ? question.days() : Collections.singleton(DayOfWeek.MONDAY),
-                question.howOften() == HowOften.ONCE_A_WEEK ? question.days().stream().findFirst().orElseThrow() : DayOfWeek.MONDAY,
-                question.howOften() == HowOften.EVERY_OTHER_WEEK ? question.days().stream().findFirst().orElseThrow() : DayOfWeek.MONDAY,
-                question.howOften() == HowOften.ONCE_A_MONTH_ON_THE_FIRST ? question.days().stream().findFirst().orElseThrow() : DayOfWeek.MONDAY);
+                question.howOften() != HowOften.DAILY_ON ? question.days().stream().findFirst().orElse(DayOfWeek.MONDAY) : DayOfWeek.MONDAY);
         return Map.of(MODEL_QUESTION, question, MODEL_FIELDSET, fieldset);
     }
 
