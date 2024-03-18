@@ -7,7 +7,6 @@ import org.projectcheckins.core.forms.HowOften;
 import org.projectcheckins.core.forms.TimeOfDay;
 
 import java.time.DayOfWeek;
-import java.util.Collections;
 import java.util.Set;
 
 public interface QuestionSave {
