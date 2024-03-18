@@ -5,6 +5,7 @@ import io.micronaut.core.beans.BeanIntrospection;
 import io.micronaut.core.beans.BeanProperty;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MediaType;
+import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.*;
 import io.micronaut.http.annotation.Error;
 import io.micronaut.multitenancy.Tenant;
@@ -65,6 +66,7 @@ class QuestionController {
 
     // UPDATE
     private static final String PATH_UPDATE = PATH + ApiConstants.PATH_UPDATE;
+    private static final String REGEX_UPDATE = "^\\/question\\/.*\\/update$";
     private static final Function<String, URI> PATH_UPDATE_BUILDER  = id -> UriBuilder.of(PATH).path(id).path(ApiConstants.ACTION_UPDATE).build();
 
     // DELETE
@@ -141,35 +143,30 @@ class QuestionController {
     }
 
     @Error(exception = ConstraintViolationException.class)
-    public HttpResponse<?> onConstraintViolationException(HttpRequest<?> request, ConstraintViolationException ex) {
+    public HttpResponse<?> onConstraintViolationException(HttpRequest<?> request,
+                                                          @Nullable Tenant tenant,
+                                                          ConstraintViolationException ex) {
         if (request.getPath().equals(PATH_SAVE)) {
             return request.getBody(QuestionSaveForm.class)
                     .map(form -> HttpResponse.unprocessableEntity()
                             .body(new ModelAndView<>(VIEW_CREATE,
                                     Collections.singletonMap(MODEL_FIELDSET,
-                                            new QuestionSaveForm(form.title(),
-                                                    form.howOften(),
-                                                    form.timeOfDay(),
-                                                    form.dailyOnDay(),
-                                                    form.onceAWeekDay(),
-                                                    form.everyOtherWeekDay(),
-                                                    form.onceAMonthOnTheFirstDay(),
-                                                    ConstraintViolationExceptionUtils.messageOf(ex, BeanIntrospection.getIntrospection(QuestionSaveForm.class)),
-                                                    )))
-                                            formGenerator.generate(PATH_SIGN_UP, signUpForm, ex)))))
+                                            QuestionSaveForm.of(form, ex)))))
                     .orElseGet(HttpResponse::serverError);
+        } else if (request.getPath().matches(REGEX_UPDATE)) {
+            Optional<QuestionUpdateForm> updateFormOptional = request.getBody(QuestionUpdateForm.class);
+            if (updateFormOptional.isEmpty()) {
+                return HttpResponse.serverError();
+            }
+            QuestionUpdateForm form = updateFormOptional.get();
+            return questionRepository.findById(form.id(), tenant)
+                    .map(question -> HttpResponse.unprocessableEntity()
+                            .body(new ModelAndView<>(VIEW_EDIT,
+                                    Map.of(MODEL_QUESTION, question, MODEL_FIELDSET, QuestionUpdateForm.of(form, ex)))))
+                    .orElseGet(NotFoundController::notFoundRedirect);
         }
-
-
-        ex.getConstraintViolations().stream().filter((violation) -> ConstraintViolationUtils.lastNode(violation).isEmpty()).map(Message::of);
-
-        ConstraintViolationUtils.lastNode(constraintViolationEx).isEmpty();
-
-
         return HttpResponse.serverError();
     }
-
-
 
     @NonNull
     private Map<String, Object> updateModel(@NonNull Question question) {
@@ -180,7 +177,8 @@ class QuestionController {
                 question.howOften() == HowOften.DAILY_ON ? question.days() : Collections.singleton(DayOfWeek.MONDAY),
                 question.howOften() == HowOften.ONCE_A_WEEK ? question.days().stream().findFirst().orElseThrow() : DayOfWeek.MONDAY,
                 question.howOften() == HowOften.EVERY_OTHER_WEEK ? question.days().stream().findFirst().orElseThrow() : DayOfWeek.MONDAY,
-                question.howOften() == HowOften.ONCE_A_MONTH_ON_THE_FIRST ? question.days().stream().findFirst().orElseThrow() : DayOfWeek.MONDAY);
+                question.howOften() == HowOften.ONCE_A_MONTH_ON_THE_FIRST ? question.days().stream().findFirst().orElseThrow() : DayOfWeek.MONDAY
+        );
         return Map.of(MODEL_QUESTION, question, MODEL_FIELDSET, fieldset);
     }
 
