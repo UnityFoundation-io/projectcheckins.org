@@ -25,6 +25,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.api.Profile;
+import org.projectcheckins.core.api.QuestionSave;
+import org.projectcheckins.core.api.QuestionUpdate;
 import org.projectcheckins.core.forms.*;
 import org.projectcheckins.core.repositories.QuestionRepository;
 import org.projectcheckins.core.repositories.SecondaryProfileRepository;
