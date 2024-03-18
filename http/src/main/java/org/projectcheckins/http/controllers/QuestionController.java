@@ -1,14 +1,21 @@
 package org.projectcheckins.http.controllers;
 
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.beans.BeanIntrospection;
+import io.micronaut.core.beans.BeanProperty;
+import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
+import io.micronaut.http.annotation.Error;
 import io.micronaut.multitenancy.Tenant;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.views.ModelAndView;
 import io.micronaut.views.fields.Form;
+import io.micronaut.views.fields.messages.ConstraintViolationUtils;
+import io.micronaut.views.fields.messages.Message;
 import io.swagger.v3.oas.annotations.Hidden;
+import jakarta.validation.ConstraintViolationException;
 import org.projectcheckins.annotations.GetHtml;
 import org.projectcheckins.annotations.PostForm;
 import io.micronaut.core.annotation.NonNull;
@@ -24,8 +31,7 @@ import org.projectcheckins.core.repositories.QuestionRepository;
 
 import java.net.URI;
 import java.time.DayOfWeek;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Controller
@@ -133,6 +139,37 @@ class QuestionController {
         questionRepository.deleteById(id, tenant);
         return HttpResponse.seeOther(URI.create(PATH_LIST));
     }
+
+    @Error(exception = ConstraintViolationException.class)
+    public HttpResponse<?> onConstraintViolationException(HttpRequest<?> request, ConstraintViolationException ex) {
+        if (request.getPath().equals(PATH_SAVE)) {
+            return request.getBody(QuestionSaveForm.class)
+                    .map(form -> HttpResponse.unprocessableEntity()
+                            .body(new ModelAndView<>(VIEW_CREATE,
+                                    Collections.singletonMap(MODEL_FIELDSET,
+                                            new QuestionSaveForm(form.title(),
+                                                    form.howOften(),
+                                                    form.timeOfDay(),
+                                                    form.dailyOnDay(),
+                                                    form.onceAWeekDay(),
+                                                    form.everyOtherWeekDay(),
+                                                    form.onceAMonthOnTheFirstDay(),
+                                                    ConstraintViolationExceptionUtils.messageOf(ex, BeanIntrospection.getIntrospection(QuestionSaveForm.class)),
+                                                    )))
+                                            formGenerator.generate(PATH_SIGN_UP, signUpForm, ex)))))
+                    .orElseGet(HttpResponse::serverError);
+        }
+
+
+        ex.getConstraintViolations().stream().filter((violation) -> ConstraintViolationUtils.lastNode(violation).isEmpty()).map(Message::of);
+
+        ConstraintViolationUtils.lastNode(constraintViolationEx).isEmpty();
+
+
+        return HttpResponse.serverError();
+    }
+
+
 
     @NonNull
     private Map<String, Object> updateModel(@NonNull Question question) {

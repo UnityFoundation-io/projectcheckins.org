@@ -12,22 +12,19 @@ import java.time.DayOfWeek;
 import java.util.Collections;
 import java.util.Set;
 
+@NotEmptyDays
 @Serdeable
 public record QuestionUpdateForm(@NonNull String id,
                                  @NotBlank String title,
                                  @NotNull HowOften howOften,
                                  @NotNull TimeOfDay timeOfDay,
-                                 @NotEmpty Set<DayOfWeek> dailyOnDay,
+                                 @Nullable Set<DayOfWeek> dailyOnDay,
                                  @Nullable DayOfWeek onceAWeekDay,
                                  @Nullable DayOfWeek everyOtherWeekDay,
-                                 @Nullable DayOfWeek onceAMonthOnTheFirstDay) implements QuestionUpdate {
+                                 @Nullable DayOfWeek onceAMonthOnTheFirstDay) implements QuestionUpdate, QuestionForm {
     @Override
+    @NotEmpty
     public Set<DayOfWeek> days() {
-        return switch (howOften) {
-            case DAILY_ON -> dailyOnDay;
-            case EVERY_OTHER_WEEK -> Collections.singleton(everyOtherWeekDay);
-            case ONCE_A_WEEK -> Collections.singleton(onceAWeekDay);
-            case ONCE_A_MONTH_ON_THE_FIRST -> Collections.singleton(onceAMonthOnTheFirstDay);
-        };
+        return QuestionForm.super.days();
     }
 }

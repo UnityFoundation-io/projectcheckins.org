@@ -2,7 +2,13 @@
 <div data-controller="questionform">
     <div class="mb-3">
         <label for="title" class="form-label" th:text="#{question.title}"></label>
-        <input type="text" class="form-control" id="title" name="title" th:value="${fieldset.title}"/>
+        <input type="text" class="form-control"
+               th:attr="aria-describedby=${fieldset.titleErrors}?|titleValidationServerFeedback|"
+               th:classappend="${fieldset.titleErrors} ? is-invalid"
+               id="title"
+               name="title"
+               th:value="${fieldset.title}" required/>
+        <div th:if="${fieldset.titleErrors}" th:replace="~{fieldset/errors :: errors('title', ${fieldset.titleErrors})}"></div>
     </div>
     <div class="row">
         <p><label th:text="#{howOften}"></label></p>
