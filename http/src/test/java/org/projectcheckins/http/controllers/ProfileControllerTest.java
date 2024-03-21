@@ -90,6 +90,7 @@ class ProfileControllerTest {
     @Override
     public List<ProfileRecord> list(Tenant tenant) {
       return List.of(new ProfileRecord(
+              "id",
               "calvog@unityfoundation.io",
               TimeZone.getDefault(),
               DayOfWeek.MONDAY,
@@ -105,6 +106,7 @@ class ProfileControllerTest {
     @Override
     public Optional<ProfileRecord> findByAuthentication(Authentication authentication, Tenant tenant) {
       return Optional.of(new ProfileRecord(
+              authentication.getName(),
               authentication.getAttributes().get("email").toString(),
               TimeZone.getDefault(),
               DayOfWeek.MONDAY,
