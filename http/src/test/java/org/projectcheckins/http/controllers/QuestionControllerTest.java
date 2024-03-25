@@ -58,6 +58,19 @@ class QuestionControllerTest {
     @Singleton
     static class ProfileRepositoryMock extends SecondaryProfileRepository {
         @Override
+        public List<? extends Profile> list(Tenant tenant) {
+            return List.of(new ProfileRecord(SDELAMO.getName(), SDELAMO.getAttributes().get("email").toString(),
+                    TimeZone.getDefault(),
+                    DayOfWeek.MONDAY,
+                    LocalTime.of(9, 0),
+                    LocalTime.of(16, 30),
+                    TimeFormat.TWENTY_FOUR_HOUR_CLOCK,
+                    Format.MARKDOWN,
+                    null,
+                    null));
+        }
+
+        @Override
         public Optional<? extends Profile> findById(String id, Tenant tenant) {
             return Optional.of(new ProfileRecord(SDELAMO.getName(), SDELAMO.getAttributes().get("email").toString(),
                     TimeZone.getDefault(),
@@ -132,7 +145,7 @@ class QuestionControllerTest {
         @NonNull
         public Optional<QuestionRecord> findById(@NotBlank String id, @Nullable Tenant tenant) {
             if (id.equals("xxx")) {
-                return Optional.of(new QuestionRecord("xxx", "What are working on?", HowOften.DAILY_ON, Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY), TimeOfDay.END, LocalTime.of(16, 30)));
+                return Optional.of(new QuestionRecord("xxx", "What are working on?", HowOften.DAILY_ON, Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY), TimeOfDay.END, LocalTime.of(16, 30), Set.of(new RespondentRecord("user1"))));
             }
             return Optional.empty();
         }
