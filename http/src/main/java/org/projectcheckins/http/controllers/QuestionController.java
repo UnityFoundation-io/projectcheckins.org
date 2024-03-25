@@ -28,13 +28,16 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.projectcheckins.bootstrap.Breadcrumb;
 import org.projectcheckins.core.api.Question;
+import org.projectcheckins.core.api.Respondent;
 import org.projectcheckins.core.forms.*;
+import org.projectcheckins.core.repositories.ProfileRepository;
 import org.projectcheckins.core.repositories.QuestionRepository;
 
 import java.net.URI;
 import java.time.DayOfWeek;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Controller
 class QuestionController {
@@ -44,6 +47,7 @@ class QuestionController {
 
     private static final String MODEL_QUESTIONS = "questions";
     private static final String MODEL_QUESTION = "question";
+    private static final String MODEL_RESPONDENTS = "respondents";
 
     // LIST
     public static final String PATH_LIST = PATH + ApiConstants.PATH_LIST;
@@ -81,11 +85,15 @@ class QuestionController {
 
     private final QuestionRepository questionRepository;
 
+    private final ProfileRepository profileRepository;
+
     private final AnswerSaveFormGenerator answerSaveFormGenerator;
 
     QuestionController(QuestionRepository questionRepository,
+                       ProfileRepository profileRepository,
                        AnswerSaveFormGenerator answerSaveFormGenerator) {
         this.questionRepository = questionRepository;
+        this.profileRepository = profileRepository;
         this.answerSaveFormGenerator = answerSaveFormGenerator;
     }
 
@@ -95,8 +103,9 @@ class QuestionController {
     }
 
     @GetHtml(uri = PATH_CREATE, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_CREATE)
-    Map<String, Object> questionCreate() {
+    Map<String, Object> questionCreate(@Nullable Tenant tenant) {
         return Map.of(MODEL_FIELDSET, new QuestionSaveForm(null),
+                MODEL_RESPONDENTS, profileRepository.list(tenant),
                 ApiConstants.MODEL_BREADCRUMBS, List.of(BREADCRUMB_LIST, BREADCRUMB_CREATE));
     }
     @PostForm(uri = PATH_SAVE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
@@ -127,7 +136,7 @@ class QuestionController {
     HttpResponse<?> questionEdit(@PathVariable @NotBlank String id,
                                  @Nullable Tenant tenant) {
         return questionRepository.findById(id, tenant)
-                .map(question -> HttpResponse.ok(new ModelAndView<>(VIEW_EDIT, updateModel(question))))
+                .map(question -> HttpResponse.ok(new ModelAndView<>(VIEW_EDIT, updateModel(question, tenant))))
                 .orElseGet(NotFoundController::notFoundRedirect);
     }
 
@@ -176,7 +185,7 @@ class QuestionController {
     }
 
     @NonNull
-    private Map<String, Object> updateModel(@NonNull Question question) {
+    private Map<String, Object> updateModel(@NonNull Question question, @Nullable Tenant tenant) {
         QuestionUpdateForm fieldset = new QuestionUpdateForm(question.id(),
                 question.title(),
                 question.howOften(),
@@ -185,10 +194,12 @@ class QuestionController {
                 question.howOften() == HowOften.DAILY_ON ? question.days() : Collections.singleton(DayOfWeek.MONDAY),
                 question.howOften() == HowOften.ONCE_A_WEEK ? question.days().stream().findFirst().orElseThrow() : DayOfWeek.MONDAY,
                 question.howOften() == HowOften.EVERY_OTHER_WEEK ? question.days().stream().findFirst().orElseThrow() : DayOfWeek.MONDAY,
-                question.howOften() == HowOften.ONCE_A_MONTH_ON_THE_FIRST ? question.days().stream().findFirst().orElseThrow() : DayOfWeek.MONDAY
+                question.howOften() == HowOften.ONCE_A_MONTH_ON_THE_FIRST ? question.days().stream().findFirst().orElseThrow() : DayOfWeek.MONDAY,
+                question.respondents().stream().map(Respondent::profileId).collect(Collectors.toSet())
         );
         return Map.of(MODEL_QUESTION, question, MODEL_FIELDSET, fieldset,
-                ApiConstants.MODEL_BREADCRUMBS, List.of(BREADCRUMB_LIST, BREADCRUMB_SHOW.apply(question), BREADCRUMB_EDIT));
+                ApiConstants.MODEL_BREADCRUMBS, List.of(BREADCRUMB_LIST, BREADCRUMB_SHOW.apply(question), BREADCRUMB_EDIT),
+                MODEL_RESPONDENTS, profileRepository.list(tenant));
     }
 
 }
