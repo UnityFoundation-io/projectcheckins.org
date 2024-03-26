@@ -10,6 +10,8 @@ import java.util.Set;
 
 public interface QuestionForm extends ValidatedFieldset {
     @NotNull HowOften howOften();
+    @NotNull
+    TimeOfDay timeOfDay();
     @Nullable
     Set<DayOfWeek> dailyOnDay();
     @Nullable
