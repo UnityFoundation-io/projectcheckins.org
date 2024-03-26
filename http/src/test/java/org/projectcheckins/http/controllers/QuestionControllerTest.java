@@ -120,6 +120,8 @@ class QuestionControllerTest {
 
         assertThat(client.exchange(BrowserRequest.GET(UriBuilder.of("/question").path("xxx").path("show").build()), String.class))
             .matches(htmlPage())
+            .matches(htmlBody(Pattern.compile("""
+                Asking 1 person\\s*every weekday\\s*at the end of the day.""")))
             .matches(htmlBody("""
                 <li class="breadcrumb-item"><a href="/question/list">"""));
 
