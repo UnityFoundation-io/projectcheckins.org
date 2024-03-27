@@ -113,8 +113,8 @@
         <div class="form-check" th:each="respondent : ${respondents}">
             <input class="form-check-input" type="checkbox" name="respondentIds" th:id="${respondent.id}" th:value="${respondent.id}" th:checked="${fieldset.respondentIds.contains(respondent.id)}">
             <label class="form-check-label" th:for="${respondent.id}">
-                <span th:text="${respondent.fullName}"></span>
-                <code th:text="${respondent.email}"></code>
+                <span th:unless="${respondent.fullName.empty}" th:text="${respondent.fullName}"></span>
+                <code th:if="${respondent.fullName.empty}" th:text="${respondent.email}"></code>
             </label>
         </div>
     </div>
