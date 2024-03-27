@@ -29,7 +29,8 @@ class QuestionUpdateFormTest {
                 .hasNotBlankViolation("title")
                 .hasNotNullViolation("timeOfDay")
                 .hasNotNullViolation("fixedTime")
-                .hasErrorMessage("You must select at least one day.");
+                .hasErrorMessage("You must select at least one day.")
+                .hasErrorMessage("You must select at least one respondent.");
         assertThat(validator.validate(new QuestionUpdateForm("", "", null, null, null, null, null, null, null, null, null, null)))
                 .hasNotBlankViolation("id")
                 .hasNotNullViolation("howOften")

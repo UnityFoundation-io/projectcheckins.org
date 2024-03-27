@@ -150,7 +150,7 @@ class QuestionController {
         questionRepository.update(form, tenant);
         return HttpResponse.seeOther(PATH_SHOW_BUILDER.apply(id));
     }
- 
+
     @PostForm(uri = PATH_DELETE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
     HttpResponse<?> questionDelete(@PathVariable @NotBlank String id,
                                    @Nullable Tenant tenant) {
@@ -166,8 +166,8 @@ class QuestionController {
             return request.getBody(QuestionSaveForm.class)
                     .map(form -> HttpResponse.unprocessableEntity()
                             .body(new ModelAndView<>(VIEW_CREATE,
-                                    Collections.singletonMap(MODEL_FIELDSET,
-                                            QuestionSaveForm.of(form, ex)))))
+                                    Map.of(MODEL_FIELDSET, QuestionSaveForm.of(form, ex),
+                                            MODEL_RESPONDENTS, profileRepository.list(tenant)))))
                     .orElseGet(HttpResponse::serverError);
         } else if (request.getPath().matches(REGEX_UPDATE)) {
             Optional<QuestionUpdateForm> updateFormOptional = request.getBody(QuestionUpdateForm.class);
@@ -178,7 +178,9 @@ class QuestionController {
             return questionRepository.findById(form.id(), tenant)
                     .map(question -> HttpResponse.unprocessableEntity()
                             .body(new ModelAndView<>(VIEW_EDIT,
-                                    Map.of(MODEL_QUESTION, question, MODEL_FIELDSET, QuestionUpdateForm.of(form, ex)))))
+                                    Map.of(MODEL_QUESTION, question,
+                                            MODEL_FIELDSET, QuestionUpdateForm.of(form, ex),
+                                            MODEL_RESPONDENTS, profileRepository.list(tenant)))))
                     .orElseGet(NotFoundController::notFoundRedirect);
         }
         return HttpResponse.serverError();

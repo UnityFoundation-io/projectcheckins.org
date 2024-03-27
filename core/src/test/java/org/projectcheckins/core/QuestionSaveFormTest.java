@@ -30,12 +30,13 @@ class QuestionSaveFormTest {
                 .hasNotNullViolation("fixedTime");
         assertThat(validator.validate(new QuestionSaveForm("", HowOften.DAILY_ON, null, null, null, null, null, null, null, null, null)))
                 .hasNotBlankViolation("title")
+                .hasErrorMessage("You must select at least one respondent.")
                 .hasErrorMessage("You must select at least one day.");
-        assertThat(validator.validate(new QuestionSaveForm("What are you working on", HowOften.DAILY_ON, TimeOfDay.END, LocalTime.of(16, 30), Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY), null, null, null, null, null, null)))
+        assertThat(validator.validate(new QuestionSaveForm("What are you working on", HowOften.DAILY_ON, TimeOfDay.END, LocalTime.of(16, 30), Set.of(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY), null, null, null, Set.of("user1"), null, null)))
                 .isValid();
-        assertThat(validator.validate(new QuestionSaveForm("What are you working on", HowOften.ONCE_A_WEEK, TimeOfDay.END, LocalTime.of(16, 30), Collections.emptySet(), DayOfWeek.MONDAY, null, null, null, null, null)))
+        assertThat(validator.validate(new QuestionSaveForm("What are you working on", HowOften.ONCE_A_WEEK, TimeOfDay.END, LocalTime.of(16, 30), Collections.emptySet(), DayOfWeek.MONDAY, null, null, Set.of("user1"), null, null)))
                 .isValid();
-        assertThat(validator.validate(new QuestionSaveForm("What are you working on", HowOften.ONCE_A_WEEK, TimeOfDay.END, LocalTime.of(16, 30), null, DayOfWeek.MONDAY, null, null, null, null, null)))
+        assertThat(validator.validate(new QuestionSaveForm("What are you working on", HowOften.ONCE_A_WEEK, TimeOfDay.END, LocalTime.of(16, 30), null, DayOfWeek.MONDAY, null, null, Set.of("user1"), null, null)))
                 .isValid();
     }
 

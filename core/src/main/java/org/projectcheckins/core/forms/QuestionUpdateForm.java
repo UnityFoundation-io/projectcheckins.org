@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 @NotEmptyDays
+@NotEmptyRespondents
 @Serdeable
 public record QuestionUpdateForm(@NonNull String id,
                                  @NotBlank String title,
