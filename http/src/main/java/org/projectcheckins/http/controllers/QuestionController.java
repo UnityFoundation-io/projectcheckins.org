@@ -195,7 +195,7 @@ class QuestionController {
                 question.howOften() == HowOften.ONCE_A_WEEK ? question.days().stream().findFirst().orElseThrow() : DayOfWeek.MONDAY,
                 question.howOften() == HowOften.EVERY_OTHER_WEEK ? question.days().stream().findFirst().orElseThrow() : DayOfWeek.MONDAY,
                 question.howOften() == HowOften.ONCE_A_MONTH_ON_THE_FIRST ? question.days().stream().findFirst().orElseThrow() : DayOfWeek.MONDAY,
-                question.respondents().stream().map(Respondent::profileId).collect(Collectors.toSet())
+                question.respondents().stream().map(Respondent::id).collect(Collectors.toSet())
         );
         return Map.of(MODEL_QUESTION, question, MODEL_FIELDSET, fieldset,
                 ApiConstants.MODEL_BREADCRUMBS, List.of(BREADCRUMB_LIST, BREADCRUMB_SHOW.apply(question), BREADCRUMB_EDIT),

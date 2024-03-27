@@ -6,6 +6,6 @@ import org.projectcheckins.core.api.Respondent;
 
 @Serdeable
 public record RespondentRecord(
-        @NotBlank String profileId
+        @NotBlank String id
 ) implements Respondent {
 }

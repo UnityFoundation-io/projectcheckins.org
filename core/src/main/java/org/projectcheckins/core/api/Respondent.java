@@ -4,5 +4,5 @@ import jakarta.validation.constraints.NotBlank;
 
 public interface Respondent {
 
-    @NotBlank String profileId();
+    @NotBlank String id();
 }

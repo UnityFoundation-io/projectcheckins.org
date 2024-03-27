@@ -102,6 +102,6 @@ public class QuestionEntity implements Question {
     }
 
     public void respondents(@NotEmpty Set<? extends Respondent> respondents) {
-        this.respondents = RespondentEntity.toEntity(respondents);
+        this.respondents = RespondentEntity.toEntities(respondents);
     }
 }

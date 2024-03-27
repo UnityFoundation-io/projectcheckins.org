@@ -16,9 +16,9 @@ class RespondentRecordTest {
     @Test
     void respondentRecordValidation(Validator validator) {
         assertThat(validator.validate(new RespondentRecord(null)))
-                .hasNotBlankViolation("profileId");
+                .hasNotBlankViolation("id");
         assertThat(validator.validate(new RespondentRecord("")))
-                .hasNotBlankViolation("profileId");
+                .hasNotBlankViolation("id");
         assertThat(validator.validate(new RespondentRecord("PROFILE ID")))
                 .isValid();
     }
