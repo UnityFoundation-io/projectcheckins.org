@@ -22,7 +22,7 @@
                           th:text="#{summary.howOften.every.weekday}"/>
                 <th:block th:unless="${days.size == 1 || days.size == 7 || mondayToFriday}">
                     <th:block th:text="#{summary.howOften.daily}"/>
-                    <th:block th:each="day, status : ${days}">
+                    <th:block th:each="day, status : ${days.stream().sorted().toList()}">
                         <th:block th:if="${!status.first && status.last}"
                                   th:text="#{summary.howOften.and}"/>
                         <th:block th:with="dayName=${#messages.msgOrNull('dayofweek.' + day.toString().toLowerCase())}"
