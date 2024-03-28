@@ -40,29 +40,29 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     @NonNull
-    public String createQuestion(@NotNull @Valid QuestionForm form, @Nullable Tenant tenant) {
+    public String save(@NotNull @Valid QuestionForm form, @Nullable Tenant tenant) {
         return questionRepository.save(question(null, form, tenant), tenant);
     }
 
     @Override
     @NonNull
-    public Optional<? extends Question> getQuestion(@NotBlank String id, @Nullable Tenant tenant) {
+    public Optional<? extends Question> findById(@NotBlank String id, @Nullable Tenant tenant) {
         return questionRepository.findById(id, tenant);
     }
 
     @Override
-    public void updateQuestion(@NotBlank String id, @NotNull @Valid QuestionForm form, @Nullable Tenant tenant) {
+    public void update(@NotBlank String id, @NotNull @Valid QuestionForm form, @Nullable Tenant tenant) {
         questionRepository.update(question(id, form, tenant), tenant);
     }
 
     @Override
     @NonNull
-    public List<? extends Question> listQuestions(@Nullable Tenant tenant) {
+    public List<? extends Question> findAll(@Nullable Tenant tenant) {
         return questionRepository.findAll(tenant);
     }
 
     @Override
-    public void deleteQuestion(@NotBlank String id, @Nullable Tenant tenant) {
+    public void deleteById(@NotBlank String id, @Nullable Tenant tenant) {
         questionRepository.deleteById(id, tenant);
     }
 
@@ -74,7 +74,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     private QuestionRecord question(@Nullable String questionId, @NotNull QuestionForm form, @Nullable Tenant tenant) {
         return Optional.ofNullable(questionId)
-                .flatMap(id -> getQuestion(id, tenant))
+                .flatMap(id -> findById(id, tenant))
                 .filter(q -> doesNotNeedRecalculation(q, form))
                 .map(q -> updatedQuestion(q, form))
                 .orElseGet(() -> newQuestion(questionId, form, tenant));

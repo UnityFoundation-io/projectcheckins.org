@@ -16,17 +16,17 @@ import java.util.Optional;
 public interface QuestionService {
 
     @NonNull
-    String createQuestion(@NotNull @Valid QuestionForm form, @Nullable Tenant tenant);
+    String save(@NotNull @Valid QuestionForm form, @Nullable Tenant tenant);
 
     @NonNull
-    Optional<? extends Question> getQuestion(@NotBlank String id, @Nullable Tenant tenant);
+    Optional<? extends Question> findById(@NotBlank String id, @Nullable Tenant tenant);
 
-    void updateQuestion(@NotBlank String id, @NotNull @Valid QuestionForm form, @Nullable Tenant tenant);
+    void update(@NotBlank String id, @NotNull @Valid QuestionForm form, @Nullable Tenant tenant);
 
     @NonNull
-    List<? extends Question> listQuestions(@Nullable Tenant tenant);
+    List<? extends Question> findAll(@Nullable Tenant tenant);
 
-    void deleteQuestion(@NotBlank String id, @Nullable Tenant tenant);
+    void deleteById(@NotBlank String id, @Nullable Tenant tenant);
 
     @NonNull
     List<? extends PublicProfile> listAvailableRespondents(@Nullable Tenant tenant);

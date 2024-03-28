@@ -92,7 +92,7 @@ class QuestionController {
 
     @GetHtml(uri = PATH_LIST, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_LIST)
     Map<String, Object> questionList(@Nullable Tenant tenant) {
-        return Map.of(MODEL_QUESTIONS, questionService.listQuestions(tenant));
+        return Map.of(MODEL_QUESTIONS, questionService.findAll(tenant));
     }
 
     @GetHtml(uri = PATH_CREATE, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_CREATE)
@@ -111,7 +111,7 @@ class QuestionController {
     @PostForm(uri = PATH_SAVE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
     HttpResponse<?> questionSave(@NonNull @NotNull @Valid @Body QuestionFormRecord form,
                                  @Nullable Tenant tenant) {
-        String id = questionService.createQuestion(form, tenant);
+        String id = questionService.save(form, tenant);
         return HttpResponse.seeOther(PATH_SHOW_BUILDER.apply(id));
     }
 
@@ -120,7 +120,7 @@ class QuestionController {
                                  @NonNull Authentication authentication,
                                  @Nullable Tenant tenant) {
         Form answerFormSave = answerSaveFormGenerator.generate(id, format -> AnswerController.URI_BUILDER_ANSWER_SAVE.apply(id, format).toString(), authentication);
-        return questionService.getQuestion(id, tenant)
+        return questionService.findById(id, tenant)
                 .map(question -> HttpResponse.ok(Map.of(
                         MODEL_QUESTION, question,
                         ApiConstants.MODEL_BREADCRUMBS, List.of(BREADCRUMB_LIST, new Breadcrumb(Message.of(question.title()))),
@@ -135,7 +135,7 @@ class QuestionController {
     @Secured(SecurityRule.IS_AUTHENTICATED)
     HttpResponse<?> questionEdit(@PathVariable @NotBlank String id,
                                  @Nullable Tenant tenant) {
-        return questionService.getQuestion(id, tenant)
+        return questionService.findById(id, tenant)
                 .map(question -> HttpResponse.ok(new ModelAndView<>(VIEW_EDIT, updateModel(question, QuestionFormRecord.of(question), tenant))))
                 .orElseGet(NotFoundController::notFoundRedirect);
     }
@@ -144,14 +144,14 @@ class QuestionController {
     HttpResponse<?> questionUpdate(@PathVariable @NotBlank String id,
                                    @NonNull @NotNull @Valid @Body QuestionFormRecord form,
                                    @Nullable Tenant tenant) {
-        questionService.updateQuestion(id, form, tenant);
+        questionService.update(id, form, tenant);
         return HttpResponse.seeOther(PATH_SHOW_BUILDER.apply(id));
     }
 
     @PostForm(uri = PATH_DELETE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
     HttpResponse<?> questionDelete(@PathVariable @NotBlank String id,
                                    @Nullable Tenant tenant) {
-        questionService.deleteQuestion(id, tenant);
+        questionService.deleteById(id, tenant);
         return HttpResponse.seeOther(URI.create(PATH_LIST));
     }
 
@@ -172,7 +172,7 @@ class QuestionController {
                 return HttpResponse.serverError();
             }
             QuestionForm form = updateFormOptional.get();
-            return questionService.getQuestion(id, tenant)
+            return questionService.findById(id, tenant)
                     .map(question -> HttpResponse.unprocessableEntity()
                             .body(new ModelAndView<>(VIEW_EDIT, updateModel(question, QuestionFormRecord.of(form, ex), tenant))))
                     .orElseGet(NotFoundController::notFoundRedirect);

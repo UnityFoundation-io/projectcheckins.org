@@ -61,23 +61,23 @@ class QuestionServiceImplTest {
         final QuestionForm updateFixedTimeOnly = QuestionFormRecord.of(new QuestionRecord(id, updatedTitle, QUESTION.howOften(), QUESTION.days(), QUESTION.timeOfDay(), LocalTime.of(21, 45), QUESTION.respondents()));
         final QuestionForm updateRespondentsOnly = QuestionFormRecord.of(new QuestionRecord(id, updatedTitle, QUESTION.howOften(), QUESTION.days(), QUESTION.timeOfDay(), LocalTime.of(21, 45), Set.of(new RespondentRecord("user3", now()))));
 
-        questionService.updateQuestion(id, updateTitleOnlyForm, null);
+        questionService.update(id, updateTitleOnlyForm, null);
         assertThat(questionRepository.findById(id))
                 .hasValueSatisfying(q -> assertThat(q).hasFieldOrPropertyWithValue("title", updatedTitle));
 
-        assertThatThrownBy(() -> questionService.updateQuestion(id, updateHowOftenOnly, null))
+        assertThatThrownBy(() -> questionService.update(id, updateHowOftenOnly, null))
                 .hasMessage("Next execution time calculated");
 
-        assertThatThrownBy(() -> questionService.updateQuestion(id, updateDaysOnly, null))
+        assertThatThrownBy(() -> questionService.update(id, updateDaysOnly, null))
                 .hasMessage("Next execution time calculated");
 
-        assertThatThrownBy(() -> questionService.updateQuestion(id, updateTimeOfDayOnly, null))
+        assertThatThrownBy(() -> questionService.update(id, updateTimeOfDayOnly, null))
                 .hasMessage("Next execution time calculated");
 
-        assertThatThrownBy(() -> questionService.updateQuestion(id, updateFixedTimeOnly, null))
+        assertThatThrownBy(() -> questionService.update(id, updateFixedTimeOnly, null))
                 .hasMessage("Next execution time calculated");
 
-        assertThatThrownBy(() -> questionService.updateQuestion(id, updateRespondentsOnly, null))
+        assertThatThrownBy(() -> questionService.update(id, updateRespondentsOnly, null))
                 .hasMessage("Next execution time calculated");
     }
 
