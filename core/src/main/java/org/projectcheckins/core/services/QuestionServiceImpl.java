@@ -12,6 +12,7 @@ import org.projectcheckins.core.api.PublicProfile;
 import org.projectcheckins.core.api.Question;
 import org.projectcheckins.core.exceptions.UserNotFoundException;
 import org.projectcheckins.core.forms.QuestionForm;
+import org.projectcheckins.core.forms.QuestionFormRecord;
 import org.projectcheckins.core.forms.QuestionRecord;
 import org.projectcheckins.core.forms.RespondentRecord;
 import org.projectcheckins.core.repositories.ProfileRepository;
@@ -19,6 +20,7 @@ import org.projectcheckins.core.repositories.QuestionRepository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toSet;
@@ -71,6 +73,33 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     private QuestionRecord question(@Nullable String questionId, @NotNull QuestionForm form, @Nullable Tenant tenant) {
+        return Optional.ofNullable(questionId)
+                .flatMap(id -> getQuestion(id, tenant))
+                .filter(q -> doesNotNeedRecalculation(q, form))
+                .map(q -> updatedQuestion(q, form))
+                .orElseGet(() -> newQuestion(questionId, form, tenant));
+    }
+
+    private boolean doesNotNeedRecalculation(@NotNull Question question, @NotNull QuestionForm form) {
+        return formHash(form) == formHash(QuestionFormRecord.of(question));
+    }
+
+    private int formHash(@NotNull QuestionForm form) {
+        return Objects.hash(form.howOften(), form.days().stream().sorted().toList(), form.timeOfDay(), form.fixedTime(), form.respondentIds().stream().sorted().toList());
+    }
+
+    private QuestionRecord updatedQuestion(@NotNull Question same, @NotNull QuestionForm form) {
+        return new QuestionRecord(
+                same.id(),
+                form.title(),
+                same.howOften(),
+                same.days(),
+                same.timeOfDay(),
+                same.fixedTime(),
+                same.respondents());
+    }
+
+    private QuestionRecord newQuestion(@Nullable String questionId, @NotNull QuestionForm form, @Nullable Tenant tenant) {
         return new QuestionRecord(
                 questionId,
                 form.title(),
