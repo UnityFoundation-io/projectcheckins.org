@@ -1,18 +1,20 @@
 package org.projectcheckins.repository.eclipsestore;
 
-import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.eclipsestore.RootProvider;
 import io.micronaut.eclipsestore.annotations.StoreParams;
-import io.micronaut.security.authentication.Authentication;
+import io.micronaut.multitenancy.Tenant;
 import jakarta.inject.Singleton;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import org.projectcheckins.core.api.Answer;
 import org.projectcheckins.core.forms.AnswerMarkdownSave;
-import org.projectcheckins.core.forms.AnswerSave;
 import org.projectcheckins.core.idgeneration.IdGenerator;
 import org.projectcheckins.core.repositories.AnswerRepository;
 
-import java.util.List;
+import static java.util.Comparator.comparing;
 
 @Singleton
 class EclipseStoreAnswerRepository implements AnswerRepository {
@@ -26,18 +28,27 @@ class EclipseStoreAnswerRepository implements AnswerRepository {
     }
 
     @Override
-    public void save(@NonNull @NotNull Authentication authentication,
-              @NonNull @NotNull @Valid AnswerSave answerSave) {
+    @NotBlank
+    public String save(@NotNull @Valid Answer answer, @Nullable Tenant tenant) {
         AnswerEntity entity = new AnswerEntity();
         String id = idGenerator.generate();
         entity.id(id);
-        entity.questionId(answerSave.questionId());
-        entity.respondentId(authentication.getName());
-        entity.answerDate(answerSave.answerDate());
-        entity.format(answerSave.format());
-        entity.text(answerSave.text());
+        entity.questionId(answer.questionId());
+        entity.respondentId(answer.respondentId());
+        entity.answerDate(answer.answerDate());
+        entity.format(answer.format());
+        entity.text(answer.text());
         rootProvider.root().getAnswers().add(entity);
         save(rootProvider.root().getAnswers());
+        return id;
+    }
+
+    @Override
+    public List<AnswerEntity> findByQuestionId(@NotBlank String questionId, @Nullable Tenant tenant) {
+        return rootProvider.root().getAnswers().stream()
+                .filter(a -> a.questionId().equals(questionId))
+                .sorted(comparing(AnswerEntity::answerDate))
+                .toList();
     }
 
     @StoreParams("answers")
