@@ -1,5 +1,6 @@
 package org.projectcheckins.repository.eclipsestore;
 
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.eclipsestore.RootProvider;
 import io.micronaut.eclipsestore.annotations.StoreParams;
@@ -30,17 +31,22 @@ class EclipseStoreAnswerRepository implements AnswerRepository {
     @Override
     @NotBlank
     public String save(@NotNull @Valid Answer answer, @Nullable Tenant tenant) {
-        AnswerEntity entity = new AnswerEntity();
         String id = idGenerator.generate();
+        AnswerEntity entity = answerOf(id, answer);
+        save(rootProvider.root().getAnswers(), entity);
+        return id;
+    }
+
+    @NonNull
+    private AnswerEntity answerOf(@NonNull String id, @NonNull Answer answer) {
+        AnswerEntity entity = new AnswerEntity();
         entity.id(id);
         entity.questionId(answer.questionId());
         entity.respondentId(answer.respondentId());
         entity.answerDate(answer.answerDate());
         entity.format(answer.format());
         entity.text(answer.text());
-        rootProvider.root().getAnswers().add(entity);
-        save(rootProvider.root().getAnswers());
-        return id;
+        return entity;
     }
 
     @Override
@@ -52,10 +58,7 @@ class EclipseStoreAnswerRepository implements AnswerRepository {
     }
 
     @StoreParams("answers")
-    public void save(List<AnswerEntity> answers) {
-    }
-
-    @StoreParams("answer")
-    public void save(AnswerMarkdownSave answer) {
+    public void save(List<AnswerEntity> answers, AnswerEntity answer) {
+        answers.add(answer);
     }
 }
