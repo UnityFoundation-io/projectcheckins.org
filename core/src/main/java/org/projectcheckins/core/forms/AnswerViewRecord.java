@@ -11,6 +11,7 @@ import org.projectcheckins.core.api.PublicProfile;
 public record AnswerViewRecord (
         @NotNull Answer answer,
         @NotNull PublicProfile respondent,
-        @NotBlank String html
+        @NotBlank String html,
+        boolean isEditable
 ) implements AnswerView {
 }

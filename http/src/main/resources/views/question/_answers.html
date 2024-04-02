@@ -11,6 +11,9 @@
                 </th:block>
             </div>
             <div class="text" th:utext="${view.html}"/>
+            <a th:if="${view.isEditable}" th:href="@{|/question/${view.answer.questionId}/answer/${view.answer.id}/edit|}">
+                <button type="button" class="btn btn-outline-primary" th:text="#{answer.edit}"/>
+            </a>
         </article>
 
     </div>

@@ -71,15 +71,20 @@ public class AnswerServiceImpl implements AnswerService {
     @Override
     @NonNull
     public List<AnswerViewRecord> findByQuestionId(@NotBlank String questionId,
+                                                   @NotNull Authentication authentication,
                                                    @Nullable Tenant tenant) {
         final Map<String, PublicProfile> respondents = profileRepository.list(tenant).stream().collect(toMap(PublicProfile::id, Function.identity()));
         return answerRepository.findByQuestionId(questionId, tenant).stream()
-                .map(answer -> buildView(answer, respondents))
+                .map(answer -> buildView(answer, authentication.getName(), respondents))
                 .toList();
     }
 
-    private AnswerViewRecord buildView(Answer answer, Map<String, PublicProfile> respondents) {
-        return new AnswerViewRecord(answer, respondents.getOrDefault(answer.respondentId(), UNKNOWN_RESPONDENT), getHtml(answer));
+    private AnswerViewRecord buildView(Answer answer, String authenticatedUserId, Map<String, PublicProfile> respondents) {
+        final String respondentId = answer.respondentId();
+        final PublicProfile respondent = respondents.getOrDefault(respondentId, UNKNOWN_RESPONDENT);
+        final String html = getHtml(answer);
+        final boolean isEditable = respondentId.equals(authenticatedUserId);
+        return new AnswerViewRecord(answer, respondent, html, isEditable);
     }
 
     private String getHtml(Answer answer) {

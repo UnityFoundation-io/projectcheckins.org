@@ -129,7 +129,7 @@ class QuestionController {
                 .map(question -> HttpResponse.ok(Map.of(
                         MODEL_QUESTION, question,
                         ApiConstants.MODEL_BREADCRUMBS, List.of(BREADCRUMB_LIST, new Breadcrumb(Message.of(question.title()))),
-                        MODEL_ANSWERS, answerService.findByQuestionId(id, tenant),
+                        MODEL_ANSWERS, answerService.findByQuestionId(id, authentication, tenant),
                         ANSWER_FORM, answerFormSave
                 )))
                 .orElseGet(NotFoundController::notFoundRedirect);

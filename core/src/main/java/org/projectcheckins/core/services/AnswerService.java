@@ -19,5 +19,5 @@ public interface AnswerService {
     String save(@NotNull Authentication authentication, @NotNull @Valid AnswerSave answerSave, @Nullable Tenant tenant);
 
     @NonNull
-    List<? extends AnswerView> findByQuestionId(@NotBlank String questionId, @Nullable Tenant tenant);
+    List<? extends AnswerView> findByQuestionId(@NotBlank String questionId, @NotNull Authentication authentication, @Nullable Tenant tenant);
 }
