@@ -1,20 +1,7 @@
 <th:block th:fragment="answers(answers)" xmlns:th="http://www.thymeleaf.org">
     <div id="question-answers" class="mt-3">
-
-        <article class="m-3 p-3 border border-primary" th:each="view : ${answers}">
-            <div class="date" th:text="${view.answer.answerDate}"/>
-            <div class="respondent">
-                <span th:unless="${view.respondent.id}" th:text="#{unknown.respondent.fullName}"></span>
-                <th:block th:if="${view.respondent.id}">
-                    <code th:if="${view.respondent.fullName.empty}" th:text="${view.respondent.email}"></code>
-                    <span th:unless="${view.respondent.fullName.empty}" th:text="${view.respondent.fullName}"></span>
-                </th:block>
-            </div>
-            <div class="text" th:utext="${view.html}"/>
-            <a th:if="${view.isEditable}" th:href="@{|/question/${view.answer.questionId}/answer/${view.answer.id}/edit|}">
-                <button type="button" class="btn btn-outline-primary" th:text="#{answer.edit}"/>
-            </a>
-        </article>
-
+        <th:block th:each="view : ${answers}">
+            <article th:replace="~{question/_answer :: answer(${view})}"/>
+        </th:block>
     </div>
 </th:block>
