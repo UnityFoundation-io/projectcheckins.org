@@ -48,7 +48,7 @@ class AnswerServiceImplTest {
         final AnswerSave answerSave = new AnswerSave(questionId, LocalDate.now(), Format.MARKDOWN, "Lorem ipsum");
         assertThat(answerService.save(auth, answerSave, null))
                 .isNotBlank();
-        assertThat(answerService.findByQuestionId(questionId, null))
+        assertThat(answerService.findByQuestionId(questionId, auth, null))
                 .isNotEmpty();
     }
 

@@ -122,13 +122,14 @@ class QuestionControllerTest {
         assertThat(client.exchange(BrowserRequest.GET(UriBuilder.of("/question").path("yyy").path("edit").build()), String.class))
             .matches(redirection("/notFound"));
 
-        answerRepository.save(new AnswerRecord(null, "yyy", SDELAMO.getName(), LocalDate.now(), Format.MARKDOWN, "This is *my* answer."), null);
+        answerRepository.save(new AnswerRecord("zzz", "yyy", SDELAMO.getName(), LocalDate.now(), Format.MARKDOWN, "This is *my* answer."), null);
 
         assertThat(client.exchange(BrowserRequest.GET(UriBuilder.of("/question").path("xxx").path("show").build()), String.class))
             .matches(htmlPage())
             .matches(htmlBody(Pattern.compile("""
                 Asking 1 person\\s*every weekday\\s*at the end of the day.""")))
             .matches(htmlBody("This is <em>my</em> answer."))
+            .matches(htmlBody("/question/yyy/answer/zzz/edit"))
             .matches(htmlBody("""
                 <li class="breadcrumb-item"><a href="/question/list">"""));
 
