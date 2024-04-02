@@ -8,19 +8,43 @@ import jakarta.inject.Singleton;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.projectcheckins.core.api.Answer;
+import org.projectcheckins.core.api.PublicProfile;
 import org.projectcheckins.core.forms.*;
 import org.projectcheckins.core.repositories.AnswerRepository;
+import org.projectcheckins.core.repositories.ProfileRepository;
 
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.toMap;
 
 @Singleton
 public class AnswerServiceImpl implements AnswerService {
 
-    private final AnswerRepository answerRepository;
+    private static final PublicProfile UNKNOWN_RESPONDENT = new ProfileRecord(
+            null,
+            "unknown@respondent.com",
+            TimeZone.getDefault(),
+            DayOfWeek.MONDAY,
+            LocalTime.of(9, 0),
+            LocalTime.of(16, 30),
+            TimeFormat.TWENTY_FOUR_HOUR_CLOCK,
+            Format.MARKDOWN,
+            "Unknown",
+            "Respondent"
+    );
 
-    public AnswerServiceImpl(AnswerRepository answerRepository) {
+    private final AnswerRepository answerRepository;
+    private final ProfileRepository profileRepository;
+
+    public AnswerServiceImpl(AnswerRepository answerRepository,
+                             ProfileRepository profileRepository) {
         this.answerRepository = answerRepository;
+        this.profileRepository = profileRepository;
     }
 
     @Override
@@ -41,8 +65,11 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     @NonNull
-    public List<? extends Answer> findByQuestionId(@NotBlank String questionId,
+    public List<AnswerViewRecord> findByQuestionId(@NotBlank String questionId,
                                                    @Nullable Tenant tenant) {
-        return answerRepository.findByQuestionId(questionId, tenant);
+        final Map<String, PublicProfile> respondents = profileRepository.list(tenant).stream().collect(toMap(PublicProfile::id, Function.identity()));
+        return answerRepository.findByQuestionId(questionId, tenant).stream()
+                .map(answer -> new AnswerViewRecord(answer, respondents.getOrDefault(answer.respondentId(), UNKNOWN_RESPONDENT)))
+                .toList();
     }
 }
