@@ -3,12 +3,17 @@ package org.projectcheckins.core.services;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.multitenancy.Tenant;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.authentication.ClientAuthentication;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.api.Answer;
 import org.projectcheckins.core.forms.AnswerSave;
@@ -51,13 +56,16 @@ class AnswerServiceImplTest {
         List<Answer> answers = new ArrayList<>();
 
         @Override
-        public String save(Answer answer, Tenant tenant) {
+        @NotBlank
+        public String save(@NotNull @Valid Answer answer, @Nullable Tenant tenant) {
             answers.add(answer);
             return "xxx";
         }
 
         @Override
-        public List<? extends Answer> findByQuestionId(String questionId, Tenant tenant) {
+        @NonNull
+        public List<? extends Answer> findByQuestionId(@NotBlank String questionId,
+                                                       @Nullable Tenant tenant) {
             return answers.stream().filter(a -> a.questionId().equals(questionId)).toList();
         }
     }

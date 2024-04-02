@@ -29,12 +29,27 @@ class EclipseStoreAnswerRepository implements AnswerRepository {
     }
 
     @Override
-    @NotBlank
+    @NonNull
     public String save(@NotNull @Valid Answer answer, @Nullable Tenant tenant) {
         String id = idGenerator.generate();
         AnswerEntity entity = answerOf(id, answer);
         save(rootProvider.root().getAnswers(), entity);
         return id;
+    }
+
+    @Override
+    @NonNull
+    public List<? extends Answer> findByQuestionId(@NotBlank String questionId,
+                                                   @Nullable Tenant tenant) {
+        return rootProvider.root().getAnswers().stream()
+                .filter(a -> a.questionId().equals(questionId))
+                .sorted(comparing(AnswerEntity::answerDate))
+                .toList();
+    }
+
+    @StoreParams("answers")
+    public void save(List<AnswerEntity> answers, AnswerEntity answer) {
+        answers.add(answer);
     }
 
     @NonNull
@@ -47,18 +62,5 @@ class EclipseStoreAnswerRepository implements AnswerRepository {
         entity.format(answer.format());
         entity.text(answer.text());
         return entity;
-    }
-
-    @Override
-    public List<AnswerEntity> findByQuestionId(@NotBlank String questionId, @Nullable Tenant tenant) {
-        return rootProvider.root().getAnswers().stream()
-                .filter(a -> a.questionId().equals(questionId))
-                .sorted(comparing(AnswerEntity::answerDate))
-                .toList();
-    }
-
-    @StoreParams("answers")
-    public void save(List<AnswerEntity> answers, AnswerEntity answer) {
-        answers.add(answer);
     }
 }
