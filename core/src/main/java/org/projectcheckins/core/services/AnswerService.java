@@ -15,8 +15,7 @@ import java.util.List;
 public interface AnswerService {
 
     @NonNull
-    @NotBlank
-    String save(Authentication authentication, @NotNull @Valid AnswerSave answerSave, @Nullable Tenant tenant);
+    String save(@NotNull Authentication authentication, @NotNull @Valid AnswerSave answerSave, @Nullable Tenant tenant);
 
     @NonNull
     List<? extends Answer> findByQuestionId(@NotBlank String questionId, @Nullable Tenant tenant);

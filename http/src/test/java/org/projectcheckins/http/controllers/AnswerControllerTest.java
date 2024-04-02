@@ -2,6 +2,8 @@ package org.projectcheckins.http.controllers;
 
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpStatus;
@@ -12,6 +14,9 @@ import io.micronaut.http.uri.UriBuilder;
 import io.micronaut.multitenancy.Tenant;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Singleton;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.api.Answer;
 import org.projectcheckins.core.forms.Format;
@@ -98,7 +103,8 @@ class AnswerControllerTest {
 
         private List<Answer> answers = new ArrayList<>();
         @Override
-        public String save(Answer answer, Tenant tenant) {
+        @NonNull
+        public String save(@NotNull @Valid Answer answer, @Nullable Tenant tenant) {
             final String id = "xxx";
             this.answers.add(answer);
             return id;

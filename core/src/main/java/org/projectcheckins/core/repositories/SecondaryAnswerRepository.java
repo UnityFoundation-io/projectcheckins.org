@@ -3,8 +3,13 @@ package org.projectcheckins.core.repositories;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Secondary;
 import io.micronaut.context.env.Environment;
+import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.multitenancy.Tenant;
 import jakarta.inject.Singleton;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.projectcheckins.annotations.Generated;
 import org.projectcheckins.core.api.Answer;
 
@@ -17,12 +22,16 @@ import java.util.List;
 @Singleton
 public class SecondaryAnswerRepository implements AnswerRepository {
     @Override
-    public String save(Answer answer, Tenant tenant) {
+    @NonNull
+    public String save(@NotNull @Valid Answer answer,
+                       @Nullable Tenant tenant) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
-    public List<? extends Answer> findByQuestionId(String questionId, Tenant tenant) {
+    @NonNull
+    public List<? extends Answer> findByQuestionId(@NotBlank String questionId,
+                                                   @Nullable Tenant tenant) {
         throw new UnsupportedOperationException("Not implemented");
     }
 }

@@ -1,5 +1,6 @@
 package org.projectcheckins.repository.eclipsestore;
 
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.eclipsestore.RootProvider;
 import io.micronaut.eclipsestore.annotations.StoreParams;
@@ -28,23 +29,18 @@ class EclipseStoreAnswerRepository implements AnswerRepository {
     }
 
     @Override
-    @NotBlank
+    @NonNull
     public String save(@NotNull @Valid Answer answer, @Nullable Tenant tenant) {
-        AnswerEntity entity = new AnswerEntity();
         String id = idGenerator.generate();
-        entity.id(id);
-        entity.questionId(answer.questionId());
-        entity.respondentId(answer.respondentId());
-        entity.answerDate(answer.answerDate());
-        entity.format(answer.format());
-        entity.text(answer.text());
-        rootProvider.root().getAnswers().add(entity);
-        save(rootProvider.root().getAnswers());
+        AnswerEntity entity = answerOf(id, answer);
+        save(rootProvider.root().getAnswers(), entity);
         return id;
     }
 
     @Override
-    public List<AnswerEntity> findByQuestionId(@NotBlank String questionId, @Nullable Tenant tenant) {
+    @NonNull
+    public List<? extends Answer> findByQuestionId(@NotBlank String questionId,
+                                                   @Nullable Tenant tenant) {
         return rootProvider.root().getAnswers().stream()
                 .filter(a -> a.questionId().equals(questionId))
                 .sorted(comparing(AnswerEntity::answerDate))
@@ -52,10 +48,19 @@ class EclipseStoreAnswerRepository implements AnswerRepository {
     }
 
     @StoreParams("answers")
-    public void save(List<AnswerEntity> answers) {
+    public void save(List<AnswerEntity> answers, AnswerEntity answer) {
+        answers.add(answer);
     }
 
-    @StoreParams("answer")
-    public void save(AnswerMarkdownSave answer) {
+    @NonNull
+    private static AnswerEntity answerOf(@NonNull String id, @NonNull Answer answer) {
+        AnswerEntity entity = new AnswerEntity();
+        entity.id(id);
+        entity.questionId(answer.questionId());
+        entity.respondentId(answer.respondentId());
+        entity.answerDate(answer.answerDate());
+        entity.format(answer.format());
+        entity.text(answer.text());
+        return entity;
     }
 }
