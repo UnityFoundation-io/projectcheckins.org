@@ -8,8 +8,10 @@ import jakarta.inject.Singleton;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.projectcheckins.core.api.Answer;
 import org.projectcheckins.core.api.PublicProfile;
 import org.projectcheckins.core.forms.*;
+import org.projectcheckins.core.markdown.MarkdownRenderer;
 import org.projectcheckins.core.repositories.AnswerRepository;
 import org.projectcheckins.core.repositories.ProfileRepository;
 
@@ -40,11 +42,14 @@ public class AnswerServiceImpl implements AnswerService {
 
     private final AnswerRepository answerRepository;
     private final ProfileRepository profileRepository;
+    private final MarkdownRenderer markdownRenderer;
 
     public AnswerServiceImpl(AnswerRepository answerRepository,
-                             ProfileRepository profileRepository) {
+                             ProfileRepository profileRepository,
+                             MarkdownRenderer markdownRenderer) {
         this.answerRepository = answerRepository;
         this.profileRepository = profileRepository;
+        this.markdownRenderer = markdownRenderer;
     }
 
     @Override
@@ -69,7 +74,18 @@ public class AnswerServiceImpl implements AnswerService {
                                                    @Nullable Tenant tenant) {
         final Map<String, PublicProfile> respondents = profileRepository.list(tenant).stream().collect(toMap(PublicProfile::id, Function.identity()));
         return answerRepository.findByQuestionId(questionId, tenant).stream()
-                .map(answer -> new AnswerViewRecord(answer, respondents.getOrDefault(answer.respondentId(), UNKNOWN_RESPONDENT)))
+                .map(answer -> buildView(answer, respondents))
                 .toList();
+    }
+
+    private AnswerViewRecord buildView(Answer answer, Map<String, PublicProfile> respondents) {
+        return new AnswerViewRecord(answer, respondents.getOrDefault(answer.respondentId(), UNKNOWN_RESPONDENT), getHtml(answer));
+    }
+
+    private String getHtml(Answer answer) {
+        if (answer.format() == Format.WYSIWYG) {
+            return answer.text();
+        }
+        return markdownRenderer.render(answer.text());
     }
 }

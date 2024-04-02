@@ -12,4 +12,5 @@ public interface AnswerView {
 
     @NotNull Answer answer();
     @NotNull PublicProfile respondent();
+    @NotBlank String html();
 }

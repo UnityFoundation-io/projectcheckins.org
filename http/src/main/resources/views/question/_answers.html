@@ -10,7 +10,7 @@
                     <span th:unless="${view.respondent.fullName.empty}" th:text="${view.respondent.fullName}"></span>
                 </th:block>
             </div>
-            <div class="text" th:utext="${view.answer.text}"/>
+            <div class="text" th:utext="${view.html}"/>
         </article>
 
     </div>
