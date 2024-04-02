@@ -53,7 +53,7 @@ class EclipseStoreAnswerRepository implements AnswerRepository {
     }
 
     @NonNull
-    private AnswerEntity answerOf(@NonNull String id, @NonNull Answer answer) {
+    private static AnswerEntity answerOf(@NonNull String id, @NonNull Answer answer) {
         AnswerEntity entity = new AnswerEntity();
         entity.id(id);
         entity.questionId(answer.questionId());
