@@ -33,7 +33,7 @@ public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
         addUser("calvog@unityfoundation.io");
         addUser("grellej@unityfoundation.io");
         addUser("yatest@unityfoundation.io");
-        addUser("wetted@objectcomputing.com");
+        addUser("wetted@unityfoundation.io");
     }
 
     private void addUser(String email) {
