@@ -104,6 +104,7 @@ class AnswerControllerTest {
                 .matches(htmlPage())
                 .matches(htmlBody("""
                         <div class="date">"""))
+                .matches(htmlBody("Monday, March 11"))
                 .matches(htmlBody("""
                         <div class="respondent">"""))
                 .matches(htmlBody("<span>Code Monkey</span>"))
