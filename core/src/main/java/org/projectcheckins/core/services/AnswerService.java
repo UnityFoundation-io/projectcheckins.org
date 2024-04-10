@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import org.projectcheckins.core.api.AnswerView;
 import org.projectcheckins.core.forms.AnswerSave;
 import org.projectcheckins.core.models.DateAnswers;
+import org.projectcheckins.core.forms.AnswerUpdate;
 
 import java.util.List;
 import java.util.Locale;
@@ -19,6 +20,8 @@ public interface AnswerService {
 
     @NonNull
     String save(@NotNull Authentication authentication, @NotNull @Valid AnswerSave answerSave, @Nullable Tenant tenant);
+
+    void update(@NotNull Authentication authentication, @NotBlank String questionId, @NotBlank String id, @NotNull @Valid AnswerUpdate answerUpdate, @Nullable Tenant tenant);
 
     @NonNull
     Optional<? extends AnswerView> findById(@NotBlank String id, @NotNull Authentication authentication, @Nullable Tenant tenant);
