@@ -3,6 +3,7 @@ package org.projectcheckins.core.services;
 import io.micronaut.context.MessageSource;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.multitenancy.Tenant;
 import io.micronaut.security.authentication.Authentication;
 import jakarta.inject.Singleton;
@@ -14,6 +15,7 @@ import org.projectcheckins.core.api.AnswerView;
 import org.projectcheckins.core.api.PublicProfile;
 import org.projectcheckins.core.forms.*;
 import org.projectcheckins.core.markdown.MarkdownRenderer;
+import org.projectcheckins.core.models.DateAnswers;
 import org.projectcheckins.core.repositories.AnswerRepository;
 import org.projectcheckins.core.repositories.ProfileRepository;
 
@@ -21,11 +23,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.function.Function;
 
 import static java.time.format.DateTimeFormatterBuilder.getLocalizedDateTimePattern;
@@ -90,13 +88,43 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     @NonNull
-    public List<AnswerViewRecord> findByQuestionId(@NotBlank String questionId,
-                                                   @NotNull Authentication authentication,
-                                                   @Nullable Tenant tenant) {
+    public List<DateAnswers> findByQuestionId(@NotBlank String questionId,
+                                              @NotNull Authentication authentication,
+                                              @Nullable Tenant tenant) {
+        return dateAnswersByQuestionId(questionId, authentication, tenant);
+    }
+
+    @NonNull
+    private List<? extends AnswerView> findAllByQuestionId(@NotBlank String questionId,
+                                              @NotNull Authentication authentication,
+                                              @Nullable Tenant tenant) {
         final Map<String, PublicProfile> respondents = profileRepository.list(tenant).stream().collect(toMap(PublicProfile::id, Function.identity()));
         return answerRepository.findByQuestionId(questionId, tenant).stream()
                 .map(answer -> buildView(answer, authentication.getName(), respondents))
                 .toList();
+    }
+
+    private List<DateAnswers> dateAnswersByQuestionId(@NonNull String id,
+                                                      @NonNull Authentication authentication,
+                                                      @Nullable Tenant tenant) {
+        LocalDate answerDate = null;
+        List<AnswerView> answers = null;
+        List<DateAnswers> result = new ArrayList<>();
+        for (AnswerView view : findAllByQuestionId(id, authentication, tenant)) {
+            if (answerDate != null && !view.answer().answerDate().equals(answerDate)) {
+                result.add(new DateAnswers(answerDate, answers));
+                answerDate = view.answer().answerDate();
+                answers = new ArrayList<>();
+            } else if (answerDate == null) {
+                answerDate = view.answer().answerDate();
+                answers = new ArrayList<>();
+            }
+            answers.add(view);
+        }
+        if (answerDate != null && CollectionUtils.isNotEmpty(answers)) {
+            result.add(new DateAnswers(answerDate, answers));
+        }
+        return result;
     }
 
     @Override

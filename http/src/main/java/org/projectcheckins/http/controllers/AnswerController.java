@@ -149,23 +149,14 @@ class AnswerController {
             answerForm = Optional.empty();
         }
         return answerForm.map(f -> questionService.findById(f.questionId(), tenant)
-                        .map(q -> HttpResponse.unprocessableEntity().body(new ModelAndView<>(QuestionController.VIEW_SHOW, showQuestionModel(q, generateForm(f, ex), authentication, tenant))))
+                        .map(q -> HttpResponse.unprocessableEntity().body(new ModelAndView<>(QuestionController.VIEW_SHOW,
+                                QuestionController.showModel(answerService, q, generateForm(f, ex), authentication, tenant))))
                         .orElseGet(NotFoundController::notFoundRedirect))
                 .orElseGet(HttpResponse::serverError);
     }
 
     private Breadcrumb makeBreadcrumbShow(AnswerView view, Locale locale) {
         return new Breadcrumb(Message.of(answerService.getAnswerSummary(view, locale)), PATH_SHOW_BUILDER.andThen(URI::toString).apply(view.answer()));
-    }
-
-    @NonNull
-    private Map<String, Object> showQuestionModel(@NonNull Question question, @NonNull Form answerFormSave, @NonNull Authentication authentication, Tenant tenant) {
-        return Map.of(
-                QuestionController.MODEL_QUESTION, question,
-                ApiConstants.MODEL_BREADCRUMBS, List.of(QuestionController.BREADCRUMB_LIST, new Breadcrumb(Message.of(question.title()))),
-                QuestionController.MODEL_ANSWERS, answerService.findByQuestionId(question.id(), authentication, tenant),
-                QuestionController.ANSWER_FORM, answerFormSave
-        );
     }
 
     private Form generateForm(AnswerForm form, ConstraintViolationException ex) {
