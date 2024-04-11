@@ -6,4 +6,5 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 @Serdeable
+@MemberNotAlreadyRegistered
 public record TeamMemberSave(@NonNull @NotBlank @Email String email) { }
