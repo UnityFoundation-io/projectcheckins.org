@@ -23,6 +23,7 @@ import org.projectcheckins.email.EmailConfirmationComposer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -42,7 +43,7 @@ class LoginFailedEventListenerTest {
         String recipient = "delamos@unityfoundation.io";
         AuthenticationResponse authenticationResponse = AuthenticationResponse.failure(AuthenticationFailureReason.USER_DISABLED);
         UsernamePasswordCredentials usernamePasswordCredentials = new UsernamePasswordCredentials(recipient, "password");
-        loginFailedEventPublisher.publishEvent(new LoginFailedEvent(authenticationResponse, usernamePasswordCredentials));
+        loginFailedEventPublisher.publishEvent(new LoginFailedEvent(authenticationResponse, usernamePasswordCredentials, null, Locale.ENGLISH));
         await().atMost(3, SECONDS).until(() -> !emailSenderReplacement.getEmails().isEmpty());
         List<Email> emails = emailSenderReplacement.getEmails();
         assertThat(emails).hasSize(1);
