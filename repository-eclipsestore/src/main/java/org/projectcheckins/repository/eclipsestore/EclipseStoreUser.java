@@ -20,10 +20,12 @@ class EclipseStoreUser extends AbstractRegisterService implements UserFetcher, E
     private final RootProvider<Data> rootProvider;
     private final IdGenerator idGenerator;
     protected EclipseStoreUser(PasswordEncoder passwordEncoder,
+                               RegistrationCheck registrationCheck,
+                               TeamInvitationRepository teamInvitationRepository,
                                ProfileConfiguration profileConfiguration,
                                RootProvider<Data> rootProvider,
                                IdGenerator idGenerator) {
-        super(passwordEncoder);
+        super(passwordEncoder, registrationCheck, teamInvitationRepository);
         this.profileConfiguration = profileConfiguration;
         this.rootProvider = rootProvider;
         this.idGenerator = idGenerator;

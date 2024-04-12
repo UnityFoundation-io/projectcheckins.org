@@ -12,11 +12,11 @@ public interface RegisterService {
 
     @NonNull
     default String register(@NonNull @NotBlank String email,
-                             @NonNull @NotBlank String rawPassword) throws UserAlreadyExistsException {
+                             @NonNull @NotBlank String rawPassword) throws UserAlreadyExistsException, UserNotInvitedException {
         return register(email, rawPassword, Collections.emptyList());
     }
 
     @NonNull String register(@NonNull @NotBlank String email,
                     @NonNull @NotBlank String rawPassword,
-                    @NonNull List<String> authorities) throws UserAlreadyExistsException;
+                    @NonNull List<String> authorities) throws UserAlreadyExistsException, UserNotInvitedException;
 }

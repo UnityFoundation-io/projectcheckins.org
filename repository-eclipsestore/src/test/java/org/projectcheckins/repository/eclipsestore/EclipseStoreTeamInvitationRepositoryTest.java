@@ -3,7 +3,6 @@ package org.projectcheckins.repository.eclipsestore;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
-import org.projectcheckins.security.*;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -11,14 +10,18 @@ import static org.assertj.core.api.Assertions.*;
 class EclipseStoreTeamInvitationRepositoryTest {
 
     @Inject
-    TeamInvitationRepository teamInvitationRepository;
+    EclipseStoreTeamInvitationRepository teamInvitationRepository;
 
     @Test
     void testOperations() {
         final String email = "invitation@email.com";
         assertThat(teamInvitationRepository.findAll())
                 .isEmpty();
+        assertThat(teamInvitationRepository.canRegister(email))
+                .isFalse();
         teamInvitationRepository.save(email);
+        assertThat(teamInvitationRepository.canRegister(email))
+                .isTrue();
         assertThat(teamInvitationRepository.findAll())
                 .hasSize(1);
         assertThat(teamInvitationRepository.findAll().get(0))
