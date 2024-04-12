@@ -23,7 +23,9 @@ import org.projectcheckins.core.forms.*;
 import org.projectcheckins.core.repositories.QuestionRepository;
 import org.projectcheckins.core.repositories.SecondaryProfileRepository;
 import org.projectcheckins.security.RegisterService;
+import org.projectcheckins.security.TeamInvitationRepository;
 import org.projectcheckins.security.UserAlreadyExistsException;
+import org.projectcheckins.security.UserNotInvitedException;
 import org.projectcheckins.test.AbstractAuthenticationFetcher;
 import org.projectcheckins.test.BrowserRequest;
 
@@ -43,8 +45,10 @@ class QuestionCrudTest {
     void questionCrud(@Client("/") HttpClient httpClient,
                       QuestionRepository questionRepository,
                       RegisterService registerService,
-                      AuthenticationFetcherMock authenticationFetcher) throws UserAlreadyExistsException {
+                      TeamInvitationRepository teamInvitationRepository,
+                      AuthenticationFetcherMock authenticationFetcher) throws UserAlreadyExistsException, UserNotInvitedException {
         String email = "delamos@unityfoundation.io";
+        teamInvitationRepository.save(email);
         String userId = registerService.register(email, "secret");
         Authentication authentication = Authentication.build(userId, Collections.emptyList(), Collections.singletonMap("email", email));
         authenticationFetcher.setAuthentication(authentication);
