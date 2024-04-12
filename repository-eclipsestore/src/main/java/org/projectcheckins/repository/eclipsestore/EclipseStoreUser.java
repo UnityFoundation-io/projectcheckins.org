@@ -79,6 +79,15 @@ class EclipseStoreUser extends AbstractRegisterService implements UserFetcher, E
 
     @Override
     @NonNull
+    public Optional<UserState> findById(@NotBlank @NonNull String id) {
+        return rootProvider.root().getUsers().stream()
+                .filter(user -> user.id().equals(id))
+                .map(EclipseStoreUser::userStateOfEntity)
+                .findFirst();
+    }
+
+    @Override
+    @NonNull
     public Optional<UserState> findByEmail(@NotBlank @NonNull String email) {
         return rootProvider.root().getUsers().stream()
                 .filter(user -> user.email().equals(email))
