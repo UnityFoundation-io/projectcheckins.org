@@ -3,13 +3,11 @@ package org.projectcheckins.core.services;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.annotation.NonNull;
 import io.micronaut.multitenancy.Tenant;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.constraints.NotBlank;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.api.Profile;
 import org.projectcheckins.core.forms.Format;
@@ -18,19 +16,15 @@ import org.projectcheckins.core.forms.TeamMemberSave;
 import org.projectcheckins.core.forms.TimeFormat;
 import org.projectcheckins.core.repositories.ProfileRepository;
 import org.projectcheckins.core.repositories.SecondaryProfileRepository;
-import org.projectcheckins.security.RegisterService;
-import org.projectcheckins.security.UserAlreadyExistsException;
-import org.projectcheckins.security.UserFetcher;
-import org.projectcheckins.security.UserState;
+import org.projectcheckins.security.TeamInvitation;
+import org.projectcheckins.security.TeamInvitationRepository;
 
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.TimeZone;
 
 import static java.time.DayOfWeek.MONDAY;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
 @Property(name = "spec.name", value = "TeamServiceImplTest")
 @MicronautTest(startApplication = false)
@@ -49,27 +43,15 @@ class TeamServiceImplTest {
             null
     );
 
-    static final UserState USER_1_STATE = new UserState() {
-        @Override
-        public String getId() {
-            return USER_1.id();
-        }
+    static final TeamInvitation INVITATION_1 = new TeamInvitationRecord("pending1@email.com", false);
 
-        @Override
-        public boolean isEnabled() {
-            return true;
-        }
+    static final TeamInvitation INVITATION_2 = new TeamInvitationRecord("pending2@email.com", true);
 
-        @Override
-        public String getEmail() {
-            return USER_1.email();
-        }
-
-        @Override
-        public String getPassword() {
-            return "secret";
-        }
-    };
+    @Test
+    void testFindPendingInvitations() {
+        assertThat(teamService.findPendingInvitations(null))
+                .isEqualTo(List.of(INVITATION_1));
+    }
 
     @Inject
     TeamServiceImpl teamService;
@@ -81,15 +63,14 @@ class TeamServiceImplTest {
     }
 
     @Test
-    void testSave() throws UserAlreadyExistsException {
+    void testSave() {
         final TeamMemberSave form = new TeamMemberSave("user2@email.com");
-        final String id = teamService.save(form, null);
-        assertThat(id)
-                .isEqualTo("xxx");
+        assertThatCode(() -> teamService.save(form, null))
+                .doesNotThrowAnyException();
     }
 
     @Test
-    void testSaveInvalidEmail() throws UserAlreadyExistsException {
+    void testSaveInvalidEmail() {
         final TeamMemberSave form = new TeamMemberSave("not an email");
         assertThatThrownBy(() -> teamService.save(form, null))
                 .isInstanceOf(ConstraintViolationException.class)
@@ -138,4 +119,24 @@ class TeamServiceImplTest {
             return List.of(USER_1);
         }
     }
+
+    @Requires(property = "spec.name", value = "TeamServiceImplTest")
+    @Singleton
+    static class TeamInvitationRepositoryMock implements TeamInvitationRepository {
+        @Override
+        public List<? extends TeamInvitation> findAll() {
+            return List.of(INVITATION_1, INVITATION_2);
+        }
+
+        @Override
+        public void save(String email) {
+        }
+
+        @Override
+        public void accept(String email) {
+
+        }
+    }
+
+    record TeamInvitationRecord(String email, boolean accepted) implements TeamInvitation { }
 }
