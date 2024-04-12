@@ -26,6 +26,7 @@ import org.projectcheckins.bootstrap.Alert;
 import org.projectcheckins.security.PasswordService;
 import org.projectcheckins.security.RegisterService;
 import org.projectcheckins.security.UserAlreadyExistsException;
+import org.projectcheckins.security.UserNotInvitedException;
 
 import java.net.URI;
 import java.util.Collections;
@@ -90,6 +91,11 @@ class SecurityController {
                     Map.of(
                             MODEL_FORM, signUpForm,
                             MODEL_ALERT, Alert.danger(Message.of("User already exists", "user.already.exists")))));
+        } catch (UserNotInvitedException e) {
+            return HttpResponse.unprocessableEntity().body(new ModelAndView<>(VIEW_SECURITY_SIGN_UP,
+                    Map.of(
+                            MODEL_FORM, signUpForm,
+                            MODEL_ALERT, Alert.danger(Message.of("User not invited", "user.not.invited")))));
         }
         return HttpResponse.seeOther(URI_LOGIN);
     }

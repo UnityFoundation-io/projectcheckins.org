@@ -11,13 +11,21 @@ import java.util.List;
 public abstract class AbstractRegisterService implements RegisterService, PasswordService {
 
     private final PasswordEncoder passwordEncoder;
+    private final RegistrationCheck registrationCheck;
+    private final TeamInvitationRepository teamInvitationRepository;
 
-    protected AbstractRegisterService(PasswordEncoder passwordEncoder) {
+    protected AbstractRegisterService(
+            PasswordEncoder passwordEncoder,
+            RegistrationCheck registrationCheck,
+            TeamInvitationRepository teamInvitationRepository
+    ) {
         this.passwordEncoder = passwordEncoder;
+        this.registrationCheck = registrationCheck;
+        this.teamInvitationRepository = teamInvitationRepository;
     }
 
     public String register(@NonNull @NotBlank String username,
-                           @NonNull @NotBlank String rawPassword) throws UserAlreadyExistsException {
+                           @NonNull @NotBlank String rawPassword) throws UserAlreadyExistsException, UserNotInvitedException {
         return register(username, rawPassword, Collections.emptyList());
     }
 
@@ -27,9 +35,14 @@ public abstract class AbstractRegisterService implements RegisterService, Passwo
     @Override
     public String register(@NonNull @NotBlank String username,
                            @NonNull @NotBlank String rawPassword,
-                           @NonNull List<String> authorities) throws UserAlreadyExistsException {
+                           @NonNull List<String> authorities) throws UserAlreadyExistsException, UserNotInvitedException {
+        if (!registrationCheck.canRegister(username)) {
+            throw new UserNotInvitedException();
+        }
         final String encodedPassword = passwordEncoder.encode(rawPassword);
-        return register(new UserSave(username, encodedPassword, authorities));
+        final String id = register(new UserSave(username, encodedPassword, authorities));
+        teamInvitationRepository.accept(username);
+        return id;
     }
 
     @Override

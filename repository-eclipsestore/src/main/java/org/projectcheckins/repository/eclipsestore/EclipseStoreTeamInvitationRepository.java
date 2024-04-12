@@ -5,6 +5,7 @@ import io.micronaut.eclipsestore.annotations.StoreParams;
 import jakarta.inject.Singleton;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import org.projectcheckins.security.RegistrationCheck;
 import org.projectcheckins.security.TeamInvitation;
 import org.projectcheckins.security.TeamInvitationRepository;
 
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Singleton
-class EclipseStoreTeamInvitationRepository implements TeamInvitationRepository {
+class EclipseStoreTeamInvitationRepository implements TeamInvitationRepository, RegistrationCheck {
     private final RootProvider<Data> rootProvider;
 
     protected EclipseStoreTeamInvitationRepository(RootProvider<Data> rootProvider) {
@@ -34,6 +35,11 @@ class EclipseStoreTeamInvitationRepository implements TeamInvitationRepository {
     @Override
     public void accept(@NotBlank @Email String email) {
         findByEmail(email).ifPresent(this::saveInvitation);
+    }
+
+    @Override
+    public boolean canRegister(@NotBlank @Email String email) {
+        return findByEmail(email).isPresent();
     }
 
     private Optional<TeamInvitationEntity> findByEmail(@NotBlank @Email String email) {
