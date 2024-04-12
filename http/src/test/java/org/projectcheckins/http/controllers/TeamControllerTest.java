@@ -28,6 +28,7 @@ import org.projectcheckins.core.forms.TeamMemberSave;
 import org.projectcheckins.core.forms.TimeFormat;
 import org.projectcheckins.core.services.TeamService;
 import org.projectcheckins.core.services.TeamServiceImpl;
+import org.projectcheckins.security.TeamInvitation;
 import org.projectcheckins.security.UserAlreadyExistsException;
 import org.projectcheckins.security.UserFetcher;
 import org.projectcheckins.security.UserState;
@@ -80,6 +81,8 @@ class TeamControllerTest {
             null
     );
 
+    static final TeamInvitation INVITATION_1 = new TeamInvitationRecord("pending@email.com", false);
+
     @Test
     void testListTeamMembers(@Client("/") HttpClient httpClient, AuthenticationFetcherMock authenticationFetcher) {
         final BlockingHttpClient client = httpClient.toBlocking();
@@ -89,6 +92,8 @@ class TeamControllerTest {
                         <span>User One</span>"""))
                 .matches(htmlBody("""
                         <code>user2@email.com</code>"""))
+                .matches(htmlBody("""
+                        <code>pending@email.com</code>"""))
                 .matches(htmlBody(Pattern.compile("""
                         <a href="/team/create">""")));
     }
@@ -127,33 +132,11 @@ class TeamControllerTest {
                 .hasStatus(HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-    @Test
-    void testSaveTeamMemberAlreadyExists(@Client("/") HttpClient httpClient, AuthenticationFetcherMock authenticationFetcher) {
-        final BlockingHttpClient client = httpClient.toBlocking();
-        final Map<String, Object> body = Map.of("email", USER_1.email());
-        final HttpRequest<?> request = BrowserRequest.POST(URI_SAVE, body);
-        HttpClientResponseExceptionAssert.assertThatThrowsHttpClientResponseException(() -> client.exchange(request))
-                .hasStatus(HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-
     @Requires(property = "spec.name", value = "TeamControllerTest")
     @Singleton
     static class AuthenticationFetcherMock extends AbstractAuthenticationFetcher {
         AuthenticationFetcherMock() {
             setAuthentication(AbstractAuthenticationFetcher.SDELAMO);
-        }
-    }
-
-    @Requires(property = "spec.name", value = "TeamControllerTest")
-    @Singleton
-    static class UserFetcherMock implements UserFetcher {
-        @NonNull
-        public Optional<UserState> findByEmail(@NotBlank @NonNull String email) {
-            return switch (email) {
-                case "user1@email.com" -> Optional.of(new UserStateRecord(USER_1));
-                case "user2@email.com" -> Optional.of(new UserStateRecord(USER_2));
-                default -> Optional.empty();
-            };
         }
     }
 
@@ -168,30 +151,15 @@ class TeamControllerTest {
         }
 
         @Override
-        public String save(@NotNull @Valid TeamMemberSave form, @Nullable Tenant tenant) throws UserAlreadyExistsException {
-            return "xxx";
+        public List<? extends TeamInvitation> findPendingInvitations(Tenant tenant) {
+            return List.of(INVITATION_1);
+        }
+
+        @Override
+        public void save(@NotNull @Valid TeamMemberSave form, @Nullable Tenant tenant) {
         }
     }
 
-    record UserStateRecord(Profile profile) implements UserState {
-        @Override
-        public String getId() {
-            return profile.id();
-        }
-
-        @Override
-        public boolean isEnabled() {
-            return true;
-        }
-
-        @Override
-        public String getEmail() {
-            return profile.email();
-        }
-
-        @Override
-        public String getPassword() {
-            return "secret";
-        }
+    record TeamInvitationRecord(String email, boolean accepted) implements TeamInvitation {
     }
 }
