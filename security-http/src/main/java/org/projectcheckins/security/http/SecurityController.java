@@ -23,8 +23,7 @@ import org.projectcheckins.annotations.GetHtml;
 import org.projectcheckins.annotations.PostForm;
 import org.projectcheckins.bootstrap.Alert;
 import org.projectcheckins.security.RegisterService;
-import org.projectcheckins.security.UserAlreadyExistsException;
-import org.projectcheckins.security.UserNotInvitedException;
+import org.projectcheckins.security.RegistrationCheckViolationException;
 
 import java.net.URI;
 import java.util.Collections;
@@ -72,16 +71,11 @@ class SecurityController {
     HttpResponse<?> signUp(@NonNull @NotNull @Valid @Body SignUpForm form) {
         try {
             registerService.register(form.email(), form.password());
-        } catch (UserAlreadyExistsException e) {
+        } catch (RegistrationCheckViolationException e) {
             return HttpResponse.unprocessableEntity().body(new ModelAndView<>(VIEW_SECURITY_SIGN_UP,
                     Map.of(
                             MODEL_FORM, signUpForm,
-                            MODEL_ALERT, Alert.danger(Message.of("User already exists", "user.already.exists")))));
-        } catch (UserNotInvitedException e) {
-            return HttpResponse.unprocessableEntity().body(new ModelAndView<>(VIEW_SECURITY_SIGN_UP,
-                    Map.of(
-                            MODEL_FORM, signUpForm,
-                            MODEL_ALERT, Alert.danger(Message.of("User not invited", "user.not.invited")))));
+                            MODEL_ALERT, Alert.danger(e.getViolation().message()))));
         }
         return HttpResponse.seeOther(URI_LOGIN);
     }

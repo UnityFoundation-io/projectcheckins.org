@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    api("io.micronaut.views:micronaut-views-fieldset")
     // Micronaut Security
     api("io.micronaut.security:micronaut-security")
     implementation("io.micronaut.reactor:micronaut-reactor")

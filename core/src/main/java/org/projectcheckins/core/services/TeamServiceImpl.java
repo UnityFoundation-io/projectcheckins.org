@@ -10,10 +10,7 @@ import org.projectcheckins.core.forms.TeamMemberSave;
 import org.projectcheckins.core.repositories.ProfileRepository;
 import org.projectcheckins.security.TeamInvitation;
 import org.projectcheckins.security.TeamInvitationRepository;
-
 import java.util.List;
-
-import static java.util.function.Predicate.not;
 
 @Singleton
 public class TeamServiceImpl implements TeamService {
@@ -34,8 +31,8 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     @NonNull
-    public List<? extends TeamInvitation> findPendingInvitations(@Nullable Tenant tenant) {
-        return teamInvitationRepository.findAll().stream().filter(not(TeamInvitation::accepted)).toList();
+    public List<? extends TeamInvitation> findInvitations(@Nullable Tenant tenant) {
+        return teamInvitationRepository.findAll();
     }
 
     @Override

@@ -1,9 +1,17 @@
 package org.projectcheckins.security;
 
+import io.micronaut.core.order.Ordered;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-public interface RegistrationCheck {
+import java.util.Optional;
 
-    boolean canRegister(@NotBlank @Email String email);
+public interface RegistrationCheck extends Ordered {
+
+    /**
+     *
+     * @param email The email address to register.
+     * @return An empty optional if the registration is possible with the supplied email address.
+     */
+    Optional<RegistrationCheckViolation> validate(@NotBlank @Email String email);
 }

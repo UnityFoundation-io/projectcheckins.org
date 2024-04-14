@@ -1,35 +1,29 @@
 package org.projectcheckins.repository.eclipsestore;
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
+import org.projectcheckins.security.UserNotInvitedRegistrationCheck;
 
 import static org.assertj.core.api.Assertions.*;
 
 @MicronautTest(startApplication = false)
 class EclipseStoreTeamInvitationRepositoryTest {
-
-    @Inject
-    EclipseStoreTeamInvitationRepository teamInvitationRepository;
-
     @Test
-    void testOperations() {
+    void testOperations(EclipseStoreTeamInvitationRepository teamInvitationRepository,
+                        UserNotInvitedRegistrationCheck userNotInvitedRegistrationCheck) {
         final String email = "invitation@email.com";
         assertThat(teamInvitationRepository.findAll())
                 .isEmpty();
-        assertThat(teamInvitationRepository.canRegister(email))
-                .isFalse();
+        assertThat(userNotInvitedRegistrationCheck.validate(email))
+                .isNotEmpty();
         teamInvitationRepository.save(email);
-        assertThat(teamInvitationRepository.canRegister(email))
-                .isTrue();
+        assertThat(userNotInvitedRegistrationCheck.validate(email))
+                .isEmpty();
         assertThat(teamInvitationRepository.findAll())
                 .hasSize(1);
         assertThat(teamInvitationRepository.findAll().get(0))
-                .hasFieldOrPropertyWithValue("accepted", false);
+                .hasFieldOrPropertyWithValue("email", email);
         assertThatCode(() -> teamInvitationRepository.save(email))
                 .doesNotThrowAnyException();
-        teamInvitationRepository.accept(email);
-        assertThat(teamInvitationRepository.findAll().get(0))
-                .hasFieldOrPropertyWithValue("accepted", true);
     }
 }

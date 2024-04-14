@@ -11,5 +11,7 @@ public interface TeamInvitationRepository {
 
     void save(@NotBlank @Email String email);
 
-    void accept(@NotBlank @Email String email);
+    void deleteByEmail(@NotBlank @Email String email);
+
+    boolean existsByEmail(@NotBlank @Email String email);
 }

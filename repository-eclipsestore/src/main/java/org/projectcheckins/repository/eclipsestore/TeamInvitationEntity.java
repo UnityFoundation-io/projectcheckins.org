@@ -9,7 +9,6 @@ public class TeamInvitationEntity implements TeamInvitation {
 
     @NotBlank
     private String email;
-    private boolean accepted;
 
     public TeamInvitationEntity(String email) {
         this.email = email;
@@ -21,13 +20,5 @@ public class TeamInvitationEntity implements TeamInvitation {
 
     public void email(String email) {
         this.email = email;
-    }
-
-    public boolean accepted() {
-        return accepted;
-    }
-
-    public void accepted(boolean accepted) {
-        this.accepted = accepted;
     }
 }

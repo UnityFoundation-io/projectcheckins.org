@@ -65,7 +65,7 @@ class TeamController {
         return Map.of(
                 ApiConstants.MODEL_BREADCRUMBS, BREADCRUMBS_LIST,
                 MODEL_MEMBERS, teamService.findAll(tenant),
-                MODEL_INVITATIONS, teamService.findPendingInvitations(tenant)
+                MODEL_INVITATIONS, teamService.findInvitations(tenant)
         );
     }
 

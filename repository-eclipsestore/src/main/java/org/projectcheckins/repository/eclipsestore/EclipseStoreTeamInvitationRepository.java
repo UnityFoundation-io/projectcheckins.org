@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Singleton
-class EclipseStoreTeamInvitationRepository implements TeamInvitationRepository, RegistrationCheck {
+class EclipseStoreTeamInvitationRepository implements TeamInvitationRepository {
     private final RootProvider<Data> rootProvider;
 
     protected EclipseStoreTeamInvitationRepository(RootProvider<Data> rootProvider) {
@@ -27,18 +27,18 @@ class EclipseStoreTeamInvitationRepository implements TeamInvitationRepository, 
 
     @Override
     public void save(@NotBlank @Email String email) {
-        if (!canRegister(email)) {
+        if (findByEmail(email).isEmpty()) {
             saveInvitation(rootProvider.root().getInvitations(), new TeamInvitationEntity(email));
         }
     }
 
     @Override
-    public void accept(@NotBlank @Email String email) {
-        findByEmail(email).ifPresent(this::saveInvitation);
+    public void deleteByEmail(@NotBlank @Email String email) {
+        findByEmail(email).ifPresent(e -> delete(rootProvider.root().getInvitations(), e));
     }
 
     @Override
-    public boolean canRegister(@NotBlank @Email String email) {
+    public boolean existsByEmail(String email) {
         return findByEmail(email).isPresent();
     }
 
@@ -51,8 +51,8 @@ class EclipseStoreTeamInvitationRepository implements TeamInvitationRepository, 
         invitations.add(invitation);
     }
 
-    @StoreParams("invitation")
-    public void saveInvitation(TeamInvitationEntity invitation) {
-        invitation.accepted(true);
+    @StoreParams("invitations")
+    public void delete(List<TeamInvitationEntity> invitations, TeamInvitationEntity invitation) {
+        invitations.remove(invitation);
     }
 }

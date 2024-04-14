@@ -3,7 +3,6 @@ package org.projectcheckins.http.controllers;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
-import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpRequest;
@@ -16,7 +15,6 @@ import io.micronaut.multitenancy.Tenant;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Singleton;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -29,9 +27,6 @@ import org.projectcheckins.core.forms.TimeFormat;
 import org.projectcheckins.core.services.TeamService;
 import org.projectcheckins.core.services.TeamServiceImpl;
 import org.projectcheckins.security.TeamInvitation;
-import org.projectcheckins.security.UserAlreadyExistsException;
-import org.projectcheckins.security.UserFetcher;
-import org.projectcheckins.security.UserState;
 import org.projectcheckins.test.AbstractAuthenticationFetcher;
 import org.projectcheckins.test.BrowserRequest;
 import org.projectcheckins.test.HttpClientResponseExceptionAssert;
@@ -40,7 +35,6 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
@@ -151,7 +145,7 @@ class TeamControllerTest {
         }
 
         @Override
-        public List<? extends TeamInvitation> findPendingInvitations(Tenant tenant) {
+        public List<? extends TeamInvitation> findInvitations(Tenant tenant) {
             return List.of(INVITATION_1);
         }
 

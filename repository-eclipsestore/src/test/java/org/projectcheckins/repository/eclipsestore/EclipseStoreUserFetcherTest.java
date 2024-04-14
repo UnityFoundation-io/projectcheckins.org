@@ -7,11 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.idgeneration.IdGenerator;
 import org.projectcheckins.email.EmailConfirmationRepository;
 import org.projectcheckins.security.RegisterService;
+import org.projectcheckins.security.RegistrationCheckViolationException;
 import org.projectcheckins.security.TeamInvitationRepository;
-import org.projectcheckins.security.UserAlreadyExistsException;
 import org.projectcheckins.security.UserFetcher;
-import org.projectcheckins.security.UserNotInvitedException;
-
 import static org.assertj.core.api.Assertions.*;
 
 @MicronautTest(startApplication = false)
@@ -23,7 +21,7 @@ class EclipseStoreUserFetcherTest {
     TeamInvitationRepository teamInvitationRepository;
 
     @Test
-    void authoritiesFetcher(UserFetcher userFetcher, RegisterService registerService) throws UserAlreadyExistsException, UserNotInvitedException {
+    void authoritiesFetcher(UserFetcher userFetcher, RegisterService registerService) throws RegistrationCheckViolationException {
         assertThat(userFetcher.findByEmail(NOT_FOUND_EMAIL))
             .isEmpty();
         teamInvitationRepository.save(FOUND_EMAIL);
@@ -43,16 +41,14 @@ class EclipseStoreUserFetcherTest {
         assertThatCode(() -> registerService.register(email, "foo"))
                 .doesNotThrowAnyException();
         assertThatThrownBy(() -> registerService.register(email, "foo"))
-                .isInstanceOf(UserAlreadyExistsException.class);
-        assertThatThrownBy(() -> registerService.register(notInvited, "foo"))
-                .isInstanceOf(UserNotInvitedException.class);
+                .isInstanceOf(RegistrationCheckViolationException.class);
     }
 
     @Test
     void testUserEnable(RootProvider<Data> rootProvider,
                         RegisterService registerService,
                         IdGenerator idGenerator,
-                        EmailConfirmationRepository emailConfirmationRepository) throws UserAlreadyExistsException, UserNotInvitedException {
+                        EmailConfirmationRepository emailConfirmationRepository) throws RegistrationCheckViolationException {
         String email = idGenerator.generate() + "@projectcheckins.org";
         teamInvitationRepository.save(email);
         String id = registerService.register(email, "password");

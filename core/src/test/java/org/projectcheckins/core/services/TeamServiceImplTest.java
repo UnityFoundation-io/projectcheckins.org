@@ -8,6 +8,8 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.api.Profile;
 import org.projectcheckins.core.forms.Format;
@@ -16,6 +18,7 @@ import org.projectcheckins.core.forms.TeamMemberSave;
 import org.projectcheckins.core.forms.TimeFormat;
 import org.projectcheckins.core.repositories.ProfileRepository;
 import org.projectcheckins.core.repositories.SecondaryProfileRepository;
+import org.projectcheckins.security.SecondaryTeamInvitationRepository;
 import org.projectcheckins.security.TeamInvitation;
 import org.projectcheckins.security.TeamInvitationRepository;
 
@@ -43,14 +46,14 @@ class TeamServiceImplTest {
             null
     );
 
-    static final TeamInvitation INVITATION_1 = new TeamInvitationRecord("pending1@email.com", false);
+    static final TeamInvitation INVITATION_1 = new TeamInvitationRecord("pending1@email.com");
 
-    static final TeamInvitation INVITATION_2 = new TeamInvitationRecord("pending2@email.com", true);
+    static final TeamInvitation INVITATION_2 = new TeamInvitationRecord("pending2@email.com");
 
     @Test
     void testFindPendingInvitations() {
-        assertThat(teamService.findPendingInvitations(null))
-                .isEqualTo(List.of(INVITATION_1));
+        assertThat(teamService.findInvitations(null))
+                .isEqualTo(List.of(INVITATION_1, INVITATION_2));
     }
 
     @Inject
@@ -89,21 +92,17 @@ class TeamServiceImplTest {
 
     @Requires(property = "spec.name", value = "TeamServiceImplTest")
     @Singleton
-    static class TeamInvitationRepositoryMock implements TeamInvitationRepository {
+    @Replaces(TeamInvitationRepository.class)
+    static class TeamInvitationRepositoryMock extends SecondaryTeamInvitationRepository {
         @Override
         public List<? extends TeamInvitation> findAll() {
             return List.of(INVITATION_1, INVITATION_2);
         }
 
         @Override
-        public void save(String email) {
-        }
-
-        @Override
-        public void accept(String email) {
-
+        public void save(@NotBlank @Email String email) {
         }
     }
 
-    record TeamInvitationRecord(String email, boolean accepted) implements TeamInvitation { }
+    record TeamInvitationRecord(String email) implements TeamInvitation { }
 }
