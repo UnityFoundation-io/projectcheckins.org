@@ -14,7 +14,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @MicronautTest(startApplication = false)
 @Property(name = "spec.name", value = "UniqueValidatorTest")
-class UniqueValidatorTest {
+class UniqueInvitationValidatorTest {
     private static final String EXISTING_EMAIL = "calvog@unityfoundation.io";
     @Test
     void isValid(UniqueValidator uniqueValidator) {
@@ -23,7 +23,7 @@ class UniqueValidatorTest {
         assertThat(uniqueValidator.isValid(new TenantTeamInvitation("delamos@unityfoundation.io", null), null, null)).isTrue();
         assertThat(uniqueValidator.isValid(new TenantTeamInvitation(EXISTING_EMAIL, null), null, null)).isFalse();
     }
-    
+
     @Requires(property = "spec.name", value = "UniqueValidatorTest")
     @Singleton
     @Replaces(TeamInvitationRepository.class)

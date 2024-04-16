@@ -12,7 +12,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.projectcheckins.security.TeamInvitationRepository;
 import org.projectcheckins.security.TenantTeamInvitation;
-import org.projectcheckins.security.constraints.Unique;
 
 import java.util.List;
 import java.util.Optional;

@@ -7,24 +7,24 @@ import io.micronaut.core.util.StringUtils;
 import io.micronaut.validation.validator.constraints.ConstraintValidator;
 import io.micronaut.validation.validator.constraints.ConstraintValidatorContext;
 import jakarta.inject.Singleton;
-import org.projectcheckins.security.TeamInvitationRepository;
 import org.projectcheckins.security.TenantTeamInvitation;
+import org.projectcheckins.security.UserAlreadyExistsRegistrationCheck;
 
 @Singleton
-class UniqueValidator implements ConstraintValidator<UniqueInvitation, TenantTeamInvitation> {
-    private final TeamInvitationRepository teamInvitationRepository;
+class UserDoesNotExistValidator implements ConstraintValidator<UserDoesNotExist, TenantTeamInvitation> {
+    private final UserAlreadyExistsRegistrationCheck userAlreadyExistsRegistrationCheck;
 
-    UniqueValidator(TeamInvitationRepository teamInvitationRepository) {
-        this.teamInvitationRepository = teamInvitationRepository;
+    UserDoesNotExistValidator(UserAlreadyExistsRegistrationCheck userAlreadyExistsRegistrationCheck) {
+        this.userAlreadyExistsRegistrationCheck = userAlreadyExistsRegistrationCheck;
     }
 
     @Override
     public boolean isValid(@Nullable TenantTeamInvitation invitation,
-                           @NonNull AnnotationValue<UniqueInvitation> annotationMetadata,
+                           @NonNull AnnotationValue<UserDoesNotExist> annotationMetadata,
                            @NonNull ConstraintValidatorContext context) {
         if (StringUtils.isEmpty(invitation.email())) {
             return true;
         }
-        return !teamInvitationRepository.existsByEmail(invitation.email(), invitation.tenant());
+        return userAlreadyExistsRegistrationCheck.validate(invitation.email(), invitation.tenant()).isEmpty();
     }
 }

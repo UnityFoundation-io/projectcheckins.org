@@ -11,8 +11,6 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.api.Profile;
@@ -22,14 +20,11 @@ import org.projectcheckins.core.forms.TeamMemberSave;
 import org.projectcheckins.core.forms.TimeFormat;
 import org.projectcheckins.core.repositories.ProfileRepository;
 import org.projectcheckins.core.repositories.SecondaryProfileRepository;
-import org.projectcheckins.security.SecondaryTeamInvitationRepository;
-import org.projectcheckins.security.TeamInvitation;
-import org.projectcheckins.security.TeamInvitationRepository;
-import org.projectcheckins.security.TenantTeamInvitation;
-import org.projectcheckins.security.constraints.Unique;
+import org.projectcheckins.security.*;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 
 import static java.time.DayOfWeek.MONDAY;
@@ -115,5 +110,19 @@ class TeamServiceImplTest {
         }
     }
 
+    @Requires(property = "spec.name", value = "TeamServiceImplTest")
+    @Singleton
+    @Replaces(UserAlreadyExistsRegistrationCheck.class)
+    static class UserAlreadyExistsRegistrationCheckMock extends UserAlreadyExistsRegistrationCheck {
+
+        public UserAlreadyExistsRegistrationCheckMock(UserRepository userRepository) {
+            super(userRepository);
+        }
+
+        @Override
+        public Optional<RegistrationCheckViolation> validate(String email, Tenant tenant) {
+            return Optional.empty();
+        }
+    }
     record TeamInvitationRecord(String email) implements TeamInvitation { }
 }
