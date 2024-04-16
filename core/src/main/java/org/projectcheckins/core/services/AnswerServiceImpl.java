@@ -3,7 +3,6 @@ package org.projectcheckins.core.services;
 import io.micronaut.context.MessageSource;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.core.util.CollectionUtils;
 import io.micronaut.multitenancy.Tenant;
 import io.micronaut.security.authentication.Authentication;
 import jakarta.inject.Singleton;
@@ -28,10 +27,14 @@ import java.util.function.Function;
 
 import static java.time.format.DateTimeFormatterBuilder.getLocalizedDateTimePattern;
 import static java.time.format.FormatStyle.LONG;
+import static java.util.Collections.reverseOrder;
 import static java.util.stream.Collectors.toMap;
 
 @Singleton
 public class AnswerServiceImpl implements AnswerService {
+
+    private static final Function<AnswerView, Answer> ANSWER = AnswerView::answer;
+    private static final Function<AnswerView, LocalDate> GROUP_BY_DATE = ANSWER.andThen(Answer::answerDate);
 
     private static final PublicProfile UNKNOWN_RESPONDENT = new ProfileRecord(
             null,
@@ -125,24 +128,8 @@ public class AnswerServiceImpl implements AnswerService {
     private List<DateAnswers> dateAnswersByQuestionId(@NonNull String id,
                                                       @NonNull Authentication authentication,
                                                       @Nullable Tenant tenant) {
-        LocalDate answerDate = null;
-        List<AnswerView> answers = null;
-        List<DateAnswers> result = new ArrayList<>();
-        for (AnswerView view : findByQuestionId(id, authentication, tenant)) {
-            if (answerDate != null && !view.answer().answerDate().equals(answerDate)) {
-                result.add(new DateAnswers(answerDate, answers));
-                answerDate = view.answer().answerDate();
-                answers = new ArrayList<>();
-            } else if (answerDate == null) {
-                answerDate = view.answer().answerDate();
-                answers = new ArrayList<>();
-            }
-            answers.add(view);
-        }
-        if (answerDate != null && CollectionUtils.isNotEmpty(answers)) {
-            result.add(new DateAnswers(answerDate, answers));
-        }
-        return result;
+        final List<? extends AnswerView> answers = findByQuestionId(id, authentication, tenant);
+        return ViewUtils.encapsulate(answers, GROUP_BY_DATE, reverseOrder(), DateAnswers::new);
     }
 
     @Override
