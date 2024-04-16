@@ -24,7 +24,7 @@ class EclipseStoreAuthoritiesFetcherTest {
         registerService.register(new UserSave(FOUND_EMAIL, "password", null, Collections.emptyList()));
         assertThat(authoritiesFetcher.findAuthoritiesByEmail(FOUND_EMAIL))
             .isEmpty();
-        registerService.register(new UserSave(FOUND_EMAIL_WITH_ROLES, "password", Collections.singletonList("ROLE_USER")), null);
+        registerService.register(new UserSave(FOUND_EMAIL_WITH_ROLES, "password", null, Collections.singletonList("ROLE_USER")));
         assertThat(authoritiesFetcher.findAuthoritiesByEmail(FOUND_EMAIL_WITH_ROLES))
             .containsExactly("ROLE_USER");
 
