@@ -15,7 +15,7 @@ public interface TeamInvitationRepository {
     @NonNull
     List<? extends TeamInvitation> findAll(@Nullable Tenant tenant);
 
-    void save(@NonNull @NotNull @Valid TenantTeamInvitation invitation);
+    void save(@NonNull @NotNull @Valid TeamInvitation invitation);
 
     void deleteByEmail(@NotBlank @Email String email, @Nullable Tenant tenant);
 
