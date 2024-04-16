@@ -25,7 +25,7 @@ class EclipseStoreUserFetcherTest {
         assertThat(userFetcher.findByEmail(NOT_FOUND_EMAIL))
             .isEmpty();
         teamInvitationRepository.save(FOUND_EMAIL);
-        registerService.register(FOUND_EMAIL, "password");
+        registerService.register(FOUND_EMAIL, "password", null);
         assertThat(userFetcher.findByEmail(FOUND_EMAIL)).hasValueSatisfying(userState -> assertThat(userState)
                 .matches(u -> !u.isEnabled())
                 .matches(u -> u.getEmail().equals(FOUND_EMAIL))
@@ -38,9 +38,9 @@ class EclipseStoreUserFetcherTest {
         String email = "sergio@projectcheckins.org";
         String notInvited = "not-invited@projectcheckins.org";
         teamInvitationRepository.save(email);
-        assertThatCode(() -> registerService.register(email, "foo"))
+        assertThatCode(() -> registerService.register(email, "foo", null))
                 .doesNotThrowAnyException();
-        assertThatThrownBy(() -> registerService.register(email, "foo"))
+        assertThatThrownBy(() -> registerService.register(email, "foo", null))
                 .isInstanceOf(RegistrationCheckViolationException.class);
     }
 
@@ -51,7 +51,7 @@ class EclipseStoreUserFetcherTest {
                         EmailConfirmationRepository emailConfirmationRepository) throws RegistrationCheckViolationException {
         String email = idGenerator.generate() + "@projectcheckins.org";
         teamInvitationRepository.save(email);
-        String id = registerService.register(email, "password");
+        String id = registerService.register(email, "password", null);
         assertThat(rootProvider.root().getUsers()).noneMatch(UserEntity::enabled);
         emailConfirmationRepository.enableByEmail(email);
         assertThat(rootProvider.root().getUsers()).anyMatch(UserEntity::enabled);

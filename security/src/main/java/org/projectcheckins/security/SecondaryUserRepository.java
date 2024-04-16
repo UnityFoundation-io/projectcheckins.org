@@ -1,6 +1,8 @@
 package org.projectcheckins.security;
 
 import io.micronaut.context.annotation.Secondary;
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.multitenancy.Tenant;
 import jakarta.inject.Singleton;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,7 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 @Singleton
 public class SecondaryUserRepository implements UserRepository {
     @Override
-    public boolean existsByEmail(@NotBlank @Email String email) {
+    public boolean existsByEmail(@NotBlank @Email String email, @Nullable Tenant tenant) {
         throw new UnsupportedOperationException("Not implemented");
     }
 }

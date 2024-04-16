@@ -1,6 +1,8 @@
 package org.projectcheckins.security;
 
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.multitenancy.Tenant;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,19 +31,21 @@ public abstract class AbstractRegisterService implements RegisterService {
     }
 
     public String register(@NonNull @NotBlank String username,
-                           @NonNull @NotBlank String rawPassword) throws RegistrationCheckViolationException {
-        return register(username, rawPassword, Collections.emptyList());
+                           @NonNull @NotBlank String rawPassword,
+                           @Nullable Tenant tenant) throws RegistrationCheckViolationException {
+        return register(username, rawPassword, Collections.emptyList(), tenant);
     }
 
     @NonNull
-    protected abstract String register(@NonNull @NotNull @Valid UserSave userSave) throws RegistrationCheckViolationException;
+    protected abstract String register(@NonNull @NotNull @Valid UserSave userSave, @Nullable Tenant tenant) throws RegistrationCheckViolationException;
 
     @Override
     public String register(@NonNull @NotBlank String username,
                            @NonNull @NotBlank String rawPassword,
-                           @NonNull List<String> authorities) throws RegistrationCheckViolationException {
+                           @NonNull List<String> authorities,
+                           @Nullable Tenant tenant) throws RegistrationCheckViolationException {
         Optional<RegistrationCheckViolation> violationOptional = registrationChecks.stream()
-                .map(check -> check.validate(username))
+                .map(check -> check.validate(username, tenant))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .findFirst();
@@ -50,8 +54,8 @@ public abstract class AbstractRegisterService implements RegisterService {
             throw new RegistrationCheckViolationException(violationOptional.get());
         }
         final String encodedPassword = passwordEncoder.encode(rawPassword);
-        final String id = register(new UserSave(username, encodedPassword, authorities));
-        teamInvitationRepository.deleteByEmail(username);
+        final String id = register(new UserSave(username, encodedPassword, authorities), tenant);
+        teamInvitationRepository.deleteByEmail(username, tenant);
         return id;
     }
 }

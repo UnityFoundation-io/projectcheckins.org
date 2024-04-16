@@ -1,6 +1,8 @@
 package org.projectcheckins.security;
 
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.multitenancy.Tenant;
 import io.micronaut.views.fields.messages.Message;
 import jakarta.inject.Singleton;
 import jakarta.validation.constraints.Email;
@@ -19,8 +21,8 @@ public class UserAlreadyExistsRegistrationCheck implements RegistrationCheck {
 
     @Override
     @NonNull
-    public Optional<RegistrationCheckViolation> validate(@NotBlank @Email String email) {
-        return userRepository.existsByEmail(email)
+    public Optional<RegistrationCheckViolation> validate(@NotBlank @Email String email, @Nullable Tenant tenant) {
+        return userRepository.existsByEmail(email, tenant)
                 ? Optional.of(VIOLATION_USER_ALREADY_EXISTS)
                 : Optional.empty();
     }

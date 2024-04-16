@@ -46,7 +46,7 @@ class EclipseStoreProfileRepository implements ProfileRepository, UserRepository
   }
 
   @Override
-  public boolean existsByEmail(@NotBlank @Email String email) {
+  public boolean existsByEmail(@NotBlank @Email String email, @Nullable Tenant tenant) {
     return findByEmail(email).isPresent();
   }
 

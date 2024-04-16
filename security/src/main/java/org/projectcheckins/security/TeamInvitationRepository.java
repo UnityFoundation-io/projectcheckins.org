@@ -1,18 +1,28 @@
 package org.projectcheckins.security;
 
+import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.multitenancy.Tenant;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.projectcheckins.security.constraints.Unique;
 
 import java.util.List;
 
 public interface TeamInvitationRepository {
 
-    List<? extends TeamInvitation> findAll();
+    @NonNull
+    List<? extends TeamInvitation> findAll(@Nullable Tenant tenant);
 
-    void save(@Unique @NotBlank @Email String email);
+    void save(@NonNull @NotNull @Valid TenantTeamInvitation invitation);
 
-    void deleteByEmail(@NotBlank @Email String email);
+    default void save(@NonNull @NotBlank @Email String email) {
+        save(new TenantTeamInvitation(email, null));
+    }
 
-    boolean existsByEmail(@NotBlank @Email String email);
+    void deleteByEmail(@NotBlank @Email String email, @Nullable Tenant tenant);
+
+    boolean existsByEmail(@NotBlank @Email String email, @Nullable Tenant tenant);
 }

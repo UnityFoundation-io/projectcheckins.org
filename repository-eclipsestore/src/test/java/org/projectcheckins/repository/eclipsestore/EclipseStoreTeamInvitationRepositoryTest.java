@@ -1,6 +1,8 @@
 package org.projectcheckins.repository.eclipsestore;
 
+import io.micronaut.multitenancy.Tenant;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.security.UserNotInvitedRegistrationCheck;
 
@@ -12,18 +14,20 @@ class EclipseStoreTeamInvitationRepositoryTest {
     void testOperations(EclipseStoreTeamInvitationRepository teamInvitationRepository,
                         UserNotInvitedRegistrationCheck userNotInvitedRegistrationCheck) {
         final String email = "invitation@email.com";
-        assertThat(teamInvitationRepository.findAll())
+        Tenant tenant = null;
+        assertThat(teamInvitationRepository.findAll(null))
                 .isEmpty();
-        assertThat(userNotInvitedRegistrationCheck.validate(email))
+        assertThat(userNotInvitedRegistrationCheck.validate(email, tenant))
                 .isNotEmpty();
-        teamInvitationRepository.save(email);
-        assertThat(userNotInvitedRegistrationCheck.validate(email))
-                .isEmpty();
-        assertThat(teamInvitationRepository.findAll())
-                .hasSize(1);
-        assertThat(teamInvitationRepository.findAll().get(0))
-                .hasFieldOrPropertyWithValue("email", email);
         assertThatCode(() -> teamInvitationRepository.save(email))
-                .doesNotThrowAnyException();
+                .doesNotThrowAnyException();;
+        assertThat(userNotInvitedRegistrationCheck.validate(email, tenant))
+                .isEmpty();
+        assertThat(teamInvitationRepository.findAll(null))
+                .hasSize(1);
+        assertThat(teamInvitationRepository.findAll(null).get(0))
+                .hasFieldOrPropertyWithValue("email", email);
+        assertThatThrownBy(() -> teamInvitationRepository.save(email))
+                .isInstanceOf(ConstraintViolationException.class);
     }
 }

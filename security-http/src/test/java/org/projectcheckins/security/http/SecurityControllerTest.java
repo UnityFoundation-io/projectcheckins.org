@@ -10,6 +10,7 @@ import io.micronaut.http.HttpStatus;
 import io.micronaut.http.client.BlockingHttpClient;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
+import io.micronaut.multitenancy.Tenant;
 import io.micronaut.security.authentication.AuthenticationFailureReason;
 import io.micronaut.security.authentication.AuthenticationRequest;
 import io.micronaut.security.authentication.AuthenticationResponse;
@@ -107,7 +108,7 @@ class SecurityControllerTest {
         private final List<String> emails = new ArrayList<>();
 
         @Override
-        public String register(String email, String rawPassword, List<String> authorities) throws RegistrationCheckViolationException {
+        public String register(String email, String rawPassword, List<String> authorities, @Nullable Tenant tenant) throws RegistrationCheckViolationException {
             if (email.equals(EMAIL_ALREADY_EXISTS)) {
                 throw new RegistrationCheckViolationException(UserAlreadyExistsRegistrationCheck.VIOLATION_USER_ALREADY_EXISTS);
             }

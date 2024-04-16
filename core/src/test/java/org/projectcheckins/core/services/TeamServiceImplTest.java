@@ -3,13 +3,17 @@ package org.projectcheckins.core.services;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.multitenancy.Tenant;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.api.Profile;
 import org.projectcheckins.core.forms.Format;
@@ -21,6 +25,7 @@ import org.projectcheckins.core.repositories.SecondaryProfileRepository;
 import org.projectcheckins.security.SecondaryTeamInvitationRepository;
 import org.projectcheckins.security.TeamInvitation;
 import org.projectcheckins.security.TeamInvitationRepository;
+import org.projectcheckins.security.TenantTeamInvitation;
 import org.projectcheckins.security.constraints.Unique;
 
 import java.time.LocalTime;
@@ -96,12 +101,17 @@ class TeamServiceImplTest {
     @Replaces(TeamInvitationRepository.class)
     static class TeamInvitationRepositoryMock extends SecondaryTeamInvitationRepository {
         @Override
-        public List<? extends TeamInvitation> findAll() {
+        public List<? extends TeamInvitation> findAll(@Nullable Tenant tenant) {
             return List.of(INVITATION_1, INVITATION_2);
         }
 
         @Override
-        public void save(@Unique @NotBlank @Email String email){
+        public void save(@NonNull @NotNull @Valid TenantTeamInvitation invitation){
+        }
+
+        @Override
+        public boolean existsByEmail(String email, @Nullable Tenant tenant) {
+            return false;
         }
     }
 

@@ -8,10 +8,10 @@ import io.micronaut.validation.validator.constraints.ConstraintValidator;
 import io.micronaut.validation.validator.constraints.ConstraintValidatorContext;
 import jakarta.inject.Singleton;
 import org.projectcheckins.security.TeamInvitationRepository;
-import org.projectcheckins.security.constraints.Unique;
+import org.projectcheckins.security.TenantTeamInvitation;
 
 @Singleton
-class UniqueValidator implements ConstraintValidator<Unique, String> {
+class UniqueValidator implements ConstraintValidator<Unique, TenantTeamInvitation> {
     private final TeamInvitationRepository teamInvitationRepository;
 
     UniqueValidator(TeamInvitationRepository teamInvitationRepository) {
@@ -19,12 +19,12 @@ class UniqueValidator implements ConstraintValidator<Unique, String> {
     }
 
     @Override
-    public boolean isValid(@Nullable String value,
+    public boolean isValid(@Nullable TenantTeamInvitation invitation,
                            @NonNull AnnotationValue<Unique> annotationMetadata,
                            @NonNull ConstraintValidatorContext context) {
-        if (StringUtils.isEmpty(value)) {
+        if (StringUtils.isEmpty(invitation.email())) {
             return true;
         }
-        return !teamInvitationRepository.existsByEmail(value);
+        return !teamInvitationRepository.existsByEmail(invitation.email(), invitation.tenant());
     }
 }

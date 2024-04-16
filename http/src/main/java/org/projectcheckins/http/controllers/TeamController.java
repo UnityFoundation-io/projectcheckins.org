@@ -54,7 +54,6 @@ class TeamController {
     private final TeamService teamService;
     private final FormGenerator formGenerator;
 
-
     TeamController(TeamService teamService, FormGenerator formGenerator) {
         this.teamService = teamService;
         this.formGenerator = formGenerator;

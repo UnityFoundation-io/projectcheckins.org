@@ -9,6 +9,7 @@ import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Error;
 import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.http.uri.UriBuilder;
+import io.micronaut.multitenancy.Tenant;
 import io.micronaut.security.authentication.AuthenticationFailureReason;
 import io.micronaut.security.endpoints.LoginControllerConfiguration;
 import io.micronaut.security.rules.SecurityRule;
@@ -68,9 +69,10 @@ class SecurityController {
     }
 
     @PostForm(uri = PATH_SIGN_UP, rolesAllowed = SecurityRule.IS_ANONYMOUS)
-    HttpResponse<?> signUp(@NonNull @NotNull @Valid @Body SignUpForm form) {
+    HttpResponse<?> signUp(@NonNull @NotNull @Valid @Body SignUpForm form,
+                           @Nullable Tenant tenant) {
         try {
-            registerService.register(form.email(), form.password());
+            registerService.register(form.email(), form.password(), tenant);
         } catch (RegistrationCheckViolationException e) {
             return HttpResponse.unprocessableEntity().body(new ModelAndView<>(VIEW_SECURITY_SIGN_UP,
                     Map.of(

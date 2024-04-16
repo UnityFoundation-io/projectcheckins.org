@@ -10,6 +10,8 @@ import org.projectcheckins.core.forms.TeamMemberSave;
 import org.projectcheckins.core.repositories.ProfileRepository;
 import org.projectcheckins.security.TeamInvitation;
 import org.projectcheckins.security.TeamInvitationRepository;
+import org.projectcheckins.security.TenantTeamInvitation;
+
 import java.util.List;
 
 @Singleton
@@ -32,11 +34,11 @@ public class TeamServiceImpl implements TeamService {
     @Override
     @NonNull
     public List<? extends TeamInvitation> findInvitations(@Nullable Tenant tenant) {
-        return teamInvitationRepository.findAll();
+        return teamInvitationRepository.findAll(tenant);
     }
 
     @Override
     public void save(@NotNull TeamMemberSave form, @Nullable Tenant tenant) {
-        teamInvitationRepository.save(form.email());
+        teamInvitationRepository.save(new TenantTeamInvitation(form.email(), tenant));
     }
 }

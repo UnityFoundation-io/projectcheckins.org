@@ -39,7 +39,7 @@ class QuestionCrudTest {
                       AuthenticationFetcherMock authenticationFetcher) throws RegistrationCheckViolationException {
         String email = "delamos@unityfoundation.io";
         teamInvitationRepository.save(email);
-        String userId = registerService.register(email, "secret");
+        String userId = registerService.register(email, "secret", null);
         Authentication authentication = Authentication.build(userId, Collections.emptyList(), Collections.singletonMap("email", email));
         authenticationFetcher.setAuthentication(authentication);
         BlockingHttpClient client = httpClient.toBlocking();

@@ -1,8 +1,10 @@
 package org.projectcheckins.repository.eclipsestore;
 
 import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.eclipsestore.RootProvider;
 import io.micronaut.eclipsestore.annotations.StoreParams;
+import io.micronaut.multitenancy.Tenant;
 import io.micronaut.views.fields.messages.Message;
 import jakarta.inject.Singleton;
 import jakarta.validation.constraints.Email;
@@ -33,7 +35,7 @@ class EclipseStoreUser extends AbstractRegisterService implements UserFetcher, E
     }
 
     @Override
-    public String register(@NonNull UserSave userSave) throws RegistrationCheckViolationException {
+    public String register(@NonNull UserSave userSave, @Nullable Tenant tenant) throws RegistrationCheckViolationException {
         if (rootProvider.root().getUsers().stream().anyMatch(user -> user.email().equals(userSave.email()))) {
             throw new RegistrationCheckViolationException(UserAlreadyExistsRegistrationCheck.VIOLATION_USER_ALREADY_EXISTS);
         }
