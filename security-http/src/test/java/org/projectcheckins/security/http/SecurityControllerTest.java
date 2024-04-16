@@ -108,7 +108,7 @@ class SecurityControllerTest {
         private final List<String> emails = new ArrayList<>();
 
         @Override
-        public String register(String email, String rawPassword, List<String> authorities, @Nullable Tenant tenant) throws RegistrationCheckViolationException {
+        public String register(String email, String rawPassword, @Nullable Tenant tenant, List<String> authorities) throws RegistrationCheckViolationException {
             if (email.equals(EMAIL_ALREADY_EXISTS)) {
                 throw new RegistrationCheckViolationException(UserAlreadyExistsRegistrationCheck.VIOLATION_USER_ALREADY_EXISTS);
             }
