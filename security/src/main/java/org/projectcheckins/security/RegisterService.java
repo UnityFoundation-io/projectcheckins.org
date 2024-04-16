@@ -18,6 +18,6 @@ public interface RegisterService {
 
     @NonNull String register(@NonNull @NotBlank String email,
                     @NonNull @NotBlank String rawPassword,
-                    @NonNull List<String> authorities,
-                             @Nullable Tenant tenant) throws RegistrationCheckViolationException;
+                    @Nullable Tenant tenant,
+                    @NonNull List<String> authorities) throws RegistrationCheckViolationException;
 }
