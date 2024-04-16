@@ -143,7 +143,7 @@ class QuestionController {
         return Map.of(
                 MODEL_QUESTION, question,
                 ApiConstants.MODEL_BREADCRUMBS, List.of(BREADCRUMB_LIST, new Breadcrumb(Message.of(question.title()))),
-                MODEL_ANSWERS, answerService.findByQuestionId(question.id(), authentication, tenant),
+                MODEL_ANSWERS, answerService.findByQuestionIdGroupedByDate(question.id(), authentication, tenant),
                 ANSWER_FORM, answerFormSave
         );
     }

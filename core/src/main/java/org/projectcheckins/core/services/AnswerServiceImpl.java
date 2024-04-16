@@ -105,14 +105,15 @@ public class AnswerServiceImpl implements AnswerService {
 
     @Override
     @NonNull
-    public List<DateAnswers> findByQuestionId(@NotBlank String questionId,
+    public List<DateAnswers> findByQuestionIdGroupedByDate(@NotBlank String questionId,
                                               @NotNull Authentication authentication,
                                               @Nullable Tenant tenant) {
         return dateAnswersByQuestionId(questionId, authentication, tenant);
     }
 
+    @Override
     @NonNull
-    private List<? extends AnswerView> findAllByQuestionId(@NotBlank String questionId,
+    public List<? extends AnswerView> findByQuestionId(@NotBlank String questionId,
                                               @NotNull Authentication authentication,
                                               @Nullable Tenant tenant) {
         final Map<String, PublicProfile> respondents = profileRepository.list(tenant).stream().collect(toMap(PublicProfile::id, Function.identity()));
@@ -127,7 +128,7 @@ public class AnswerServiceImpl implements AnswerService {
         LocalDate answerDate = null;
         List<AnswerView> answers = null;
         List<DateAnswers> result = new ArrayList<>();
-        for (AnswerView view : findAllByQuestionId(id, authentication, tenant)) {
+        for (AnswerView view : findByQuestionId(id, authentication, tenant)) {
             if (answerDate != null && !view.answer().answerDate().equals(answerDate)) {
                 result.add(new DateAnswers(answerDate, answers));
                 answerDate = view.answer().answerDate();

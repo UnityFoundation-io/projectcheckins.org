@@ -27,7 +27,10 @@ public interface AnswerService {
     Optional<? extends AnswerView> findById(@NotBlank String id, @NotNull Authentication authentication, @Nullable Tenant tenant);
 
     @NonNull
-    List<DateAnswers> findByQuestionId(@NotBlank String questionId, @NotNull Authentication authentication, @Nullable Tenant tenant);
+    List<? extends AnswerView> findByQuestionId(@NotBlank String questionId, @NotNull Authentication authentication, @Nullable Tenant tenant);
+
+    @NonNull
+    List<DateAnswers> findByQuestionIdGroupedByDate(@NotBlank String questionId, @NotNull Authentication authentication, @Nullable Tenant tenant);
 
     @NonNull
     String getAnswerSummary(@NotNull AnswerView answerView, @Nullable Locale locale);
