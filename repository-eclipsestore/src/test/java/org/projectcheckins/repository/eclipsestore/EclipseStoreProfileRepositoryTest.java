@@ -26,7 +26,7 @@ class EclipseStoreProfileRepositoryTest {
   void testCrud(EclipseStoreUser storeUser, EclipseStoreProfileRepository profileRepository) throws Exception {
     final String email = "email@example.com";
     final String userId = storeUser.register(new UserSave(
-        email, "encodedPassword", emptyList()), null);
+        email, "encodedPassword", null, emptyList()));
     final Authentication wrongAuth = new ClientAuthentication("wrong-id", null);
     final Authentication rightAuth = new ClientAuthentication(userId, null);
     assertThat(profileRepository.findByAuthentication(rightAuth))
