@@ -13,7 +13,7 @@ public interface RegisterService {
     default String register(@NonNull @NotBlank String email,
                             @NonNull @NotBlank String rawPassword,
                             @Nullable Tenant tenant) throws RegistrationCheckViolationException {
-        return register(email, rawPassword, Collections.emptyList(), tenant);
+        return register(email, rawPassword, tenant, Collections.emptyList());
     }
 
     @NonNull String register(@NonNull @NotBlank String email,
