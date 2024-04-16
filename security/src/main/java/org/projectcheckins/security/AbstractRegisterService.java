@@ -33,7 +33,7 @@ public abstract class AbstractRegisterService implements RegisterService {
     public String register(@NonNull @NotBlank String username,
                            @NonNull @NotBlank String rawPassword,
                            @Nullable Tenant tenant) throws RegistrationCheckViolationException {
-        return register(username, rawPassword, Collections.emptyList(), tenant);
+        return register(username, rawPassword, tenant, Collections.emptyList());
     }
 
     @NonNull
@@ -42,8 +42,8 @@ public abstract class AbstractRegisterService implements RegisterService {
     @Override
     public String register(@NonNull @NotBlank String username,
                            @NonNull @NotBlank String rawPassword,
-                           @NonNull List<String> authorities,
-                           @Nullable Tenant tenant) throws RegistrationCheckViolationException {
+                           @Nullable Tenant tenant,
+                           @NonNull List<String> authorities) throws RegistrationCheckViolationException {
         Optional<RegistrationCheckViolation> violationOptional = registrationChecks.stream()
                 .map(check -> check.validate(username, tenant))
                 .flatMap(Optional::stream)

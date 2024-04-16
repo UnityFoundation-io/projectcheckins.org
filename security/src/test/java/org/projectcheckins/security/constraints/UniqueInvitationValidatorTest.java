@@ -8,8 +8,9 @@ import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Singleton;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.security.SecondaryTeamInvitationRepository;
+import org.projectcheckins.security.TeamInvitationRecord;
 import org.projectcheckins.security.TeamInvitationRepository;
-import org.projectcheckins.security.TenantTeamInvitation;
+
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @MicronautTest(startApplication = false)
@@ -18,10 +19,10 @@ class UniqueInvitationValidatorTest {
     private static final String EXISTING_EMAIL = "calvog@unityfoundation.io";
     @Test
     void isValid(UniqueValidator uniqueValidator) {
-        assertThat(uniqueValidator.isValid(new TenantTeamInvitation(null, null), null, null)).isTrue();
-        assertThat(uniqueValidator.isValid(new TenantTeamInvitation("", null), null, null)).isTrue();
-        assertThat(uniqueValidator.isValid(new TenantTeamInvitation("delamos@unityfoundation.io", null), null, null)).isTrue();
-        assertThat(uniqueValidator.isValid(new TenantTeamInvitation(EXISTING_EMAIL, null), null, null)).isFalse();
+        assertThat(uniqueValidator.isValid(new TeamInvitationRecord(null, null), null, null)).isTrue();
+        assertThat(uniqueValidator.isValid(new TeamInvitationRecord("", null), null, null)).isTrue();
+        assertThat(uniqueValidator.isValid(new TeamInvitationRecord("delamos@unityfoundation.io", null), null, null)).isTrue();
+        assertThat(uniqueValidator.isValid(new TeamInvitationRecord(EXISTING_EMAIL, null), null, null)).isFalse();
     }
 
     @Requires(property = "spec.name", value = "UniqueValidatorTest")

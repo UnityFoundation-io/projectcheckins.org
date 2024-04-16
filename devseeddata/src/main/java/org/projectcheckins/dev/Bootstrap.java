@@ -10,9 +10,9 @@ import jakarta.inject.Singleton;
 import org.projectcheckins.email.EmailConfirmationRepository;
 import org.projectcheckins.security.RegisterService;
 import org.projectcheckins.security.RegistrationCheckViolationException;
+import org.projectcheckins.security.TeamInvitationRecord;
 import org.projectcheckins.security.TeamInvitationRepository;
 import org.projectcheckins.annotations.Generated;
-import org.projectcheckins.security.TenantTeamInvitation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
     @Override
     public void onApplicationEvent(ServerStartupEvent event) {
         Tenant tenant = null;
-        teamInvitationRepository.save(new TenantTeamInvitation("pending@example.com", tenant));
+        teamInvitationRepository.save(new TeamInvitationRecord("pending@example.com", tenant));
         addUser("delamos@unityfoundation.io", tenant);
         addUser("calvog@unityfoundation.io", tenant);
         addUser("grellej@unityfoundation.io", tenant);
@@ -47,7 +47,7 @@ public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
 
     private void addUser(String email, Tenant tenant) {
         try {
-            teamInvitationRepository.save(new TenantTeamInvitation(email, tenant));
+            teamInvitationRepository.save(new TeamInvitationRecord(email, tenant));
             registerService.register(email, "secret", tenant);
         } catch (RegistrationCheckViolationException e) {
             LOG.warn("{}", e.getViolation().message().defaultMessage());

@@ -7,11 +7,11 @@ import io.micronaut.core.util.StringUtils;
 import io.micronaut.validation.validator.constraints.ConstraintValidator;
 import io.micronaut.validation.validator.constraints.ConstraintValidatorContext;
 import jakarta.inject.Singleton;
-import org.projectcheckins.security.TenantTeamInvitation;
+import org.projectcheckins.security.TeamInvitation;
 import org.projectcheckins.security.UserAlreadyExistsRegistrationCheck;
 
 @Singleton
-class UserDoesNotExistValidator implements ConstraintValidator<UserDoesNotExist, TenantTeamInvitation> {
+class UserDoesNotExistValidator implements ConstraintValidator<UserDoesNotExist, TeamInvitation> {
     private final UserAlreadyExistsRegistrationCheck userAlreadyExistsRegistrationCheck;
 
     UserDoesNotExistValidator(UserAlreadyExistsRegistrationCheck userAlreadyExistsRegistrationCheck) {
@@ -19,7 +19,7 @@ class UserDoesNotExistValidator implements ConstraintValidator<UserDoesNotExist,
     }
 
     @Override
-    public boolean isValid(@Nullable TenantTeamInvitation invitation,
+    public boolean isValid(@Nullable TeamInvitation invitation,
                            @NonNull AnnotationValue<UserDoesNotExist> annotationMetadata,
                            @NonNull ConstraintValidatorContext context) {
         if (StringUtils.isEmpty(invitation.email())) {

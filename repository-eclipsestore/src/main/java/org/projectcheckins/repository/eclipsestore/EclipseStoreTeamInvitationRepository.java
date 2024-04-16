@@ -10,8 +10,8 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.projectcheckins.security.TeamInvitation;
 import org.projectcheckins.security.TeamInvitationRepository;
-import org.projectcheckins.security.TenantTeamInvitation;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +30,7 @@ class EclipseStoreTeamInvitationRepository implements TeamInvitationRepository {
     }
 
     @Override
-    public void save(@NonNull @NotNull @Valid TenantTeamInvitation invitation) {
+    public void save(@NonNull @NotNull @Valid TeamInvitation invitation) {
         String email = invitation.email();
         if (findByEmail(email).isEmpty()) {
             saveInvitation(rootProvider.root().getInvitations(), new TeamInvitationEntity(email));

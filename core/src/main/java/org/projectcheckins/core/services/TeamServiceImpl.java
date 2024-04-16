@@ -9,8 +9,8 @@ import org.projectcheckins.core.api.PublicProfile;
 import org.projectcheckins.core.forms.TeamMemberSave;
 import org.projectcheckins.core.repositories.ProfileRepository;
 import org.projectcheckins.security.TeamInvitation;
+import org.projectcheckins.security.TeamInvitationRecord;
 import org.projectcheckins.security.TeamInvitationRepository;
-import org.projectcheckins.security.TenantTeamInvitation;
 
 import java.util.List;
 
@@ -39,6 +39,6 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public void save(@NotNull TeamMemberSave form, @Nullable Tenant tenant) {
-        teamInvitationRepository.save(new TenantTeamInvitation(form.email(), tenant));
+        teamInvitationRepository.save(new TeamInvitationRecord(form.email(), tenant));
     }
 }

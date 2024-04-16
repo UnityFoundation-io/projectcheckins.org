@@ -4,6 +4,7 @@ import io.micronaut.multitenancy.Tenant;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
+import org.projectcheckins.security.TeamInvitationRecord;
 import org.projectcheckins.security.UserNotInvitedRegistrationCheck;
 
 import static org.assertj.core.api.Assertions.*;
@@ -19,15 +20,15 @@ class EclipseStoreTeamInvitationRepositoryTest {
                 .isEmpty();
         assertThat(userNotInvitedRegistrationCheck.validate(email, tenant))
                 .isNotEmpty();
-        assertThatCode(() -> teamInvitationRepository.save(email))
-                .doesNotThrowAnyException();;
+        assertThatCode(() -> teamInvitationRepository.save(new TeamInvitationRecord(email, null)))
+                .doesNotThrowAnyException();
         assertThat(userNotInvitedRegistrationCheck.validate(email, tenant))
                 .isEmpty();
         assertThat(teamInvitationRepository.findAll(null))
                 .hasSize(1);
         assertThat(teamInvitationRepository.findAll(null).get(0))
                 .hasFieldOrPropertyWithValue("email", email);
-        assertThatThrownBy(() -> teamInvitationRepository.save(email))
+        assertThatThrownBy(() -> teamInvitationRepository.save(new TeamInvitationRecord(email, null)))
                 .isInstanceOf(ConstraintViolationException.class);
     }
 }

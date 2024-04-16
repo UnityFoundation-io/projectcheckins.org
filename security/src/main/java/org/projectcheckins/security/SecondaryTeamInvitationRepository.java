@@ -21,7 +21,7 @@ public class SecondaryTeamInvitationRepository implements TeamInvitationReposito
     }
 
     @Override
-    public void save(@NonNull @NotNull @Valid TenantTeamInvitation invitation) {
+    public void save(@NonNull @NotNull @Valid TeamInvitation invitation) {
         throw new UnsupportedOperationException("Not implemented");
     }
 

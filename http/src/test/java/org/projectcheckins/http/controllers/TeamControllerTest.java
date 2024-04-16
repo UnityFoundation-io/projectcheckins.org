@@ -75,7 +75,7 @@ class TeamControllerTest {
             null
     );
 
-    static final TeamInvitation INVITATION_1 = new TeamInvitationRecord("pending@email.com", false);
+    static final TeamInvitation INVITATION_1 = new TeamInvitationRecord("pending@email.com", false, null);
 
     @Test
     void testListTeamMembers(@Client("/") HttpClient httpClient, AuthenticationFetcherMock authenticationFetcher) {
@@ -154,6 +154,6 @@ class TeamControllerTest {
         }
     }
 
-    record TeamInvitationRecord(String email, boolean accepted) implements TeamInvitation {
+    record TeamInvitationRecord(String email, boolean accepted, @Nullable Tenant tenant) implements TeamInvitation {
     }
 }

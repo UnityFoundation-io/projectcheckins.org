@@ -47,9 +47,9 @@ class TeamServiceImplTest {
             null
     );
 
-    static final TeamInvitation INVITATION_1 = new TeamInvitationRecord("pending1@email.com");
+    static final TeamInvitation INVITATION_1 = new TeamInvitationRecord("pending1@email.com", null);
 
-    static final TeamInvitation INVITATION_2 = new TeamInvitationRecord("pending2@email.com");
+    static final TeamInvitation INVITATION_2 = new TeamInvitationRecord("pending2@email.com", null);
 
     @Test
     void testFindPendingInvitations() {
@@ -101,7 +101,7 @@ class TeamServiceImplTest {
         }
 
         @Override
-        public void save(@NonNull @NotNull @Valid TenantTeamInvitation invitation){
+        public void save(@NonNull @NotNull @Valid TeamInvitation invitation){
         }
 
         @Override
@@ -124,5 +124,5 @@ class TeamServiceImplTest {
             return Optional.empty();
         }
     }
-    record TeamInvitationRecord(String email) implements TeamInvitation { }
+    record TeamInvitationRecord(String email, @Nullable Tenant tenant) implements TeamInvitation { }
 }

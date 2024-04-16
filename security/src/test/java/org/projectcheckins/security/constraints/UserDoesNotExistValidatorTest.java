@@ -19,10 +19,10 @@ class UserDoesNotExistValidatorTest {
     private static final String EXISTING_EMAIL = "calvog@unityfoundation.io";
     @Test
     void isValid(UserDoesNotExistValidator userDoesNotExistValidator) {
-        assertThat(userDoesNotExistValidator.isValid(new TenantTeamInvitation(null, null), null, null)).isTrue();
-        assertThat(userDoesNotExistValidator.isValid(new TenantTeamInvitation("", null), null, null)).isTrue();
-        assertThat(userDoesNotExistValidator.isValid(new TenantTeamInvitation("delamos@unityfoundation.io", null), null, null)).isTrue();
-        assertThat(userDoesNotExistValidator.isValid(new TenantTeamInvitation(EXISTING_EMAIL, null), null, null)).isFalse();
+        assertThat(userDoesNotExistValidator.isValid(new TeamInvitationRecord(null, null), null, null)).isTrue();
+        assertThat(userDoesNotExistValidator.isValid(new TeamInvitationRecord("", null), null, null)).isTrue();
+        assertThat(userDoesNotExistValidator.isValid(new TeamInvitationRecord("delamos@unityfoundation.io", null), null, null)).isTrue();
+        assertThat(userDoesNotExistValidator.isValid(new TeamInvitationRecord(EXISTING_EMAIL, null), null, null)).isFalse();
     }
 
     @Requires(property = "spec.name", value = "UserDoesNotExistValidatorTest")

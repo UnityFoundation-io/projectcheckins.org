@@ -7,11 +7,11 @@ import io.micronaut.core.util.StringUtils;
 import io.micronaut.validation.validator.constraints.ConstraintValidator;
 import io.micronaut.validation.validator.constraints.ConstraintValidatorContext;
 import jakarta.inject.Singleton;
+import org.projectcheckins.security.TeamInvitation;
 import org.projectcheckins.security.TeamInvitationRepository;
-import org.projectcheckins.security.TenantTeamInvitation;
 
 @Singleton
-class UniqueValidator implements ConstraintValidator<UniqueInvitation, TenantTeamInvitation> {
+class UniqueValidator implements ConstraintValidator<UniqueInvitation, TeamInvitation> {
     private final TeamInvitationRepository teamInvitationRepository;
 
     UniqueValidator(TeamInvitationRepository teamInvitationRepository) {
@@ -19,7 +19,7 @@ class UniqueValidator implements ConstraintValidator<UniqueInvitation, TenantTea
     }
 
     @Override
-    public boolean isValid(@Nullable TenantTeamInvitation invitation,
+    public boolean isValid(@Nullable TeamInvitation invitation,
                            @NonNull AnnotationValue<UniqueInvitation> annotationMetadata,
                            @NonNull ConstraintValidatorContext context) {
         if (StringUtils.isEmpty(invitation.email())) {

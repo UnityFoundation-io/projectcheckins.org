@@ -6,10 +6,8 @@ import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.idgeneration.IdGenerator;
 import org.projectcheckins.email.EmailConfirmationRepository;
-import org.projectcheckins.security.RegisterService;
-import org.projectcheckins.security.RegistrationCheckViolationException;
-import org.projectcheckins.security.TeamInvitationRepository;
-import org.projectcheckins.security.UserFetcher;
+import org.projectcheckins.security.*;
+
 import static org.assertj.core.api.Assertions.*;
 
 @MicronautTest(startApplication = false)
@@ -24,7 +22,7 @@ class EclipseStoreUserFetcherTest {
     void authoritiesFetcher(UserFetcher userFetcher, RegisterService registerService) throws RegistrationCheckViolationException {
         assertThat(userFetcher.findByEmail(NOT_FOUND_EMAIL))
             .isEmpty();
-        teamInvitationRepository.save(FOUND_EMAIL);
+        teamInvitationRepository.save(new TeamInvitationRecord(FOUND_EMAIL, null));
         registerService.register(FOUND_EMAIL, "password", null);
         assertThat(userFetcher.findByEmail(FOUND_EMAIL)).hasValueSatisfying(userState -> assertThat(userState)
                 .matches(u -> !u.isEnabled())
@@ -37,7 +35,7 @@ class EclipseStoreUserFetcherTest {
     void testRegister(RegisterService registerService) {
         String email = "sergio@projectcheckins.org";
         String notInvited = "not-invited@projectcheckins.org";
-        teamInvitationRepository.save(email);
+        teamInvitationRepository.save(new TeamInvitationRecord(email, null));
         assertThatCode(() -> registerService.register(email, "foo", null))
                 .doesNotThrowAnyException();
         assertThatThrownBy(() -> registerService.register(email, "foo", null))
@@ -50,7 +48,7 @@ class EclipseStoreUserFetcherTest {
                         IdGenerator idGenerator,
                         EmailConfirmationRepository emailConfirmationRepository) throws RegistrationCheckViolationException {
         String email = idGenerator.generate() + "@projectcheckins.org";
-        teamInvitationRepository.save(email);
+        teamInvitationRepository.save(new TeamInvitationRecord(email, null));
         String id = registerService.register(email, "password", null);
         assertThat(rootProvider.root().getUsers()).noneMatch(UserEntity::enabled);
         emailConfirmationRepository.enableByEmail(email);

@@ -9,15 +9,14 @@ import io.micronaut.http.HttpRequest;
 import io.micronaut.http.client.BlockingHttpClient;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
+import io.micronaut.multitenancy.Tenant;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Singleton;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.api.Question;
 import org.projectcheckins.core.repositories.QuestionRepository;
-import org.projectcheckins.security.RegisterService;
-import org.projectcheckins.security.RegistrationCheckViolationException;
-import org.projectcheckins.security.TeamInvitationRepository;
+import org.projectcheckins.security.*;
 import org.projectcheckins.test.AbstractAuthenticationFetcher;
 import org.projectcheckins.test.BrowserRequest;
 
@@ -38,7 +37,7 @@ class QuestionCrudTest {
                       TeamInvitationRepository teamInvitationRepository,
                       AuthenticationFetcherMock authenticationFetcher) throws RegistrationCheckViolationException {
         String email = "delamos@unityfoundation.io";
-        teamInvitationRepository.save(email);
+        teamInvitationRepository.save(new TeamInvitationRecord(email, null));
         String userId = registerService.register(email, "secret", null);
         Authentication authentication = Authentication.build(userId, Collections.emptyList(), Collections.singletonMap("email", email));
         authenticationFetcher.setAuthentication(authentication);
