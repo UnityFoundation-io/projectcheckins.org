@@ -46,8 +46,7 @@ public abstract class AbstractRegisterService implements RegisterService {
                            @Nullable Tenant tenant) throws RegistrationCheckViolationException {
         Optional<RegistrationCheckViolation> violationOptional = registrationChecks.stream()
                 .map(check -> check.validate(username, tenant))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .flatMap(Optional::stream)
                 .findFirst();
         if (violationOptional.isPresent()) {
             LOG.warn("Could not register {}", violationOptional.get().message().defaultMessage());
