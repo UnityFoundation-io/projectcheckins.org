@@ -3,6 +3,7 @@ package org.projectcheckins.http.controllers;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.util.StringUtils;
 import io.micronaut.http.HttpRequest;
@@ -15,6 +16,7 @@ import io.micronaut.multitenancy.Tenant;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Singleton;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -27,6 +29,8 @@ import org.projectcheckins.core.forms.TimeFormat;
 import org.projectcheckins.core.services.TeamService;
 import org.projectcheckins.core.services.TeamServiceImpl;
 import org.projectcheckins.security.TeamInvitation;
+import org.projectcheckins.security.UserFetcher;
+import org.projectcheckins.security.UserState;
 import org.projectcheckins.test.AbstractAuthenticationFetcher;
 import org.projectcheckins.test.BrowserRequest;
 import org.projectcheckins.test.HttpClientResponseExceptionAssert;
@@ -35,6 +39,7 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 
@@ -74,6 +79,50 @@ class TeamControllerTest {
             null,
             null
     );
+
+    static final UserState USER_STATE_1 = new UserState() {
+        @Override
+        public String getId() {
+            return USER_1.id();
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return true;
+        }
+
+        @Override
+        public String getEmail() {
+            return USER_1.email();
+        }
+
+        @Override
+        public String getPassword() {
+            return "password";
+        }
+    };
+
+    static final UserState USER_STATE_2 = new UserState() {
+        @Override
+        public String getId() {
+            return USER_2.id();
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return true;
+        }
+
+        @Override
+        public String getEmail() {
+            return USER_2.email();
+        }
+
+        @Override
+        public String getPassword() {
+            return "password";
+        }
+    };
 
     static final TeamInvitation INVITATION_1 = new TeamInvitationRecord("pending@email.com", false, null);
 
@@ -147,8 +196,8 @@ class TeamControllerTest {
         @NonNull
         public Optional<UserState> findByEmail(@NotBlank @NonNull String email) {
             return switch (email) {
-                case "user1@email.com" -> Optional.of(new UserStateRecord(USER_1));
-                case "user2@email.com" -> Optional.of(new UserStateRecord(USER_2));
+                case "user1@email.com" -> Optional.of(USER_STATE_1);
+                case "user2@email.com" -> Optional.of(USER_STATE_2);
                 default -> Optional.empty();
             };
         }

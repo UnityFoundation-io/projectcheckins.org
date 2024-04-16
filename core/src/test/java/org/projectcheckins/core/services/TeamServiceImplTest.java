@@ -11,6 +11,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.api.Profile;
@@ -46,6 +47,28 @@ class TeamServiceImplTest {
             null,
             null
     );
+
+    static final UserState USER_1_STATE = new UserState() {
+        @Override
+        public String getId() {
+            return USER_1.id();
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return true;
+        }
+
+        @Override
+        public String getEmail() {
+            return USER_1.email();
+        }
+
+        @Override
+        public String getPassword() {
+            return "password";
+        }
+    };
 
     static final TeamInvitation INVITATION_1 = new TeamInvitationRecord("pending1@email.com", null);
 
@@ -86,14 +109,14 @@ class TeamServiceImplTest {
         final TeamMemberSave form = new TeamMemberSave(USER_1.email());
         assertThatThrownBy(() -> teamService.save(form, null))
                 .isInstanceOf(ConstraintViolationException.class)
-                .hasMessage("save.form: Team member already registered.");
+                .hasMessage("save.invitation: Invitation already exists");
     }
 
     @Requires(property = "spec.name", value = "TeamServiceImplTest")
     @Singleton
     static class RegisterServiceMock implements RegisterService {
         @Override
-        public String register(String email, String rawPassword, List<String> authorities) throws UserAlreadyExistsException {
+        public String register(String email, String rawPassword, Tenant tenant, List<String> authorities) throws RegistrationCheckViolationException {
             return "xxx";
         }
     }
@@ -139,7 +162,7 @@ class TeamServiceImplTest {
 
         @Override
         public boolean existsByEmail(String email, @Nullable Tenant tenant) {
-            return false;
+            return USER_1.email().equals(email);
         }
     }
 
