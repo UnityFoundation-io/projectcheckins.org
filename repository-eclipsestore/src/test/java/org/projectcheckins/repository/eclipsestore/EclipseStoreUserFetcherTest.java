@@ -38,6 +38,8 @@ class EclipseStoreUserFetcherTest {
         teamInvitationRepository.save(new TeamInvitationRecord(email, null));
         assertThatCode(() -> registerService.register(email, "foo", null))
                 .doesNotThrowAnyException();
+        assertThatThrownBy(() -> registerService.register(notInvited, "foo", null))
+                .isInstanceOf(RegistrationCheckViolationException.class);
         assertThatThrownBy(() -> registerService.register(email, "foo", null))
                 .isInstanceOf(RegistrationCheckViolationException.class);
     }
