@@ -7,7 +7,6 @@ import io.micronaut.views.model.ViewModelProcessor;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 public abstract class MapViewModelProcessor implements ViewModelProcessor<Map<String, Object>> {
     @Override
