@@ -21,6 +21,7 @@ import org.projectcheckins.core.repositories.SecondaryProfileRepository;
 import org.projectcheckins.security.SecondaryTeamInvitationRepository;
 import org.projectcheckins.security.TeamInvitation;
 import org.projectcheckins.security.TeamInvitationRepository;
+import org.projectcheckins.security.constraints.Unique;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -100,7 +101,7 @@ class TeamServiceImplTest {
         }
 
         @Override
-        public void save(@NotBlank @Email String email) {
+        public void save(@Unique @NotBlank @Email String email){
         }
     }
 

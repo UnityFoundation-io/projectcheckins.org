@@ -4,6 +4,7 @@ import io.micronaut.context.annotation.Secondary;
 import jakarta.inject.Singleton;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import org.projectcheckins.security.constraints.Unique;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class SecondaryTeamInvitationRepository implements TeamInvitationReposito
     }
 
     @Override
-    public void save(@NotBlank @Email String email) {
+    public void save(@Unique @NotBlank @Email String email) {
         throw new UnsupportedOperationException("Not implemented");
     }
 

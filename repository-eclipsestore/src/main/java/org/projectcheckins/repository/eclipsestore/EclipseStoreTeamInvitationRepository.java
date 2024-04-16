@@ -5,9 +5,8 @@ import io.micronaut.eclipsestore.annotations.StoreParams;
 import jakarta.inject.Singleton;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import org.projectcheckins.security.RegistrationCheck;
-import org.projectcheckins.security.TeamInvitation;
 import org.projectcheckins.security.TeamInvitationRepository;
+import org.projectcheckins.security.constraints.Unique;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +25,7 @@ class EclipseStoreTeamInvitationRepository implements TeamInvitationRepository {
     }
 
     @Override
-    public void save(@NotBlank @Email String email) {
+    public void save(@Unique @NotBlank @Email String email) {
         if (findByEmail(email).isEmpty()) {
             saveInvitation(rootProvider.root().getInvitations(), new TeamInvitationEntity(email));
         }
