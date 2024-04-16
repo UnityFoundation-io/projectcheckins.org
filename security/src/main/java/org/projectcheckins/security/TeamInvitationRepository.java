@@ -17,10 +17,6 @@ public interface TeamInvitationRepository {
 
     void save(@NonNull @NotNull @Valid TenantTeamInvitation invitation);
 
-    default void save(@NonNull @NotBlank @Email String email) {
-        save(new TenantTeamInvitation(email, null));
-    }
-
     void deleteByEmail(@NotBlank @Email String email, @Nullable Tenant tenant);
 
     boolean existsByEmail(@NotBlank @Email String email, @Nullable Tenant tenant);
