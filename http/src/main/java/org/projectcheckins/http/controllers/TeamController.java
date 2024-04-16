@@ -54,7 +54,6 @@ class TeamController {
     private final TeamService teamService;
     private final FormGenerator formGenerator;
 
-
     TeamController(TeamService teamService, FormGenerator formGenerator) {
         this.teamService = teamService;
         this.formGenerator = formGenerator;
@@ -65,7 +64,7 @@ class TeamController {
         return Map.of(
                 ApiConstants.MODEL_BREADCRUMBS, BREADCRUMBS_LIST,
                 MODEL_MEMBERS, teamService.findAll(tenant),
-                MODEL_INVITATIONS, teamService.findPendingInvitations(tenant)
+                MODEL_INVITATIONS, teamService.findInvitations(tenant)
         );
     }
 

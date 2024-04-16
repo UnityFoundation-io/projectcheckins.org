@@ -11,18 +11,11 @@ class TeamInvitationEntityTest {
         TeamInvitationEntity invitation = new TeamInvitationEntity("email@projectcheckins.org");
 
         assertThat(invitation)
-                .hasFieldOrPropertyWithValue("email", "email@projectcheckins.org")
-                .hasFieldOrPropertyWithValue("accepted", false);
-
+                .hasFieldOrPropertyWithValue("email", "email@projectcheckins.org");
         invitation.email("newEmail@projectcheckins.org");
 
         assertThat(invitation)
                 .hasFieldOrPropertyWithValue("email", "newEmail@projectcheckins.org");
-
-        invitation.accepted(true);
-
-        assertThat(invitation.accepted())
-                .isTrue();
     }
 
 }

@@ -17,7 +17,7 @@ public interface TeamService {
     List<? extends PublicProfile> findAll(@Nullable Tenant tenant);
 
     @NonNull
-    List<? extends TeamInvitation> findPendingInvitations(@Nullable Tenant tenant);
+    List<? extends TeamInvitation> findInvitations(@Nullable Tenant tenant);
 
     void save(@NotNull @Valid TeamMemberSave form, @Nullable Tenant tenant);
 }

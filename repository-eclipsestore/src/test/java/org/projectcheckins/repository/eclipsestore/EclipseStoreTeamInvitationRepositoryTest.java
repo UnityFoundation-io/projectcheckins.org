@@ -1,35 +1,34 @@
 package org.projectcheckins.repository.eclipsestore;
 
+import io.micronaut.multitenancy.Tenant;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
+import org.projectcheckins.security.TeamInvitationRecord;
+import org.projectcheckins.security.UserNotInvitedRegistrationCheck;
 
 import static org.assertj.core.api.Assertions.*;
 
 @MicronautTest(startApplication = false)
 class EclipseStoreTeamInvitationRepositoryTest {
-
-    @Inject
-    EclipseStoreTeamInvitationRepository teamInvitationRepository;
-
     @Test
-    void testOperations() {
+    void testOperations(EclipseStoreTeamInvitationRepository teamInvitationRepository,
+                        UserNotInvitedRegistrationCheck userNotInvitedRegistrationCheck) {
         final String email = "invitation@email.com";
-        assertThat(teamInvitationRepository.findAll())
+        Tenant tenant = null;
+        assertThat(teamInvitationRepository.findAll(null))
                 .isEmpty();
-        assertThat(teamInvitationRepository.canRegister(email))
-                .isFalse();
-        teamInvitationRepository.save(email);
-        assertThat(teamInvitationRepository.canRegister(email))
-                .isTrue();
-        assertThat(teamInvitationRepository.findAll())
-                .hasSize(1);
-        assertThat(teamInvitationRepository.findAll().get(0))
-                .hasFieldOrPropertyWithValue("accepted", false);
-        assertThatCode(() -> teamInvitationRepository.save(email))
+        assertThat(userNotInvitedRegistrationCheck.validate(email, tenant))
+                .isNotEmpty();
+        assertThatCode(() -> teamInvitationRepository.save(new TeamInvitationRecord(email, null)))
                 .doesNotThrowAnyException();
-        teamInvitationRepository.accept(email);
-        assertThat(teamInvitationRepository.findAll().get(0))
-                .hasFieldOrPropertyWithValue("accepted", true);
+        assertThat(userNotInvitedRegistrationCheck.validate(email, tenant))
+                .isEmpty();
+        assertThat(teamInvitationRepository.findAll(null))
+                .hasSize(1);
+        assertThat(teamInvitationRepository.findAll(null).get(0))
+                .hasFieldOrPropertyWithValue("email", email);
+        assertThatThrownBy(() -> teamInvitationRepository.save(new TeamInvitationRecord(email, null)))
+                .isInstanceOf(ConstraintViolationException.class);
     }
 }

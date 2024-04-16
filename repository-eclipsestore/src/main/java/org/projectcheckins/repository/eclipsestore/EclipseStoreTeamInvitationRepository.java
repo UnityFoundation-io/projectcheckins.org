@@ -1,11 +1,15 @@
 package org.projectcheckins.repository.eclipsestore;
 
+import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.eclipsestore.RootProvider;
 import io.micronaut.eclipsestore.annotations.StoreParams;
+import io.micronaut.multitenancy.Tenant;
 import jakarta.inject.Singleton;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import org.projectcheckins.security.RegistrationCheck;
+import jakarta.validation.constraints.NotNull;
 import org.projectcheckins.security.TeamInvitation;
 import org.projectcheckins.security.TeamInvitationRepository;
 
@@ -13,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Singleton
-class EclipseStoreTeamInvitationRepository implements TeamInvitationRepository, RegistrationCheck {
+class EclipseStoreTeamInvitationRepository implements TeamInvitationRepository {
     private final RootProvider<Data> rootProvider;
 
     protected EclipseStoreTeamInvitationRepository(RootProvider<Data> rootProvider) {
@@ -21,24 +25,25 @@ class EclipseStoreTeamInvitationRepository implements TeamInvitationRepository, 
     }
 
     @Override
-    public List<TeamInvitationEntity> findAll() {
+    public List<TeamInvitationEntity> findAll(@Nullable Tenant tenant) {
         return rootProvider.root().getInvitations();
     }
 
     @Override
-    public void save(@NotBlank @Email String email) {
-        if (!canRegister(email)) {
+    public void save(@NonNull @NotNull @Valid TeamInvitation invitation) {
+        String email = invitation.email();
+        if (findByEmail(email).isEmpty()) {
             saveInvitation(rootProvider.root().getInvitations(), new TeamInvitationEntity(email));
         }
     }
 
     @Override
-    public void accept(@NotBlank @Email String email) {
-        findByEmail(email).ifPresent(this::saveInvitation);
+    public void deleteByEmail(@NotBlank @Email String email, @Nullable Tenant tenant) {
+        findByEmail(email).ifPresent(e -> delete(rootProvider.root().getInvitations(), e));
     }
 
     @Override
-    public boolean canRegister(@NotBlank @Email String email) {
+    public boolean existsByEmail(@NotBlank @Email String email, @Nullable Tenant tenant) {
         return findByEmail(email).isPresent();
     }
 
@@ -51,8 +56,8 @@ class EclipseStoreTeamInvitationRepository implements TeamInvitationRepository, 
         invitations.add(invitation);
     }
 
-    @StoreParams("invitation")
-    public void saveInvitation(TeamInvitationEntity invitation) {
-        invitation.accepted(true);
+    @StoreParams("invitations")
+    public void delete(List<TeamInvitationEntity> invitations, TeamInvitationEntity invitation) {
+        invitations.remove(invitation);
     }
 }

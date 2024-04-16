@@ -4,14 +4,15 @@ import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.env.Environment;
 import io.micronaut.context.event.ApplicationEventListener;
 
+import io.micronaut.multitenancy.Tenant;
 import io.micronaut.runtime.server.event.ServerStartupEvent;
 import jakarta.inject.Singleton;
 import org.projectcheckins.email.EmailConfirmationRepository;
 import org.projectcheckins.security.RegisterService;
+import org.projectcheckins.security.RegistrationCheckViolationException;
+import org.projectcheckins.security.TeamInvitationRecord;
 import org.projectcheckins.security.TeamInvitationRepository;
-import org.projectcheckins.security.UserAlreadyExistsException;
 import org.projectcheckins.annotations.Generated;
-import org.projectcheckins.security.UserNotInvitedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,22 +36,21 @@ public class Bootstrap implements ApplicationEventListener<ServerStartupEvent> {
 
     @Override
     public void onApplicationEvent(ServerStartupEvent event) {
-        teamInvitationRepository.save("pending@example.com");
-        addUser("delamos@unityfoundation.io");
-        addUser("calvog@unityfoundation.io");
-        addUser("grellej@unityfoundation.io");
-        addUser("yatest@unityfoundation.io");
-        addUser("wetted@objectcomputing.com");
+        Tenant tenant = null;
+        teamInvitationRepository.save(new TeamInvitationRecord("pending@example.com", tenant));
+        addUser("delamos@unityfoundation.io", tenant);
+        addUser("calvog@unityfoundation.io", tenant);
+        addUser("grellej@unityfoundation.io", tenant);
+        addUser("yatest@unityfoundation.io", tenant);
+        addUser("wetted@objectcomputing.com", tenant);
     }
 
-    private void addUser(String email) {
+    private void addUser(String email, Tenant tenant) {
         try {
-            teamInvitationRepository.save(email);
-            registerService.register(email, "secret");
-        } catch (UserAlreadyExistsException e) {
-            LOG.info("user {} already exists", email);
-        } catch (UserNotInvitedException e) {
-            LOG.info("user {} not invited", email);
+            teamInvitationRepository.save(new TeamInvitationRecord(email, tenant));
+            registerService.register(email, "secret", tenant);
+        } catch (RegistrationCheckViolationException e) {
+            LOG.warn("{}", e.getViolation().message().defaultMessage());
         }
         emailConfirmationRepository.enableByEmail(email);
     }

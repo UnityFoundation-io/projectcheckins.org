@@ -3,11 +3,15 @@ package org.projectcheckins.core.services;
 import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Requires;
+import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.multitenancy.Tenant;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.core.api.Profile;
 import org.projectcheckins.core.forms.Format;
@@ -16,11 +20,11 @@ import org.projectcheckins.core.forms.TeamMemberSave;
 import org.projectcheckins.core.forms.TimeFormat;
 import org.projectcheckins.core.repositories.ProfileRepository;
 import org.projectcheckins.core.repositories.SecondaryProfileRepository;
-import org.projectcheckins.security.TeamInvitation;
-import org.projectcheckins.security.TeamInvitationRepository;
+import org.projectcheckins.security.*;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 
 import static java.time.DayOfWeek.MONDAY;
@@ -43,14 +47,14 @@ class TeamServiceImplTest {
             null
     );
 
-    static final TeamInvitation INVITATION_1 = new TeamInvitationRecord("pending1@email.com", false);
+    static final TeamInvitation INVITATION_1 = new TeamInvitationRecord("pending1@email.com", null);
 
-    static final TeamInvitation INVITATION_2 = new TeamInvitationRecord("pending2@email.com", true);
+    static final TeamInvitation INVITATION_2 = new TeamInvitationRecord("pending2@email.com", null);
 
     @Test
     void testFindPendingInvitations() {
-        assertThat(teamService.findPendingInvitations(null))
-                .isEqualTo(List.of(INVITATION_1));
+        assertThat(teamService.findInvitations(null))
+                .isEqualTo(List.of(INVITATION_1, INVITATION_2));
     }
 
     @Inject
@@ -122,21 +126,36 @@ class TeamServiceImplTest {
 
     @Requires(property = "spec.name", value = "TeamServiceImplTest")
     @Singleton
-    static class TeamInvitationRepositoryMock implements TeamInvitationRepository {
+    @Replaces(TeamInvitationRepository.class)
+    static class TeamInvitationRepositoryMock extends SecondaryTeamInvitationRepository {
         @Override
-        public List<? extends TeamInvitation> findAll() {
+        public List<? extends TeamInvitation> findAll(@Nullable Tenant tenant) {
             return List.of(INVITATION_1, INVITATION_2);
         }
 
         @Override
-        public void save(String email) {
+        public void save(@NonNull @NotNull @Valid TeamInvitation invitation){
         }
 
         @Override
-        public void accept(String email) {
-
+        public boolean existsByEmail(String email, @Nullable Tenant tenant) {
+            return false;
         }
     }
 
-    record TeamInvitationRecord(String email, boolean accepted) implements TeamInvitation { }
+    @Requires(property = "spec.name", value = "TeamServiceImplTest")
+    @Singleton
+    @Replaces(UserAlreadyExistsRegistrationCheck.class)
+    static class UserAlreadyExistsRegistrationCheckMock extends UserAlreadyExistsRegistrationCheck {
+
+        public UserAlreadyExistsRegistrationCheckMock(UserRepository userRepository) {
+            super(userRepository);
+        }
+
+        @Override
+        public Optional<RegistrationCheckViolation> validate(String email, Tenant tenant) {
+            return Optional.empty();
+        }
+    }
+    record TeamInvitationRecord(String email, @Nullable Tenant tenant) implements TeamInvitation { }
 }

@@ -9,6 +9,7 @@ import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Error;
 import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.http.uri.UriBuilder;
+import io.micronaut.multitenancy.Tenant;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.authentication.AuthenticationFailureReason;
 import io.micronaut.security.endpoints.LoginControllerConfiguration;
@@ -25,8 +26,7 @@ import org.projectcheckins.annotations.PostForm;
 import org.projectcheckins.bootstrap.Alert;
 import org.projectcheckins.security.PasswordService;
 import org.projectcheckins.security.RegisterService;
-import org.projectcheckins.security.UserAlreadyExistsException;
-import org.projectcheckins.security.UserNotInvitedException;
+import org.projectcheckins.security.RegistrationCheckViolationException;
 
 import java.net.URI;
 import java.util.Collections;
@@ -83,19 +83,15 @@ class SecurityController {
     }
 
     @PostForm(uri = PATH_SIGN_UP, rolesAllowed = SecurityRule.IS_ANONYMOUS)
-    HttpResponse<?> signUp(@NonNull @NotNull @Valid @Body SignUpForm form) {
+    HttpResponse<?> signUp(@NonNull @NotNull @Valid @Body SignUpForm form,
+                           @Nullable Tenant tenant) {
         try {
-            registerService.register(form.email(), form.password());
-        } catch (UserAlreadyExistsException e) {
+            registerService.register(form.email(), form.password(), tenant);
+        } catch (RegistrationCheckViolationException e) {
             return HttpResponse.unprocessableEntity().body(new ModelAndView<>(VIEW_SECURITY_SIGN_UP,
                     Map.of(
                             MODEL_FORM, signUpForm,
-                            MODEL_ALERT, Alert.danger(Message.of("User already exists", "user.already.exists")))));
-        } catch (UserNotInvitedException e) {
-            return HttpResponse.unprocessableEntity().body(new ModelAndView<>(VIEW_SECURITY_SIGN_UP,
-                    Map.of(
-                            MODEL_FORM, signUpForm,
-                            MODEL_ALERT, Alert.danger(Message.of("User not invited", "user.not.invited")))));
+                            MODEL_ALERT, Alert.danger(e.getViolation().message()))));
         }
         return HttpResponse.seeOther(URI_LOGIN);
     }
