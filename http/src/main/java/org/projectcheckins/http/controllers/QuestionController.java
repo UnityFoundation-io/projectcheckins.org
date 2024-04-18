@@ -102,7 +102,8 @@ class QuestionController {
 
     @GetHtml(uri = PATH_LIST, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_LIST)
     Map<String, Object> questionList(@Nullable Tenant tenant) {
-        return Map.of(MODEL_QUESTIONS, questionService.findAll(tenant));
+        return Map.of(MODEL_QUESTIONS, questionService.findAll(tenant),
+                ApiConstants.MODEL_BREADCRUMBS, List.of(BREADCRUMB_LIST));
     }
 
     @GetHtml(uri = PATH_CREATE, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_CREATE)
