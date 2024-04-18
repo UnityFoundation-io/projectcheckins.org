@@ -4,6 +4,7 @@ import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.multitenancy.Tenant;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.projectcheckins.security.api.PublicProfile;
 import org.projectcheckins.security.forms.TeamMemberSave;
@@ -19,5 +20,5 @@ public interface TeamService {
     @NonNull
     List<? extends TeamInvitation> findInvitations(@Nullable Tenant tenant);
 
-    void save(@NotNull @Valid TeamMemberSave form, @Nullable Tenant tenant);
+    void save(@NotNull @Valid TeamMemberSave form, @Nullable Tenant tenant, @NotBlank String url);
 }

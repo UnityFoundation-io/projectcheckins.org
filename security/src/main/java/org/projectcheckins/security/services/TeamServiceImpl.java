@@ -1,10 +1,13 @@
 package org.projectcheckins.security.services;
 
+import io.micronaut.context.event.ApplicationEventPublisher;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.multitenancy.Tenant;
 import jakarta.inject.Singleton;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.projectcheckins.security.InvitationSavedEvent;
 import org.projectcheckins.security.api.PublicProfile;
 import org.projectcheckins.security.forms.TeamMemberSave;
 import org.projectcheckins.security.repositories.PublicProfileRepository;
@@ -19,10 +22,14 @@ public class TeamServiceImpl implements TeamService {
 
     private final PublicProfileRepository profileRepository;
     private final TeamInvitationRepository teamInvitationRepository;
+    private final ApplicationEventPublisher<InvitationSavedEvent> invitationSavedEventPublisher;
 
-    public TeamServiceImpl(PublicProfileRepository profileRepository, TeamInvitationRepository teamInvitationRepository) {
+    public TeamServiceImpl(PublicProfileRepository profileRepository,
+                           TeamInvitationRepository teamInvitationRepository,
+                           ApplicationEventPublisher<InvitationSavedEvent> invitationSavedEventPublisher) {
         this.profileRepository = profileRepository;
         this.teamInvitationRepository = teamInvitationRepository;
+        this.invitationSavedEventPublisher = invitationSavedEventPublisher;
     }
 
     @Override
@@ -38,7 +45,8 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public void save(@NotNull TeamMemberSave form, @Nullable Tenant tenant) {
+    public void save(@NotNull TeamMemberSave form, @Nullable Tenant tenant, @NotBlank String url) {
         teamInvitationRepository.save(new TeamInvitationRecord(form.email(), tenant));
+        invitationSavedEventPublisher.publishEventAsync(new InvitationSavedEvent(form, url));
     }
 }

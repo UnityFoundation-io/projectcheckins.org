@@ -7,6 +7,8 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Error;
+import io.micronaut.http.server.util.HttpHostResolver;
+import io.micronaut.http.uri.UriBuilder;
 import io.micronaut.multitenancy.Tenant;
 import io.micronaut.security.rules.SecurityRule;
 import io.micronaut.views.ModelAndView;
@@ -64,10 +66,13 @@ class TeamController {
 
     private final TeamService teamService;
     private final FormGenerator formGenerator;
+    private final HttpHostResolver httpHostResolver;
+    private URI cachedSignUpUri;
 
-    TeamController(TeamService teamService, FormGenerator formGenerator) {
+    TeamController(TeamService teamService, FormGenerator formGenerator, HttpHostResolver httpHostResolver) {
         this.teamService = teamService;
         this.formGenerator = formGenerator;
+        this.httpHostResolver = httpHostResolver;
     }
 
     @GetHtml(uri = PATH_LIST, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_LIST)
@@ -86,8 +91,9 @@ class TeamController {
 
     @PostForm(uri = PATH_SAVE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
     HttpResponse<?> memberSave(@NonNull @NotNull @Valid @Body TeamMemberSave form,
+                               @NonNull @NotNull HttpRequest<?> request,
                                @Nullable Tenant tenant) {
-        teamService.save(form, tenant);
+        teamService.save(form, tenant, getSignUpUri(request).toString());
         return HttpResponse.seeOther(URI.create(PATH_LIST));
     }
 
@@ -111,5 +117,12 @@ class TeamController {
                 MODEL_BREADCRUMBS, List.of(BREADCRUMB_HOME, BREADCRUMB_LIST, BREADCRUMB_CREATE),
                 MEMBER_FORM, form
         );
+    }
+
+    private URI getSignUpUri(HttpRequest<?> request) {
+        if (cachedSignUpUri == null) {
+            cachedSignUpUri = UriBuilder.of(httpHostResolver.resolve(request)).path(SecurityController.PATH_SIGN_UP).build();
+        }
+        return cachedSignUpUri;
     }
 }
