@@ -35,16 +35,16 @@ class EmailInvitationSenderTest {
         assertThat(emailSenderReplacement.getEmails())
                 .hasSize(1)
                 .first()
-                .hasFieldOrPropertyWithValue("subject", "You have been invited to join a Check-ins team")
+                .hasFieldOrPropertyWithValue("subject", "You have been invited to join a Project Check-ins team")
                 .hasFieldOrPropertyWithValue("from", new Contact("info@projectcheckins.org"))
                 .hasFieldOrPropertyWithValue("to", List.of(new Contact(recipient)))
                 .extracting(Email::getBody)
                 .isInstanceOf(MultipartBody.class)
                 .satisfies(body -> assertThat(body.get(BodyType.TEXT)).hasValueSatisfying(x -> assertThat(x).startsWith("""
-                To accept the invitation, please click the link below:
+                Please, click the link below and signup:
                 http://example.com/signUp""")))
                 .satisfies(body -> assertThat(body.get(BodyType.HTML)).hasValueSatisfying(x -> assertThat(x).startsWith("""
-                To accept the invitation, please click the link below:
+                Please, click the link below and signup:
                 <a href="http://example.com/signUp""")));
 
         emailSenderReplacement.getEmails().clear();

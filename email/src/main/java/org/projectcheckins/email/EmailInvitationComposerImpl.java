@@ -26,8 +26,8 @@ class EmailInvitationComposerImpl implements EmailInvitationComposer {
     @NonNull
     public Email.Builder composeEmailInvitation(@NonNull @NotNull Locale locale,
                                                 @NonNull @NotNull @Valid EmailInvitation emailInvitation) {
-        String subject = messageSource.getMessage("email.invitation.subject", "You have been invited to join a Check-ins team", locale);
-        String callToAction = messageSource.getMessage("email.invitation.calltoaction", "To accept the invitation, please click the link below:", locale);
+        String subject = messageSource.getMessage("email.invitation.subject", "You have been invited to join a Project Check-ins team", locale);
+        String callToAction = messageSource.getMessage("email.invitation.calltoaction", "Please, click the link below and signup:", locale);
         String callToActionLink = messageSource.getMessage("email.invitation.calltoaction.link", "Sign up on Check-ins", locale);
         String url = emailInvitation.url();
         String text = String.join("\n", callToAction, url);

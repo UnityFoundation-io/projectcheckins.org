@@ -24,16 +24,16 @@ class EmailInvitationComposerTest {
         assertThat(emailBuilder)
             .isNotNull()
             .extracting(Email.Builder::build)
-            .hasFieldOrPropertyWithValue("subject", "You have been invited to join a Check-ins team")
+            .hasFieldOrPropertyWithValue("subject", "You have been invited to join a Project Check-ins team")
             .hasFieldOrPropertyWithValue("from", new Contact("info@projectcheckins.org"))
             .hasFieldOrPropertyWithValue("to", List.of(new Contact("sergio.delamo@softamo.com")))
             .extracting(Email::getBody)
             .isInstanceOf(MultipartBody.class)
             .satisfies(b -> assertThat(b.get(BodyType.TEXT)).hasValueSatisfying(x -> assertThat(x).startsWith("""
-                To accept the invitation, please click the link below:
+                Please, click the link below and signup:
                 https://projectcheckins.example.com/security/signUp""")))
             .satisfies(b -> assertThat(b.get(BodyType.HTML)).hasValueSatisfying(x -> assertThat(x).startsWith("""
-                To accept the invitation, please click the link below:
+                Please, click the link below and signup:
                 <a href="https://projectcheckins.example.com/security/signUp""")));
     }
 }
