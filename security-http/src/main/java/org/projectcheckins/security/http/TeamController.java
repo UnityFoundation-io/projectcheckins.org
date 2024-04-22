@@ -67,7 +67,6 @@ class TeamController {
     private final TeamService teamService;
     private final FormGenerator formGenerator;
     private final HttpHostResolver httpHostResolver;
-    private URI cachedSignUpUri;
 
     TeamController(TeamService teamService, FormGenerator formGenerator, HttpHostResolver httpHostResolver) {
         this.teamService = teamService;
@@ -120,9 +119,6 @@ class TeamController {
     }
 
     private URI getSignUpUri(HttpRequest<?> request) {
-        if (cachedSignUpUri == null) {
-            cachedSignUpUri = UriBuilder.of(httpHostResolver.resolve(request)).path(SecurityController.PATH_SIGN_UP).build();
-        }
-        return cachedSignUpUri;
+        return UriBuilder.of(httpHostResolver.resolve(request)).path(SecurityController.PATH_SIGN_UP).build();
     }
 }
