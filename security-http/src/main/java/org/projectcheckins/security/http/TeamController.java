@@ -2,13 +2,13 @@ package org.projectcheckins.security.http;
 
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.core.util.locale.LocaleResolutionConfiguration;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Error;
 import io.micronaut.http.server.util.HttpHostResolver;
+import io.micronaut.http.server.util.locale.HttpLocaleResolver;
 import io.micronaut.http.uri.UriBuilder;
 import io.micronaut.multitenancy.Tenant;
 import io.micronaut.security.rules.SecurityRule;
@@ -69,13 +69,13 @@ class TeamController {
     private final TeamService teamService;
     private final FormGenerator formGenerator;
     private final HttpHostResolver httpHostResolver;
-    private final LocaleResolutionConfiguration localeResolutionConfig;
+    private final HttpLocaleResolver httpLocaleResolver;
 
-    TeamController(TeamService teamService, FormGenerator formGenerator, HttpHostResolver httpHostResolver, LocaleResolutionConfiguration localeResolutionConfig) {
+    TeamController(TeamService teamService, FormGenerator formGenerator, HttpHostResolver httpHostResolver, HttpLocaleResolver httpLocaleResolver) {
         this.teamService = teamService;
         this.formGenerator = formGenerator;
         this.httpHostResolver = httpHostResolver;
-        this.localeResolutionConfig = localeResolutionConfig;
+        this.httpLocaleResolver = httpLocaleResolver;
     }
 
     @GetHtml(uri = PATH_LIST, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_LIST)
@@ -123,7 +123,7 @@ class TeamController {
     }
 
     private Locale getLocale(HttpRequest<?> request) {
-        return request.getLocale().or(localeResolutionConfig::getFixed).orElseGet(localeResolutionConfig::getDefaultLocale);
+        return httpLocaleResolver.resolveOrDefault(request);
     }
 
     private URI getSignUpUri(HttpRequest<?> request) {
