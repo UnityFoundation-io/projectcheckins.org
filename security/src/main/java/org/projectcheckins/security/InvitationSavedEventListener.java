@@ -15,21 +15,17 @@ class InvitationSavedEventListener implements ApplicationEventListener<Invitatio
     private static final Logger LOG = LoggerFactory.getLogger(InvitationSavedEventListener.class);
 
     private final EmailInvitationSender emailInvitationSender;
-    private final EmailInvitationConfigProperties config;
     private final Locale locale;
 
     InvitationSavedEventListener(EmailInvitationSender emailInvitationSender,
-                                 EmailInvitationConfigProperties config,
                                  LocaleResolutionConfiguration localeResolutionConfig) {
         this.emailInvitationSender = emailInvitationSender;
-        this.config = config;
         this.locale = localeResolutionConfig.getFixed().orElseGet(localeResolutionConfig::getDefaultLocale);
     }
 
     @Override
     public void onApplicationEvent(InvitationSavedEvent event) {
         LOG.trace("Received InvitationSavedEvent with email {} and url {} - {}", event.getEmail(), event.getUrl(), event.getSource());
-        final String url = !config.getUrl().isEmpty() ? config.getUrl() : event.getUrl();
-        emailInvitationSender.sendInvitationEmail(event.getEmail(), url, locale);
+        emailInvitationSender.sendInvitationEmail(event.getEmail(), event.getUrl(), locale);
     }
 }

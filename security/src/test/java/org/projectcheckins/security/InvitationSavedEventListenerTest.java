@@ -31,7 +31,6 @@ class InvitationSavedEventListenerTest {
     EmailInvitationSenderMock emailSender;
 
     @Test
-    @Property(name = "email.invitation.url", value = "")
     void testOnApplicationEvent() {
         final String recipient = "delamos@unityfoundation.io";
         final String url = "http://example.com/signUp";
@@ -44,24 +43,6 @@ class InvitationSavedEventListenerTest {
                 .first()
                 .hasFieldOrPropertyWithValue("email", recipient)
                 .hasFieldOrPropertyWithValue("url", url);
-
-        emailSender.emails.clear();
-    }
-
-    @Test
-    @Property(name = "email.invitation.url", value = "http://projectcheckins.org/signUp")
-    void testOverrideUrl(ApplicationEventPublisher<InvitationSavedEvent> publisher, EmailInvitationSenderMock emailSender) {
-        final String recipient = "delamos@unityfoundation.io";
-        final String url = "http://example.com/signUp";
-        publisher.publishEvent(new InvitationSavedEvent(new TeamMemberSave(recipient), url));
-
-        await().atMost(3, SECONDS).until(() -> !emailSender.emails.isEmpty());
-
-        assertThat(emailSender.emails)
-                .hasSize(1)
-                .first()
-                .hasFieldOrPropertyWithValue("email", recipient)
-                .hasFieldOrPropertyWithValue("url", "http://projectcheckins.org/signUp");
 
         emailSender.emails.clear();
     }
