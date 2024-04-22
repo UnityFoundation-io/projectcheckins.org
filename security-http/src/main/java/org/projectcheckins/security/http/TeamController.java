@@ -2,6 +2,7 @@ package org.projectcheckins.security.http;
 
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.util.locale.LocaleResolutionConfiguration;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Body;
@@ -26,6 +27,7 @@ import org.projectcheckins.security.services.TeamService;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Controller
@@ -67,11 +69,13 @@ class TeamController {
     private final TeamService teamService;
     private final FormGenerator formGenerator;
     private final HttpHostResolver httpHostResolver;
+    private final LocaleResolutionConfiguration localeResolutionConfig;
 
-    TeamController(TeamService teamService, FormGenerator formGenerator, HttpHostResolver httpHostResolver) {
+    TeamController(TeamService teamService, FormGenerator formGenerator, HttpHostResolver httpHostResolver, LocaleResolutionConfiguration localeResolutionConfig) {
         this.teamService = teamService;
         this.formGenerator = formGenerator;
         this.httpHostResolver = httpHostResolver;
+        this.localeResolutionConfig = localeResolutionConfig;
     }
 
     @GetHtml(uri = PATH_LIST, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_LIST)
@@ -92,7 +96,7 @@ class TeamController {
     HttpResponse<?> memberSave(@NonNull @NotNull @Valid @Body TeamMemberSave form,
                                @NonNull @NotNull HttpRequest<?> request,
                                @Nullable Tenant tenant) {
-        teamService.save(form, tenant, getSignUpUri(request).toString());
+        teamService.save(form, tenant, getLocale(request), getSignUpUri(request).toString());
         return HttpResponse.seeOther(URI.create(PATH_LIST));
     }
 
@@ -116,6 +120,10 @@ class TeamController {
                 MODEL_BREADCRUMBS, List.of(BREADCRUMB_HOME, BREADCRUMB_LIST, BREADCRUMB_CREATE),
                 MEMBER_FORM, form
         );
+    }
+
+    private Locale getLocale(HttpRequest<?> request) {
+        return request.getLocale().or(localeResolutionConfig::getFixed).orElseGet(localeResolutionConfig::getDefaultLocale);
     }
 
     private URI getSignUpUri(HttpRequest<?> request) {

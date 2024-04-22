@@ -11,6 +11,7 @@ import org.projectcheckins.security.forms.TeamMemberSave;
 import org.projectcheckins.security.TeamInvitation;
 
 import java.util.List;
+import java.util.Locale;
 
 public interface TeamService {
 
@@ -20,5 +21,5 @@ public interface TeamService {
     @NonNull
     List<? extends TeamInvitation> findInvitations(@Nullable Tenant tenant);
 
-    void save(@NotNull @Valid TeamMemberSave form, @Nullable Tenant tenant, @NotBlank String signupUrl);
+    void save(@NotNull @Valid TeamMemberSave form, @Nullable Tenant tenant, @NotNull Locale locale, @NotBlank String signupUrl);
 }

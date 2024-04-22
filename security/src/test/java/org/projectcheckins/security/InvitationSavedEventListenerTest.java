@@ -34,7 +34,7 @@ class InvitationSavedEventListenerTest {
     void testOnApplicationEvent() {
         final String recipient = "delamos@unityfoundation.io";
         final String url = "http://example.com/signUp";
-        publisher.publishEvent(new InvitationSavedEvent(new TeamMemberSave(recipient), url));
+        publisher.publishEvent(new InvitationSavedEvent(new TeamMemberSave(recipient), Locale.ENGLISH, url));
 
         await().atMost(3, SECONDS).until(() -> !emailSender.emails.isEmpty());
 

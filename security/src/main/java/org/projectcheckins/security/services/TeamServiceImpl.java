@@ -16,6 +16,7 @@ import org.projectcheckins.security.TeamInvitationRecord;
 import org.projectcheckins.security.TeamInvitationRepository;
 
 import java.util.List;
+import java.util.Locale;
 
 @Singleton
 public class TeamServiceImpl implements TeamService {
@@ -45,8 +46,8 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public void save(@NotNull TeamMemberSave form, @Nullable Tenant tenant, @NotBlank String signupUrl) {
+    public void save(@NotNull TeamMemberSave form, @Nullable Tenant tenant, @NotNull Locale locale, @NotBlank String signupUrl) {
         teamInvitationRepository.save(new TeamInvitationRecord(form.email(), tenant));
-        invitationSavedEventPublisher.publishEventAsync(new InvitationSavedEvent(form, signupUrl));
+        invitationSavedEventPublisher.publishEventAsync(new InvitationSavedEvent(form, locale, signupUrl));
     }
 }

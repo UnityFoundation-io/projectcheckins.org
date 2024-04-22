@@ -22,6 +22,7 @@ import org.projectcheckins.security.repositories.PublicProfileRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -84,7 +85,7 @@ class TeamServiceImplTest {
     @Test
     void testSave(InvitationSavedEvents events) {
         final TeamMemberSave form = new TeamMemberSave("user2@email.com");
-        assertThatCode(() -> teamService.save(form, null, SIGNUP_URL))
+        assertThatCode(() -> teamService.save(form, null, Locale.ENGLISH, SIGNUP_URL))
                 .doesNotThrowAnyException();
 
         await().atMost(1, SECONDS).until(() -> !events.received.isEmpty());
@@ -101,7 +102,7 @@ class TeamServiceImplTest {
     @Test
     void testSaveInvalidEmail() {
         final TeamMemberSave form = new TeamMemberSave("not an email");
-        assertThatThrownBy(() -> teamService.save(form, null, SIGNUP_URL))
+        assertThatThrownBy(() -> teamService.save(form, null, Locale.ENGLISH, SIGNUP_URL))
                 .isInstanceOf(ConstraintViolationException.class)
                 .hasMessage("save.form.email: must be a well-formed email address");
     }
@@ -109,7 +110,7 @@ class TeamServiceImplTest {
     @Test
     void testSaveAlreadyExists() {
         final TeamMemberSave form = new TeamMemberSave(USER_1.email());
-        assertThatThrownBy(() -> teamService.save(form, null, SIGNUP_URL))
+        assertThatThrownBy(() -> teamService.save(form, null, Locale.ENGLISH, SIGNUP_URL))
                 .isInstanceOf(ConstraintViolationException.class)
                 .hasMessage("save.invitation: Invitation already exists");
     }
