@@ -34,6 +34,12 @@ dependencies {
 
     // Notifications
     implementation(project(":notification-logger"))
+
+    // Eclipsestore S3
+    runtimeOnly("software.amazon.awssdk:s3")
+    runtimeOnly("io.micronaut.aws:micronaut-aws-sdk-v2")
+    runtimeOnly("org.eclipse.store:afs-aws-s3")
+
 }
 application {
     mainClass.set("org.projectcheckins.netty.Application")
