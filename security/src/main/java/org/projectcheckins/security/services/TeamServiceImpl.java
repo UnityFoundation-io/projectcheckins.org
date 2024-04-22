@@ -45,8 +45,8 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public void save(@NotNull TeamMemberSave form, @Nullable Tenant tenant, @NotBlank String url) {
+    public void save(@NotNull TeamMemberSave form, @Nullable Tenant tenant, @NotBlank String signupUrl) {
         teamInvitationRepository.save(new TeamInvitationRecord(form.email(), tenant));
-        invitationSavedEventPublisher.publishEventAsync(new InvitationSavedEvent(form, url));
+        invitationSavedEventPublisher.publishEventAsync(new InvitationSavedEvent(form, signupUrl));
     }
 }

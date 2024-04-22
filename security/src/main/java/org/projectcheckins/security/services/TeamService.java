@@ -20,5 +20,5 @@ public interface TeamService {
     @NonNull
     List<? extends TeamInvitation> findInvitations(@Nullable Tenant tenant);
 
-    void save(@NotNull @Valid TeamMemberSave form, @Nullable Tenant tenant, @NotBlank String url);
+    void save(@NotNull @Valid TeamMemberSave form, @Nullable Tenant tenant, @NotBlank String signupUrl);
 }

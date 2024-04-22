@@ -199,7 +199,7 @@ class TeamControllerTest {
         }
 
         @Override
-        public void save(@NotNull @Valid TeamMemberSave form, @Nullable Tenant tenant, @NotBlank String url) {
+        public void save(@NotNull @Valid TeamMemberSave form, @Nullable Tenant tenant, @NotBlank String signupUrl) {
         }
     }
 
