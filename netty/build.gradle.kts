@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":thymeleaf-fieldset"))
     implementation(project(":security-http"))
     implementation(project(":http"))
+    implementation(project(":email-http"))
     testImplementation(project(":test-utils"))
     implementation("io.micronaut.security:micronaut-security-session")
     developmentOnly("io.micronaut.security:micronaut-security-jwt")
@@ -40,6 +41,9 @@ dependencies {
     runtimeOnly("io.micronaut.aws:micronaut-aws-sdk-v2")
     runtimeOnly("org.eclipse.store:afs-aws-s3")
 
+    // Email
+    implementation("io.micronaut.email:micronaut-email-javamail")
+    runtimeOnly("org.eclipse.angus:angus-mail")
 }
 application {
     mainClass.set("org.projectcheckins.netty.Application")

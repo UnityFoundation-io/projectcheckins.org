@@ -6,4 +6,3 @@ build
 .idea
 .DS_Store
 application-dev.properties
-application-ec2.properties
