@@ -11,6 +11,7 @@ import io.micronaut.http.HttpStatus;
 import io.micronaut.http.client.BlockingHttpClient;
 import io.micronaut.http.client.HttpClient;
 import io.micronaut.http.client.annotation.Client;
+import io.micronaut.http.uri.UriBuilder;
 import io.micronaut.multitenancy.Tenant;
 import io.micronaut.security.authentication.AuthenticationFailureReason;
 import io.micronaut.security.authentication.AuthenticationRequest;
@@ -32,6 +33,7 @@ import org.projectcheckins.test.AbstractAuthenticationFetcher;
 import org.projectcheckins.test.BrowserRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -205,6 +207,16 @@ class SecurityControllerTest {
         @Override
         public void updatePassword(String userId, String newRawPassword) {
 
+        }
+
+        @Override
+        public void sendResetInstructions(String email, Locale locale, UriBuilder resetPasswordUri) {
+
+        }
+
+        @Override
+        public Optional<String> resetPassword(String token, String newRawPassword) {
+            return Optional.empty();
         }
     }
 
