@@ -6,12 +6,14 @@ import io.micronaut.email.Contact;
 import io.micronaut.email.Email;
 import io.micronaut.email.MultipartBody;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Property(name = "email.sender", value = "info@projectcheckins.org")
 @MicronautTest
@@ -19,8 +21,19 @@ class EmailResetPasswordComposerTest {
 
     @Test
     void emailInvitation(EmailResetPasswordComposer emailResetPasswordComposer) {
+        EmailResetPassword resetPassword = new EmailResetPassword("sergio.delamo@softamo.com", "https://projectcheckins.example.com/security/resetPassword?token=foobar");
+        assertThatThrownBy(() -> emailResetPasswordComposer.composeEmailResetPassword(null, resetPassword))
+                .isInstanceOf(ConstraintViolationException.class)
+                .hasMessageEndingWith("composeEmailResetPassword.locale: must not be null");
+        assertThatThrownBy(() -> emailResetPasswordComposer.composeEmailResetPassword(Locale.ENGLISH, null))
+                .isInstanceOf(ConstraintViolationException.class)
+                .hasMessageEndingWith("composeEmailResetPassword.emailResetPassword: must not be null");
+        assertThatThrownBy(() -> emailResetPasswordComposer.composeEmailResetPassword(Locale.ENGLISH, new EmailResetPassword(null, null)))
+                .isInstanceOf(ConstraintViolationException.class)
+                .hasMessageEndingWith("composeEmailResetPassword.emailResetPassword.url: must not be blank");
+
         Email.Builder emailBuilder = emailResetPasswordComposer.composeEmailResetPassword(Locale.ENGLISH,
-                new EmailResetPassword("sergio.delamo@softamo.com", "https://projectcheckins.example.com/security/resetPassword?token=foobar"));
+                resetPassword);
         assertThat(emailBuilder)
             .isNotNull()
             .extracting(Email.Builder::build)

@@ -11,7 +11,7 @@ import org.projectcheckins.security.constraints.ValidToken;
 
 @Serdeable
 @PasswordMatch
-public record ResetPasswordForm(@NonNull @ValidToken @InputHidden String token,
+public record ResetPasswordForm(@NonNull @NotBlank @ValidToken @InputHidden String token,
                                 @NonNull @NotBlank @InputPassword String password,
                                 @NonNull @NotBlank @InputPassword String repeatPassword) implements RepeatPasswordForm {
 

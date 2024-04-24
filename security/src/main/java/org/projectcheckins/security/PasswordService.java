@@ -15,6 +15,7 @@ public interface PasswordService {
     void updatePassword(@NonNull @NotBlank String userId,
                         @NonNull @NotBlank String newRawPassword);
 
+    @NonNull
     Optional<@Email String> resetPassword(@NonNull @NotBlank String token,
                                           @NonNull @NotBlank String newRawPassword);
 
