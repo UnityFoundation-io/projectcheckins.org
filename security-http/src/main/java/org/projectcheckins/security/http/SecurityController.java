@@ -158,16 +158,12 @@ class SecurityController {
         passwordService.sendResetInstructions(forgotPasswordForm.email(),
                 httpLocaleResolver.resolveOrDefault(request),
                 UriBuilder.of(httpHostResolver.resolve(request)).path(SecurityController.PATH_PASSWORD_RESET));
-        final Form form = formGenerator.generate(loginForm.action(), new LoginForm(forgotPasswordForm.email(), null));
-        final Map<String, Object> model = Map.of(MODEL_FORM, form, MODEL_ALERT, Alert.info(MESSAGE_INSTRUCTIONS_SENT));
-        return HttpResponse.ok().body(new ModelAndView<>(VIEW_SECURITY_LOGIN, model));
+        return HttpResponse.ok().body(forgotPasswordModelAndView(forgotPasswordForm.email()));
     }
 
-    @GetHtml(uri = PATH_PASSWORD_RESET, rolesAllowed = SecurityRule.IS_ANONYMOUS, view = VIEW_PASSWORD_RESET)
-    Map<String, Object> resetPasswordForm(@ValidToken @QueryValue(PasswordService.TOKEN_QUERY_PARAM) String token) {
-        final ResetPasswordForm resetPasswordForm = new ResetPasswordForm(token);
-        final Form form = formGenerator.generate(PATH_PASSWORD_RESET, resetPasswordForm);
-        return Map.of(MODEL_PASSWORD_RESET_FORM, form);
+    @GetHtml(uri = PATH_PASSWORD_RESET, rolesAllowed = SecurityRule.IS_ANONYMOUS)
+    ModelAndView<Map<String, Object>> resetPasswordForm(@ValidToken @QueryValue(PasswordService.TOKEN_QUERY_PARAM) String token) {
+        return resetPasswordModelAndView(token);
     }
 
     @PostForm(uri = PATH_PASSWORD_RESET, rolesAllowed = SecurityRule.IS_ANONYMOUS)
@@ -220,5 +216,19 @@ class SecurityController {
                             Map.of(MODEL_FORM, loginForm, MODEL_ALERT, Alert.danger(MESSAGE_TOKEN_INVALID)))));
         }
         return HttpResponse.serverError();
+    }
+
+    @NonNull
+    private ModelAndView<Map<String, Object>> resetPasswordModelAndView(@NonNull String token) {
+        final ResetPasswordForm resetPasswordForm = new ResetPasswordForm(token);
+        final Form form = formGenerator.generate(PATH_PASSWORD_RESET, resetPasswordForm);
+        return new ModelAndView<>(VIEW_PASSWORD_RESET, Map.of(MODEL_PASSWORD_RESET_FORM, form));
+    }
+
+    @NonNull
+    private ModelAndView<Map<String, Object>> forgotPasswordModelAndView(@NonNull String email) {
+        final Form form = formGenerator.generate(loginForm.action(), new LoginForm(email, null));
+        final Map<String, Object> model = Map.of(MODEL_FORM, form, MODEL_ALERT, Alert.info(MESSAGE_INSTRUCTIONS_SENT));
+        return new ModelAndView<>(VIEW_SECURITY_LOGIN, model);
     }
 }
