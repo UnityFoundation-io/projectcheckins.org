@@ -22,6 +22,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.security.api.PublicProfile;
 import org.projectcheckins.security.forms.TeamMemberSave;
+import org.projectcheckins.security.forms.TeamMemberUninvite;
 import org.projectcheckins.security.services.TeamService;
 import org.projectcheckins.security.services.TeamServiceImpl;
 import org.projectcheckins.security.TeamInvitationRecord;
@@ -201,6 +202,11 @@ class TeamControllerTest {
 
         @Override
         public void save(@NotNull @Valid TeamMemberSave form, @Nullable Tenant tenant, @NotNull Locale locale, @NotBlank String signupUrl) {
+        }
+
+        @Override
+        public void uninvite(@NotNull @Valid TeamMemberUninvite form, @Nullable Tenant tenant) {
+
         }
     }
 
