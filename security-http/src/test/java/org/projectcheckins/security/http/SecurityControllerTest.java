@@ -144,6 +144,10 @@ class SecurityControllerTest {
         assertThat(client.retrieve(BrowserRequest.GET("/security/changePassword")))
                 .satisfies(containsManyTimes(3, TYPE_PASSWORD))
                 .containsOnlyOnce("""
+                        <li class="breadcrumb-item"><a href="/">""")
+                .containsOnlyOnce("""
+                        <li class="breadcrumb-item"><a href="/profile/show">""")
+                .containsOnlyOnce("""
                         action="/security/updatePassword" method="post">""");
     }
 
@@ -156,6 +160,10 @@ class SecurityControllerTest {
                 "password", "new password",
                 "repeatPassword", "new password"));
         assertThat(client.retrieve(request))
+                .containsOnlyOnce("""
+                        <li class="breadcrumb-item"><a href="/">""")
+                .containsOnlyOnce("""
+                        <li class="breadcrumb-item"><a href="/profile/show">""")
                 .containsOnlyOnce("You have successfully changed your password.");
     }
 
