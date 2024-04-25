@@ -26,6 +26,7 @@ import jakarta.validation.constraints.NotNull;
 import org.projectcheckins.annotations.GetHtml;
 import org.projectcheckins.annotations.PostForm;
 import org.projectcheckins.bootstrap.Alert;
+import org.projectcheckins.bootstrap.Breadcrumb;
 import org.projectcheckins.security.PasswordService;
 import org.projectcheckins.security.RegisterService;
 import org.projectcheckins.security.RegistrationCheckViolationException;
@@ -34,6 +35,7 @@ import org.projectcheckins.security.constraints.ValidToken;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -45,6 +47,12 @@ class SecurityController {
     private static final String MODEL_PASSWORD_FORGOT_FORM = "forgotPasswordForm";
     private static final String MODEL_PASSWORD_RESET_FORM = "resetPasswordForm";
     private static final String MODEL_ALERT = "alert";
+    private static final String MODEL_BREADCRUMBS = "breadcrumbs";
+
+    // BREADCRUMBS
+    public static final Breadcrumb BREADCRUMB_HOME = new Breadcrumb(Message.of("Home", "home"), "/");
+    public static final Breadcrumb BREADCRUMB_PROFILE_SHOW = new Breadcrumb(Message.of("Profile", "profile.show"), "/profile/show");
+    public static final Breadcrumb BREADCRUMB_PASSWORD_CHANGE = new Breadcrumb(Message.of("Change password", "profile.changePassword"));
 
     // LOGIN
     private static final String ACTION_LOGIN = "login";
@@ -133,7 +141,8 @@ class SecurityController {
     Map<String, Object> changePassword(@NonNull Authentication authentication) {
         final PasswordForm passwordForm = new PasswordForm(authentication);
         final Form form = formGenerator.generate(PATH_PASSWORD_UPDATE, passwordForm);
-        return Map.of(MODEL_PASSWORD_FORM, form);
+        return Map.of(MODEL_PASSWORD_FORM, form,
+                MODEL_BREADCRUMBS, List.of(BREADCRUMB_HOME, BREADCRUMB_PROFILE_SHOW, BREADCRUMB_PASSWORD_CHANGE));
     }
 
     @PostForm(uri = PATH_PASSWORD_UPDATE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
@@ -142,7 +151,8 @@ class SecurityController {
         final String userId = form.userId();
         if (userId.equals(authentication.getName())) {
             this.passwordService.updatePassword(userId, form.password());
-            return HttpResponse.ok().body(new ModelAndView<>(VIEW_CHANGED_PASSWORD, Collections.emptyMap()));
+            return HttpResponse.ok().body(new ModelAndView<>(VIEW_CHANGED_PASSWORD, Map.of(
+                    MODEL_BREADCRUMBS, List.of(BREADCRUMB_HOME, BREADCRUMB_PROFILE_SHOW, BREADCRUMB_PASSWORD_CHANGE))));
         }
         return HttpResponse.seeOther(URI_LOGIN);
     }
