@@ -49,6 +49,7 @@ class TeamControllerTest {
     static final String URI_LIST = UriBuilder.of("/team").path("list").build().toString();
     static final String URI_CREATE = UriBuilder.of("/team").path("create").build().toString();
     static final String URI_SAVE = UriBuilder.of("/team").path("save").build().toString();
+    static final String URI_UNINVITE = UriBuilder.of("/team").path("uninvite").build().toString();
 
     static final PublicProfile USER_1 = new PublicProfileRecord(
             "user1",
@@ -109,7 +110,7 @@ class TeamControllerTest {
     static final TeamInvitation INVITATION_1 = new TeamInvitationRecord("pending@email.com", null);
 
     @Test
-    void testListTeamMembers(@Client("/") HttpClient httpClient, AuthenticationFetcherMock authenticationFetcher) {
+    void testListTeamMembers(@Client("/") HttpClient httpClient) {
         final BlockingHttpClient client = httpClient.toBlocking();
         Assertions.assertThat(client.exchange(BrowserRequest.GET(URI_LIST), String.class))
                 .satisfies(htmlPage())
@@ -124,7 +125,7 @@ class TeamControllerTest {
     }
 
     @Test
-    void testCreateTeamMember(@Client("/") HttpClient httpClient, AuthenticationFetcherMock authenticationFetcher) {
+    void testCreateTeamMember(@Client("/") HttpClient httpClient) {
         final BlockingHttpClient client = httpClient.toBlocking();
         Assertions.assertThat(client.exchange(BrowserRequest.GET(URI_CREATE), String.class))
                 .satisfies(htmlPage())
@@ -139,7 +140,7 @@ class TeamControllerTest {
     }
 
     @Test
-    void testSaveTeamMember(@Client("/") HttpClient httpClient, AuthenticationFetcherMock authenticationFetcher) {
+    void testSaveTeamMember(@Client("/") HttpClient httpClient) {
         final BlockingHttpClient client = httpClient.toBlocking();
         final Map<String, Object> body = Map.of("email", "user3@email.com");
         final HttpRequest<?> request = BrowserRequest.POST(URI_SAVE, body);
@@ -149,12 +150,41 @@ class TeamControllerTest {
     }
 
     @Test
-    void testSaveTeamMemberInvalidEmail(@Client("/") HttpClient httpClient, AuthenticationFetcherMock authenticationFetcher) {
+    void testSaveTeamMemberInvalidEmail(@Client("/") HttpClient httpClient) {
         final BlockingHttpClient client = httpClient.toBlocking();
         final Map<String, Object> body = Map.of("email", "Invalid Email");
         final HttpRequest<?> request = BrowserRequest.POST(URI_SAVE, body);
         HttpClientResponseExceptionAssert.assertThatThrowsHttpClientResponseException(() -> client.exchange(request))
                 .hasStatus(HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    @Test
+    void testUninviteTeamMemberForm(@Client("/") HttpClient httpClient) {
+        final BlockingHttpClient client = httpClient.toBlocking();
+        Assertions.assertThat(client.exchange(BrowserRequest.GET(UriBuilder.of(URI_UNINVITE).queryParam("email", INVITATION_1.email()).toString()), String.class))
+                .satisfies(htmlPage())
+                .satisfies(htmlBody(INVITATION_1.email()))
+                .satisfies(htmlBody("You are about to uninvite"))
+                .satisfies(htmlBody("""
+                        <form action="/team/uninvite" method="post">"""))
+                .satisfies(htmlBody("""
+                        <input type="hidden" name="email"""));
+    }
+
+    @Test
+    void testUninviteTeamMemberFormIllegalEmail(@Client("/") HttpClient httpClient) {
+        final BlockingHttpClient client = httpClient.toBlocking();
+        final String email = "*** illegal email ***";
+        Assertions.assertThat(client.exchange(BrowserRequest.GET(UriBuilder.of(URI_UNINVITE).queryParam("email", email).toString()), String.class))
+                .satisfies(redirection(URI_LIST));
+    }
+
+    @Test
+    void testUninviteTeamMember(@Client("/") HttpClient httpClient) {
+        final BlockingHttpClient client = httpClient.toBlocking();
+        final String email = INVITATION_1.email();
+        Assertions.assertThat(client.exchange(BrowserRequest.POST(URI_UNINVITE, Map.of("email", email)), String.class))
+                .satisfies(redirection(URI_LIST));
     }
 
     @Requires(property = "spec.name", value = "TeamControllerTest")
