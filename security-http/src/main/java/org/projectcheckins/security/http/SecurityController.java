@@ -49,11 +49,6 @@ class SecurityController {
     private static final String MODEL_ALERT = "alert";
     private static final String MODEL_BREADCRUMBS = "breadcrumbs";
 
-    // BREADCRUMBS
-    public static final Breadcrumb BREADCRUMB_HOME = new Breadcrumb(Message.of("Home", "home"), "/");
-    public static final Breadcrumb BREADCRUMB_PROFILE_SHOW = new Breadcrumb(Message.of("Profile", "profile.show"), "/profile/show");
-    public static final Breadcrumb BREADCRUMB_PASSWORD_CHANGE = new Breadcrumb(Message.of("Change password", "profile.changePassword"));
-
     // LOGIN
     private static final String ACTION_LOGIN = "login";
     private static final String VIEW_SECURITY_LOGIN = PATH + "/" + ACTION_LOGIN + ".html";
@@ -85,6 +80,14 @@ class SecurityController {
     private static final String VIEW_CHANGED_PASSWORD = PATH + "/passwordChanged.html";
     private static final String VIEW_PASSWORD_FORGOT = PATH + "/" + ACTION_PASSWORD_FORGOT + ".html";
     private static final String VIEW_PASSWORD_RESET = PATH + "/" + ACTION_PASSWORD_RESET + ".html";
+
+    // BREADCRUMBS
+    public static final Message MESSAGE_PASSWORD_CHANGE = Message.of("Change password", "profile.changePassword");
+    public static final Breadcrumb BREADCRUMB_HOME = new Breadcrumb(Message.of("Home", "home"), "/");
+    public static final Breadcrumb BREADCRUMB_PROFILE_SHOW = new Breadcrumb(Message.of("Profile", "profile.show"), "/profile/show");
+    public static final Breadcrumb BREADCRUMB_PASSWORD_CHANGE_ACTIVE = new Breadcrumb(MESSAGE_PASSWORD_CHANGE);
+    public static final Breadcrumb BREADCRUMB_PASSWORD_CHANGE = new Breadcrumb(MESSAGE_PASSWORD_CHANGE, PATH_PASSWORD_CHANGE);
+    public static final Breadcrumb BREADCRUMB_PASSWORD_CHANGED = new Breadcrumb(Message.of("Password Changed", "nav.passwordChanged"));
 
     private final FormGenerator formGenerator;
     private final RegisterService registerService;
@@ -142,7 +145,7 @@ class SecurityController {
         final PasswordForm passwordForm = new PasswordForm(authentication);
         final Form form = formGenerator.generate(PATH_PASSWORD_UPDATE, passwordForm);
         return Map.of(MODEL_PASSWORD_FORM, form,
-                MODEL_BREADCRUMBS, List.of(BREADCRUMB_HOME, BREADCRUMB_PROFILE_SHOW, BREADCRUMB_PASSWORD_CHANGE));
+                MODEL_BREADCRUMBS, List.of(BREADCRUMB_HOME, BREADCRUMB_PROFILE_SHOW, BREADCRUMB_PASSWORD_CHANGE_ACTIVE));
     }
 
     @PostForm(uri = PATH_PASSWORD_UPDATE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
@@ -152,7 +155,7 @@ class SecurityController {
         if (userId.equals(authentication.getName())) {
             this.passwordService.updatePassword(userId, form.password());
             return HttpResponse.ok().body(new ModelAndView<>(VIEW_CHANGED_PASSWORD, Map.of(
-                    MODEL_BREADCRUMBS, List.of(BREADCRUMB_HOME, BREADCRUMB_PROFILE_SHOW, BREADCRUMB_PASSWORD_CHANGE))));
+                    MODEL_BREADCRUMBS, List.of(BREADCRUMB_HOME, BREADCRUMB_PROFILE_SHOW, BREADCRUMB_PASSWORD_CHANGE, BREADCRUMB_PASSWORD_CHANGED))));
         }
         return HttpResponse.seeOther(URI_LOGIN);
     }
