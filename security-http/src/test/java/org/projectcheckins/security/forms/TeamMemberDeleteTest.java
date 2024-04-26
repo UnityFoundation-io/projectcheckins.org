@@ -10,28 +10,28 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.projectcheckins.test.ValidationAssert.assertThat;
 
 @MicronautTest(startApplication = false)
-class TeamMemberUninviteTest {
+class TeamMemberDeleteTest {
 
-    final static Argument<TeamMemberUninvite> ARGUMENT = Argument.of(TeamMemberUninvite.class);
+    final static Argument<TeamMemberDelete> ARGUMENT = Argument.of(TeamMemberDelete.class);
 
     @Test
     void emailIsRequired(Validator validator) {
-        assertThat(validator.validate(new TeamMemberUninvite(null)))
+        assertThat(validator.validate(new TeamMemberDelete(null)))
                 .hasNotBlankViolation("email");
-        assertThat(validator.validate(new TeamMemberUninvite("")))
+        assertThat(validator.validate(new TeamMemberDelete("")))
                 .hasNotBlankViolation("email");
-        assertThat(validator.validate(new TeamMemberUninvite("example@projectcheckins.org")))
+        assertThat(validator.validate(new TeamMemberDelete("example@projectcheckins.org")))
                 .isValid();
     }
 
     @Test
-    void teamMemberUninviteIsAnnotatedWithSerdeableDeserializable(SerdeIntrospections serde) {
+    void teamMemberDeleteIsAnnotatedWithSerdeableDeserializable(SerdeIntrospections serde) {
         assertThatCode(() -> serde.getDeserializableIntrospection(ARGUMENT))
                 .doesNotThrowAnyException();
     }
 
     @Test
-    void teamMemberUninviteIsAnnotatedWithSerdeableSerializable(SerdeIntrospections serde) {
+    void teamMemberDeleteIsAnnotatedWithSerdeableSerializable(SerdeIntrospections serde) {
         assertThatCode(() -> serde.getSerializableIntrospection(ARGUMENT))
                 .doesNotThrowAnyException();
     }

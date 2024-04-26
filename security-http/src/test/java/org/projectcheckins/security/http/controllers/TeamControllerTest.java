@@ -22,7 +22,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.security.api.PublicProfile;
 import org.projectcheckins.security.forms.TeamMemberSave;
-import org.projectcheckins.security.forms.TeamMemberUninvite;
+import org.projectcheckins.security.forms.TeamMemberDelete;
 import org.projectcheckins.security.services.TeamService;
 import org.projectcheckins.security.services.TeamServiceImpl;
 import org.projectcheckins.security.TeamInvitationRecord;
@@ -159,19 +159,6 @@ class TeamControllerTest {
     }
 
     @Test
-    void testUninviteTeamMemberForm(@Client("/") HttpClient httpClient) {
-        final BlockingHttpClient client = httpClient.toBlocking();
-        Assertions.assertThat(client.exchange(BrowserRequest.GET(UriBuilder.of(URI_UNINVITE).queryParam("email", INVITATION_1.email()).toString()), String.class))
-                .satisfies(htmlPage())
-                .satisfies(htmlBody(INVITATION_1.email()))
-                .satisfies(htmlBody("You are about to uninvite"))
-                .satisfies(htmlBody("""
-                        <form action="/team/uninvite" method="post">"""))
-                .satisfies(htmlBody("""
-                        <input type="hidden" name="email"""));
-    }
-
-    @Test
     void testUninviteTeamMemberFormIllegalEmail(@Client("/") HttpClient httpClient) {
         final BlockingHttpClient client = httpClient.toBlocking();
         final String email = "*** illegal email ***";
@@ -235,7 +222,7 @@ class TeamControllerTest {
         }
 
         @Override
-        public void uninvite(@NotNull @Valid TeamMemberUninvite form, @Nullable Tenant tenant) {
+        public void uninvite(@NotNull @Valid TeamMemberDelete form, @Nullable Tenant tenant) {
 
         }
     }

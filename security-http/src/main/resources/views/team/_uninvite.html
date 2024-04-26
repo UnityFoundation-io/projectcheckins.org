@@ -1,6 +1,0 @@
-<th:block th:fragment="uninvite(breadcrumbs, email, uninviteForm)" xmlns:th="http://www.thymeleaf.org">
-    <nav th:replace="~{bootstrap/_breadcrumbs :: breadcrumbs(${breadcrumbs})}"></nav>
-    <h2><code th:text="${email}"/></h2>
-    <div class="alert alert-danger" role="alert" th:text="#{team.uninvite.warning}"/>
-    <form th:replace="~{fieldset/form :: form(${uninviteForm})}"></form>
-</th:block>
