@@ -9,6 +9,6 @@ import jakarta.validation.constraints.NotNull;
 import org.projectcheckins.security.TeamInvitation;
 
 @Serdeable
-public record InvitationRow(@NonNull @NotNull @Valid TeamInvitation invite,
+public record InvitationRow(@NonNull @NotNull @Email String email,
                             @Nullable Form deleteForm) {
 }
