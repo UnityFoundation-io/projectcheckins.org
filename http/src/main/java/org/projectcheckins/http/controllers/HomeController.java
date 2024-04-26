@@ -18,7 +18,7 @@ class HomeController {
     private static final Message MESSAGE_HOME = Message.of("Home", "home");
     public static final Breadcrumb BREADCRUMB_HOME = new Breadcrumb(MESSAGE_HOME, "/");
 
-    @GetHtml(rolesAllowed = SecurityRule.IS_AUTHENTICATED)
+    @GetHtml(uri = "/", rolesAllowed = SecurityRule.IS_AUTHENTICATED)
     HttpResponse<?> index() {
         return HttpResponse.seeOther(URI.create(QuestionController.PATH_LIST));
     }
