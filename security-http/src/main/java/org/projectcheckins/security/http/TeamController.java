@@ -32,11 +32,12 @@ import java.util.Map;
 
 @Controller
 class TeamController {
-
     public static final String SLASH = "/";
     public static final String DOT = ".";
     public static final String DOT_HTML = DOT + "html";
     public static final String ACTION_LIST = "list";
+    public static final String FRAGMENT_LIST = "_list.html";
+    public static final String FRAGMENT_CREATE = "_create.html";
     public static final String ACTION_CREATE = "create";
     public static final String ACTION_SAVE = "save";
     private static final String TEAM = "team";
@@ -53,7 +54,6 @@ class TeamController {
     // LIST
     public static final String PATH_LIST = PATH + SLASH + ACTION_LIST;
     private static final String VIEW_LIST = PATH + SLASH + ACTION_LIST + DOT_HTML;
-
     private static final Message MESSAGE_LIST = Message.of("Team members", TEAM + DOT + ACTION_LIST);
     public static final Breadcrumb BREADCRUMB_LIST = new Breadcrumb(MESSAGE_LIST, PATH_LIST);
     private static final List<Breadcrumb> BREADCRUMBS_LIST = List.of(BREADCRUMB_HOME, new Breadcrumb(MESSAGE_LIST));
@@ -80,11 +80,7 @@ class TeamController {
 
     @GetHtml(uri = PATH_LIST, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_LIST)
     Map<String, Object> memberList(@Nullable Tenant tenant) {
-        return Map.of(
-                MODEL_BREADCRUMBS, BREADCRUMBS_LIST,
-                MODEL_MEMBERS, teamService.findAll(tenant),
-                MODEL_INVITATIONS, teamService.findInvitations(tenant)
-        );
+        return listModel(tenant);
     }
 
     @GetHtml(uri = PATH_CREATE, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_CREATE)
@@ -93,8 +89,8 @@ class TeamController {
     }
 
     @PostForm(uri = PATH_SAVE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
-    HttpResponse<?> memberSave(@NonNull @NotNull @Valid @Body TeamMemberSave form,
-                               @NonNull @NotNull HttpRequest<?> request,
+    HttpResponse<?> memberSave(HttpRequest<?> request,
+                               @NonNull @NotNull @Valid @Body TeamMemberSave form,
                                @Nullable Tenant tenant) {
         teamService.save(form, tenant, getLocale(request), getSignUpUri(request).toString());
         return HttpResponse.seeOther(URI.create(PATH_LIST));
@@ -119,6 +115,14 @@ class TeamController {
         return Map.of(
                 MODEL_BREADCRUMBS, List.of(BREADCRUMB_HOME, BREADCRUMB_LIST, BREADCRUMB_CREATE),
                 MEMBER_FORM, form
+        );
+    }
+
+    private Map<String, Object> listModel(@Nullable Tenant tenant) {
+        return Map.of(
+                MODEL_BREADCRUMBS, BREADCRUMBS_LIST,
+                MODEL_MEMBERS, teamService.findAll(tenant),
+                MODEL_INVITATIONS, teamService.findInvitations(tenant)
         );
     }
 
