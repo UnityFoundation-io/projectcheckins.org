@@ -7,7 +7,6 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Error;
-import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.http.server.util.HttpHostResolver;
 import io.micronaut.http.server.util.locale.HttpLocaleResolver;
 import io.micronaut.http.uri.UriBuilder;
@@ -19,13 +18,13 @@ import io.micronaut.views.fields.FormGenerator;
 import io.micronaut.views.fields.messages.Message;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import org.projectcheckins.annotations.GetHtml;
 import org.projectcheckins.annotations.PostForm;
 import org.projectcheckins.bootstrap.Breadcrumb;
+import org.projectcheckins.security.TeamInvitation;
 import org.projectcheckins.security.forms.TeamMemberSave;
-import org.projectcheckins.security.forms.TeamMemberUninvite;
+import org.projectcheckins.security.forms.TeamInvitationDelete;
 import org.projectcheckins.security.services.TeamService;
 
 import java.net.URI;
@@ -42,8 +41,9 @@ class TeamController {
     public static final String ACTION_LIST = "list";
     public static final String ACTION_CREATE = "create";
     public static final String ACTION_SAVE = "save";
-    public static final String ACTION_UNINVITE = "uninvite";
+    public static final String ACTION_DELETE = "delete";
     private static final String TEAM = "team";
+    private static final String INVITATION = "invitation";
     public static final String PATH = SLASH + TEAM;
 
     private static final Message MESSAGE_HOME = Message.of("Home", "home");
@@ -51,9 +51,7 @@ class TeamController {
 
     private static final String MODEL_MEMBERS = "members";
     private static final String MODEL_INVITATIONS = "invitations";
-    private static final String MODEL_EMAIL = "email";
     private static final String MEMBER_FORM = "memberForm";
-    private static final String UNINVITE_FORM = "uninviteForm";
     private static final String MODEL_BREADCRUMBS = "breadcrumbs";
 
     // LIST
@@ -73,11 +71,8 @@ class TeamController {
     private static final String PATH_SAVE = PATH + SLASH + ACTION_SAVE;
 
     // UNINVITE
-    private static final String PATH_UNINVITE = PATH + SLASH + ACTION_UNINVITE;
-    private static final String VIEW_UNINVITE = PATH + SLASH + ACTION_UNINVITE + DOT_HTML;
-    private static final Message MESSAGE_UNINVITE = Message.of("Uninvite", TEAM + DOT + ACTION_UNINVITE);
-    private static final Breadcrumb BREADCRUMB_UNINVITE = new Breadcrumb(MESSAGE_UNINVITE);
-
+    private static final String PATH_INVITATION_DELETE = PATH + SLASH + INVITATION + SLASH + ACTION_DELETE;
+    private static final Message MESSAGE_DELETE = Message.of("Delete", "action.delete");
     private final TeamService teamService;
     private final FormGenerator formGenerator;
     private final HttpHostResolver httpHostResolver;
@@ -96,7 +91,15 @@ class TeamController {
                 MODEL_BREADCRUMBS, BREADCRUMBS_LIST,
                 MODEL_MEMBERS, teamService.findAll(tenant),
                 MODEL_INVITATIONS, teamService.findInvitations(tenant)
+                        .stream()
+                        .map(i -> new InvitationRow(i.email(), deleteInvitationForm(i)))
+                        .toList()
         );
+    }
+
+    @NonNull
+    private Form deleteInvitationForm(@NonNull TeamInvitation invitation) {
+        return formGenerator.generate(PATH_INVITATION_DELETE, new TeamInvitationDelete(invitation.email()), MESSAGE_DELETE);
     }
 
     @GetHtml(uri = PATH_CREATE, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_CREATE)
@@ -112,25 +115,15 @@ class TeamController {
         return HttpResponse.seeOther(URI.create(PATH_LIST));
     }
 
-    @GetHtml(uri = PATH_UNINVITE, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_UNINVITE)
-    Map<String, Object> memberUninviteForm(@NonNull @NotNull @Email @QueryValue String email) {
-        final Form form = formGenerator.generate(PATH_UNINVITE, new TeamMemberUninvite(email), MESSAGE_UNINVITE);
-        return Map.of(
-                MODEL_BREADCRUMBS, List.of(BREADCRUMB_HOME, BREADCRUMB_LIST, BREADCRUMB_UNINVITE),
-                MODEL_EMAIL, email,
-                UNINVITE_FORM, form
-        );
-    }
-
-    @PostForm(uri = PATH_UNINVITE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
-    HttpResponse<?> memberUninvite(@NonNull @NotNull @Valid @Body TeamMemberUninvite form, @Nullable Tenant tenant) {
+    @PostForm(uri = PATH_INVITATION_DELETE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
+    HttpResponse<?> teamInvitationDelete(@NonNull @NotNull @Valid @Body TeamInvitationDelete form, @Nullable Tenant tenant) {
         teamService.uninvite(form, tenant);
         return HttpResponse.seeOther(URI.create(PATH_LIST));
     }
 
     @Error(exception = ConstraintViolationException.class)
     public HttpResponse<?> onConstraintViolationException(HttpRequest<?> request, ConstraintViolationException ex) {
-        if (PATH_UNINVITE.equals(request.getPath())) {
+        if (PATH_INVITATION_DELETE.equals(request.getPath())) {
             return HttpResponse.seeOther(URI.create(PATH_LIST));
         }
         return request.getBody(TeamMemberSave.class)
