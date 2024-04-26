@@ -37,7 +37,7 @@ class AnswerSaveFormGeneratorImpl implements AnswerSaveFormGenerator {
         return formGenerator.generate(actionFunction.apply(preferedFormat), instance);
     }
 
-    private Format formatByAuthentication(Authentication authentication) {
+    private Format getFormatByAuthentication(Authentication authentication) {
         return profileRepository.findByAuthentication(authentication)
                 .map(Profile::format)
                 .orElseThrow(UserNotFoundException::new);
