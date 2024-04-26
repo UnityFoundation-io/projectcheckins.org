@@ -38,8 +38,6 @@ class TeamController {
     public static final String DOT = ".";
     public static final String DOT_HTML = DOT + "html";
     public static final String ACTION_LIST = "list";
-    public static final String FRAGMENT_LIST = "_list.html";
-    public static final String FRAGMENT_CREATE = "_create.html";
     public static final String ACTION_CREATE = "create";
     public static final String ACTION_SAVE = "save";
     public static final String ACTION_DELETE = "delete";
