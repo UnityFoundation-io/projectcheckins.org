@@ -1,17 +1,7 @@
 <th:block th:fragment="list(breadcrumbs,members,invitations)" xmlns:th="http://www.thymeleaf.org">
     <nav th:replace="~{bootstrap/_breadcrumbs :: breadcrumbs(${breadcrumbs})}"></nav>
     <article>
-        <header><h1 th:text="#{team.list}"></h1></header>
-        <table class="table table-striped">
-            <tbody>
-                <tr th:each="member : ${members}">
-                    <th scope="row">
-                        <span th:unless="${member.fullName.empty}" th:text="${member.fullName}"></span>
-                        <code th:if="${member.fullName.empty}" th:text="${member.email}"></code>
-                    </th>
-                </tr>
-            </tbody>
-        </table>
+        <div th:replace="~{team/_members :: members(${members})}"></div>
         <div th:replace="~{team/_invitations :: invitations(${invitations})}"></div>
     </article>
 </th:block>
