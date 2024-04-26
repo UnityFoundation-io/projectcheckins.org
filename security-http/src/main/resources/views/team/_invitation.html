@@ -1,6 +1,6 @@
 <th:block th:fragment="invitation(invitation)" xmlns:th="http://www.thymeleaf.org">
     <tr>
-        <th scope="row"><code th:text="${invitation.invite.email}"></code></th>
+        <th scope="row"><code th:text="${invitation.email}"></code></th>
         <td class="text-end">
         <th:block th:if="${invitation.deleteForm}">
             <div>

@@ -22,10 +22,12 @@ class InvitationRowTest {
 
     @Test
     void validation(Validator validator) {
-        assertThat(validator.validate(new InvitationRow(new TeamInvitationRecord("example@projectcheckins.org", null), null)))
+        assertThat(validator.validate(new InvitationRow("example@projectcheckins.org", null)))
                 .isValid();
         assertThat(validator.validate(new InvitationRow(null, null)))
-                .hasNotNullViolation("invite");
+                .hasNotNullViolation("email");
+        assertThat(validator.validate(new InvitationRow("email", null)))
+                .hasMalformedEmailViolation("email");
     }
 
     @Test
@@ -40,23 +42,4 @@ class InvitationRowTest {
                 .doesNotThrowAnyException();
     }
 
-    @Requires(property = "spec.name", value = "InvitationRowTest")
-    @Replaces(UserRepository.class)
-    @Singleton
-    static class UserRepositoryMock extends SecondaryUserRepository {
-        @Override
-        public boolean existsByEmail(String email, Tenant tenant) {
-            return false;
-        }
-    }
-
-    @Requires(property = "spec.name", value = "InvitationRowTest")
-    @Replaces(TeamInvitationRepository.class)
-    @Singleton
-    static class TeamInvitationRepositoryMock extends SecondaryTeamInvitationRepository {
-        @Override
-        public boolean existsByEmail(String email, Tenant tenant) {
-            return false;
-        }
-    }
 }

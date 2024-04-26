@@ -92,7 +92,7 @@ class TeamController {
                 MODEL_MEMBERS, teamService.findAll(tenant),
                 MODEL_INVITATIONS, teamService.findInvitations(tenant)
                         .stream()
-                        .map(i -> new InvitationRow(i, deleteInvitationForm(i)))
+                        .map(i -> new InvitationRow(i.email(), deleteInvitationForm(i)))
                         .toList()
         );
     }
