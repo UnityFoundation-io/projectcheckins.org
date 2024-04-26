@@ -24,7 +24,7 @@ import org.projectcheckins.annotations.PostForm;
 import org.projectcheckins.bootstrap.Breadcrumb;
 import org.projectcheckins.security.TeamInvitation;
 import org.projectcheckins.security.forms.TeamMemberSave;
-import org.projectcheckins.security.forms.TeamMemberDelete;
+import org.projectcheckins.security.forms.TeamInvitationDelete;
 import org.projectcheckins.security.services.TeamService;
 
 import java.net.URI;
@@ -99,7 +99,7 @@ class TeamController {
 
     @NonNull
     private Form deleteInvitationForm(@NonNull TeamInvitation invitation) {
-        return formGenerator.generate(PATH_INVITATION_DELETE, new TeamMemberDelete(invitation.email()), MESSAGE_DELETE);
+        return formGenerator.generate(PATH_INVITATION_DELETE, new TeamInvitationDelete(invitation.email()), MESSAGE_DELETE);
     }
 
     @GetHtml(uri = PATH_CREATE, rolesAllowed = SecurityRule.IS_AUTHENTICATED, view = VIEW_CREATE)
@@ -116,7 +116,7 @@ class TeamController {
     }
 
     @PostForm(uri = PATH_INVITATION_DELETE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
-    HttpResponse<?> teamInvitationDelete(@NonNull @NotNull @Valid @Body TeamMemberDelete form, @Nullable Tenant tenant) {
+    HttpResponse<?> teamInvitationDelete(@NonNull @NotNull @Valid @Body TeamInvitationDelete form, @Nullable Tenant tenant) {
         teamService.uninvite(form, tenant);
         return HttpResponse.seeOther(URI.create(PATH_LIST));
     }

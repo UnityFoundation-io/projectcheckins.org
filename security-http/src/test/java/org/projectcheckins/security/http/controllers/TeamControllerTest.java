@@ -22,7 +22,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.projectcheckins.security.api.PublicProfile;
 import org.projectcheckins.security.forms.TeamMemberSave;
-import org.projectcheckins.security.forms.TeamMemberDelete;
+import org.projectcheckins.security.forms.TeamInvitationDelete;
 import org.projectcheckins.security.services.TeamService;
 import org.projectcheckins.security.services.TeamServiceImpl;
 import org.projectcheckins.security.TeamInvitationRecord;
@@ -222,7 +222,7 @@ class TeamControllerTest {
         }
 
         @Override
-        public void uninvite(@NotNull @Valid TeamMemberDelete form, @Nullable Tenant tenant) {
+        public void uninvite(@NotNull @Valid TeamInvitationDelete form, @Nullable Tenant tenant) {
 
         }
     }

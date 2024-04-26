@@ -6,4 +6,4 @@ import io.micronaut.views.fields.annotations.InputHidden;
 import jakarta.validation.constraints.NotBlank;
 
 @Serdeable
-public record TeamMemberDelete(@NonNull @NotBlank @InputHidden String email) { }
+public record TeamInvitationDelete(@NonNull @NotBlank @InputHidden String email) { }

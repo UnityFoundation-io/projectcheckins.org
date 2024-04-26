@@ -10,17 +10,17 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.projectcheckins.test.ValidationAssert.assertThat;
 
 @MicronautTest(startApplication = false)
-class TeamMemberDeleteTest {
+class TeamInvitationDeleteTest {
 
-    final static Argument<TeamMemberDelete> ARGUMENT = Argument.of(TeamMemberDelete.class);
+    final static Argument<TeamInvitationDelete> ARGUMENT = Argument.of(TeamInvitationDelete.class);
 
     @Test
     void emailIsRequired(Validator validator) {
-        assertThat(validator.validate(new TeamMemberDelete(null)))
+        assertThat(validator.validate(new TeamInvitationDelete(null)))
                 .hasNotBlankViolation("email");
-        assertThat(validator.validate(new TeamMemberDelete("")))
+        assertThat(validator.validate(new TeamInvitationDelete("")))
                 .hasNotBlankViolation("email");
-        assertThat(validator.validate(new TeamMemberDelete("example@projectcheckins.org")))
+        assertThat(validator.validate(new TeamInvitationDelete("example@projectcheckins.org")))
                 .isValid();
     }
 
