@@ -130,7 +130,7 @@ class AnswerController {
     }
 
     @GetHtml(uri = PATH_EDIT, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
-    HttpResponse<?> answerEdit(HttpRequest<?> request, @PathVariable @NotBlank String questionId,
+    HttpResponse<?> answerEdit(@NonNull @NotNull HttpRequest<?> request, @PathVariable @NotBlank String questionId,
                                @PathVariable @NotBlank String id,
                                @NonNull Authentication authentication,
                                @Nullable Locale locale,
