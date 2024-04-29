@@ -68,7 +68,7 @@ class ProfileController {
     }
 
     @GetHtml(uri = PATH_EDIT, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
-    HttpResponse<?> profileEdit(HttpRequest<?> request,
+    HttpResponse<?> profileEdit(@NonNull @NotNull HttpRequest<?> request,
                                 @NonNull @NotNull Authentication authentication,
                                 @Nullable Tenant tenant) {
         return profileRepository.findByAuthentication(authentication, tenant)
