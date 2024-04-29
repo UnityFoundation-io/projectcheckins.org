@@ -178,6 +178,12 @@ class SecurityControllerTest {
                 "password", "new password",
                 "repeatPassword", "new password"));
         assertThat(client.retrieve(request))
+                .containsOnlyOnce("""
+                        <li class="breadcrumb-item"><a href="/">""")
+                .containsOnlyOnce("""
+                        <li class="breadcrumb-item"><a href="/profile/show">""")
+                .containsOnlyOnce("""
+                        <li class="breadcrumb-item"><a href="/security/changePassword">""")
                 .containsOnlyOnce("Current password is incorrect. Please try again.");
     }
 
@@ -190,6 +196,12 @@ class SecurityControllerTest {
                 "password", "new password one",
                 "repeatPassword", "new password two"));
         assertThat(client.retrieve(request))
+                .containsOnlyOnce("""
+                        <li class="breadcrumb-item"><a href="/">""")
+                .containsOnlyOnce("""
+                        <li class="breadcrumb-item"><a href="/profile/show">""")
+                .containsOnlyOnce("""
+                        <li class="breadcrumb-item"><a href="/security/changePassword">""")
                 .containsOnlyOnce("Passwords do not match");
     }
 
