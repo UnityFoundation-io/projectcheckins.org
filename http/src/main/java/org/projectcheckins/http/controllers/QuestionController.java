@@ -195,7 +195,7 @@ class QuestionController {
     }
 
     @NonNull
-    private HttpResponse<?> unprocessableEntity(HttpRequest<?> request,
+    private HttpResponse<?> unprocessableEntity(@NonNull @NotNull HttpRequest<?> request,
                                                 Object model,
                                                 String contentType,
                                                 String view) {
