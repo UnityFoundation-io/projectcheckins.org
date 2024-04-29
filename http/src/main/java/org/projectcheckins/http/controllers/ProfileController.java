@@ -58,7 +58,7 @@ class ProfileController {
     }
 
     @GetHtml(uri = PATH_SHOW, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
-    HttpResponse<?> profileShow(HttpRequest<?> request,
+    HttpResponse<?> profileShow(@NonNull @NotNull HttpRequest<?> request,
                                 @NonNull @NotNull Authentication authentication,
                                 @Nullable Tenant tenant) {
         return showModel(authentication, tenant)
