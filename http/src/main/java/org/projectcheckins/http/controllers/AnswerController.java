@@ -15,6 +15,7 @@ import io.micronaut.views.ModelAndView;
 import io.micronaut.views.fields.Form;
 import io.micronaut.views.fields.FormGenerator;
 import io.micronaut.views.fields.messages.Message;
+import io.micronaut.views.turbo.http.TurboMediaType;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -28,6 +29,8 @@ import org.projectcheckins.core.api.Question;
 import org.projectcheckins.core.forms.*;
 import org.projectcheckins.core.services.AnswerService;
 import org.projectcheckins.core.services.QuestionService;
+import org.projectcheckins.security.http.TurboFrameUtils;
+import org.projectcheckins.security.http.TurboStreamUtils;
 
 import java.net.URI;
 import java.util.List;
@@ -38,6 +41,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static org.projectcheckins.http.controllers.ApiConstants.SLASH;
 
 @Controller
 class AnswerController {
@@ -77,24 +82,30 @@ class AnswerController {
     public static final BiFunction<String, String, URI> PATH_SHOW_URI_BUILDER  = (questionId, id) -> UriBuilder.of(QuestionController.PATH).path(questionId).path(ANSWER).path(id).path(ApiConstants.ACTION_SHOW).build();
     public static final Function<Answer, URI> PATH_SHOW_BUILDER  = answer -> PATH_SHOW_URI_BUILDER.apply(answer.questionId(), answer.id());
     private static final String VIEW_SHOW = ANSWER + ApiConstants.VIEW_SHOW;
+    public static final String VIEW_SHOW_FRAGMENT =  ANSWER + SLASH + ApiConstants.FRAGMENT_SHOW;
 
     // EDIT
     private static final String PATH_EDIT = PATH + ApiConstants.PATH_EDIT;
     private static final String VIEW_EDIT = ANSWER + ApiConstants.VIEW_EDIT;
+    public static final String VIEW_EDIT_FRAGMENT =  ANSWER + SLASH + ApiConstants.FRAGMENT_EDIT;
     private static final Breadcrumb BREADCRUMB_EDIT = new Breadcrumb(Message.of("Edit Answer", ANSWER + ApiConstants.DOT + ApiConstants.ACTION_EDIT));
 
     private final QuestionService questionService;
     private final AnswerService answerService;
     private final FormGenerator formGenerator;
+    private final AnswerSaveFormGenerator answerSaveFormGenerator;
+
     private final HttpLocaleResolver httpLocaleResolver;
 
     AnswerController(QuestionService questionService,
                      AnswerService answerService,
                      FormGenerator formGenerator,
+                     AnswerSaveFormGenerator answerSaveFormGenerator,
                      HttpLocaleResolver httpLocaleResolver) {
         this.questionService = questionService;
         this.answerService = answerService;
         this.formGenerator = formGenerator;
+        this.answerSaveFormGenerator = answerSaveFormGenerator;
         this.httpLocaleResolver = httpLocaleResolver;
     }
 
@@ -124,13 +135,16 @@ class AnswerController {
                                @Nullable Tenant tenant) {
         Locale locale = httpLocaleResolver.resolveOrDefault(request);
         return answerShowModel(questionId, id, authentication, locale, tenant)
-                .map(model -> new ModelAndView<>(VIEW_SHOW, model))
+                .map(model -> TurboFrameUtils.turboFrame(request)
+                        .map(frame -> (Object) TurboFrameUtils.turboFrame(frame, VIEW_SHOW_FRAGMENT, model))
+                        .orElseGet(() -> new ModelAndView<>(VIEW_SHOW, model)))
                 .map(HttpResponse::ok)
                 .orElseGet(NotFoundController::notFoundRedirect);
     }
 
     @GetHtml(uri = PATH_EDIT, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
-    HttpResponse<?> answerEdit(@NonNull @NotNull HttpRequest<?> request, @PathVariable @NotBlank String questionId,
+    HttpResponse<?> answerEdit(@NonNull @NotNull HttpRequest<?> request,
+                               @PathVariable @NotBlank String questionId,
                                @PathVariable @NotBlank String id,
                                @NonNull Authentication authentication,
                                @Nullable Locale locale,
@@ -138,7 +152,9 @@ class AnswerController {
         return questionService.findById(questionId, tenant)
                 .flatMap(question -> answerService.findById(id, authentication, tenant)
                         .map(answer -> updateAnswerModel(question, answer, locale)))
-                .map(model -> new ModelAndView<>(VIEW_EDIT, model))
+                .map(model -> TurboFrameUtils.turboFrame(request)
+                        .map(frame -> (Object) TurboFrameUtils.turboFrame(frame, VIEW_EDIT_FRAGMENT, model))
+                        .orElseGet(() -> new ModelAndView<>(VIEW_EDIT, model)))
                 .map(HttpResponse::ok)
                 .orElseGet(NotFoundController::notFoundRedirect);
     }
@@ -151,6 +167,12 @@ class AnswerController {
                                  @Nullable Tenant tenant,
                                  @Body @NonNull @NotNull @Valid AnswerUpdateRecord answerUpdate) {
         answerService.update(authentication, questionId, id, answerUpdate, tenant);
+        if (TurboMediaType.acceptsTurboStream(request)) {
+            return answerShowModel(questionId, id, authentication, httpLocaleResolver.resolveOrDefault(request), tenant)
+                    .flatMap(model -> TurboStreamUtils.turboStream(request, VIEW_SHOW_FRAGMENT, model))
+                    .map(HttpResponse::ok)
+                    .orElseGet(NotFoundController::notFoundRedirect);
+        }
         return HttpResponse.seeOther(PATH_SHOW_URI_BUILDER.apply(questionId, id));
     }
 
@@ -169,9 +191,10 @@ class AnswerController {
         return answerForm(request)
                 .map(f -> questionService.findById(f.questionId(), tenant)
                         .map(q -> QuestionController.showModel(answerService, q, generateForm(f, ex), auth, tenant))
-                        .map(model -> new ModelAndView<>(QuestionController.VIEW_SHOW, model))
+                        .map(model -> TurboMediaType.acceptsTurboStream(request) ? TurboStreamUtils.turboStream(request, VIEW_SHOW_FRAGMENT, model) : new ModelAndView<>(QuestionController.VIEW_SHOW, model))
                         .map(b -> HttpResponse.unprocessableEntity().body(b))
-                        .orElseGet(NotFoundController::notFoundRedirect));
+                .orElseGet(NotFoundController::notFoundRedirect));
+
     }
 
     private Optional<? extends AnswerForm> answerForm(HttpRequest<?> request) {
@@ -268,6 +291,12 @@ class AnswerController {
             return HttpResponse.unprocessableEntity();
         }
         answerService.save(authentication, new AnswerSave(form.questionId(), form.answerDate(), format, text), tenant);
+        if (TurboMediaType.acceptsTurboStream(request)) {
+            return QuestionController.showModel(answerService, questionService, answerSaveFormGenerator, questionId, authentication, tenant)
+                    .flatMap(model -> TurboStreamUtils.turboStream(request, QuestionController.VIEW_SHOW_FRAGMENT, model))
+                    .map(HttpResponse::ok)
+                    .orElseGet(NotFoundController::notFoundRedirect);
+        }
         return HttpResponse.seeOther(QuestionController.PATH_SHOW_BUILDER.apply(questionId));
     }
 

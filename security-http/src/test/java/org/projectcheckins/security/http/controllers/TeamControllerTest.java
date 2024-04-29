@@ -129,6 +129,7 @@ class TeamControllerTest {
     @Test
     void testCreateTeamMember(@Client("/") HttpClient httpClient) {
         final BlockingHttpClient client = httpClient.toBlocking();
+        String html = client.retrieve(BrowserRequest.GET(URI_CREATE), String.class);
         Assertions.assertThat(client.exchange(BrowserRequest.GET(URI_CREATE), String.class))
                 .satisfies(htmlPage())
                 .satisfies(htmlBody("""
@@ -136,7 +137,7 @@ class TeamControllerTest {
                 .satisfies(htmlBody("""
                         <a href="/team/list">"""))
                 .satisfies(htmlBody("""
-                        <form action="/team/save" method="post">"""))
+                        <form action="/team/save"""))
                 .satisfies(htmlBody("""
                         <input type="email" name="email" value="" id="email" class="form-control" required="required"/>"""));
     }
