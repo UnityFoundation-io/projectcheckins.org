@@ -144,7 +144,7 @@ class AnswerController {
     }
 
     @PostForm(uri = PATH_ANSWER_UPDATE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
-    HttpResponse<?> answerUpdate(HttpRequest<?> request,
+    HttpResponse<?> answerUpdate(@NonNull @NotNull HttpRequest<?> request,
                                  @PathVariable String questionId,
                                  @PathVariable String id,
                                  @NonNull Authentication authentication,
