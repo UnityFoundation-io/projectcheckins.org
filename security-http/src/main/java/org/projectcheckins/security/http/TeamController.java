@@ -99,7 +99,7 @@ class TeamController {
     }
 
     @PostForm(uri = PATH_SAVE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
-    HttpResponse<?> memberSave(HttpRequest<?> request,
+    HttpResponse<?> memberSave(@NonNull @NotNull HttpRequest<?> request,
                                @NonNull @NotNull @Valid @Body TeamMemberSave form,
                                @Nullable Tenant tenant) {
         teamService.save(form, tenant, getLocale(request), getSignUpUri(request).toString());
