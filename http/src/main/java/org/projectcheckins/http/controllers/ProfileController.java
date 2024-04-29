@@ -80,7 +80,7 @@ class ProfileController {
 
     @PostForm(uri = PATH_UPDATE, rolesAllowed = SecurityRule.IS_AUTHENTICATED)
     HttpResponse<?> profileUpdate(
-            HttpRequest<?> request,
+            @NonNull @NotNull HttpRequest<?> request,
             @NonNull @NotNull Authentication authentication,
             @NonNull @NotNull @Valid @Body ProfileUpdate profileUpdate,
             @Nullable Tenant tenant) {
