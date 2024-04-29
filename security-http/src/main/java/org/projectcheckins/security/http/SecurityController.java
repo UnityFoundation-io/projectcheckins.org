@@ -214,7 +214,8 @@ class SecurityController {
             }
             final PasswordForm passwordForm = new PasswordForm(authentication);
             final Form form = formGenerator.generate(PATH_PASSWORD_UPDATE, passwordForm, ex);
-            final Map<String, Object> model = Collections.singletonMap(MODEL_PASSWORD_FORM, form);
+            final Map<String, Object> model = Map.of(MODEL_PASSWORD_FORM, form,
+                    MODEL_BREADCRUMBS, List.of(BREADCRUMB_HOME, BREADCRUMB_PROFILE_SHOW, BREADCRUMB_PASSWORD_CHANGE, BREADCRUMB_PASSWORD_CHANGED));
             return HttpResponse.ok().body(new ModelAndView<>(VIEW_PASSWORD_CHANGE, model));
         } else if (request.getPath().equals(PATH_PASSWORD_FORGOT)) {
             return request.getBody(ForgotPasswordForm.class)
