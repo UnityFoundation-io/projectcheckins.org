@@ -25,6 +25,7 @@ import org.projectcheckins.security.api.PublicProfile;
 import org.projectcheckins.security.forms.TeamMemberDelete;
 import org.projectcheckins.security.forms.TeamMemberSave;
 import org.projectcheckins.security.forms.TeamInvitationDelete;
+import org.projectcheckins.security.forms.TeamMemberUpdate;
 import org.projectcheckins.security.services.TeamService;
 import org.projectcheckins.security.services.TeamServiceImpl;
 import org.projectcheckins.security.TeamInvitationRecord;
@@ -313,6 +314,9 @@ class TeamControllerTest {
         public void uninvite(@NotNull @Valid TeamInvitationDelete form, @Nullable Tenant tenant) {
 
         }
+
+        @Override
+        public void update(@NotNull @Valid TeamMemberUpdate form, @Nullable Tenant tenant) {}
     }
 
     record PublicProfileRecord(String id, String email, String fullName, boolean isAdmin) implements PublicProfile {
