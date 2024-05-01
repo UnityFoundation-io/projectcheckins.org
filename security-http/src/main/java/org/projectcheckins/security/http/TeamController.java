@@ -58,7 +58,6 @@ class TeamController {
     private static final String MODEL_INVITATIONS = "invitations";
     private static final String MEMBER_FORM = "memberForm";
     private static final String MODEL_BREADCRUMBS = "breadcrumbs";
-    private static final String MODEL_IS_ADMIN = "isAdmin";
 
     // LIST
     public static final String PATH_LIST = PATH + SLASH + ACTION_LIST;
@@ -163,7 +162,6 @@ class TeamController {
         final String self = authentication.getName();
         return Map.of(
                 MODEL_BREADCRUMBS, BREADCRUMBS_LIST,
-                MODEL_IS_ADMIN, isAdmin,
                 MODEL_MEMBERS, teamService.findAll(tenant)
                         .stream()
                         .map(m -> new MemberRow(m.email(), m.fullName(), isAdmin && !m.id().equals(self) ? deleteMemberForm(m) : null))
