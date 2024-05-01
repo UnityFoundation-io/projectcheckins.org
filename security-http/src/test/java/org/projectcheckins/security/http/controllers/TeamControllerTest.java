@@ -56,13 +56,15 @@ class TeamControllerTest {
     static final PublicProfile USER_1 = new PublicProfileRecord(
             "user1",
             "user1@email.com",
-            "User One"
+            "User One",
+            true
     );
 
     static final PublicProfile USER_2 = new PublicProfileRecord(
             "user2",
             "user2@email.com",
-            ""
+            "",
+            false
     );
 
     static final UserState USER_STATE_1 = new UserState() {
@@ -251,6 +253,6 @@ class TeamControllerTest {
         }
     }
 
-    record PublicProfileRecord(String id, String email, String fullName) implements PublicProfile {
+    record PublicProfileRecord(String id, String email, String fullName, boolean isAdmin) implements PublicProfile {
     }
 }
