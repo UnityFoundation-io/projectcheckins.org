@@ -14,6 +14,7 @@ import io.micronaut.http.client.annotation.Client;
 import io.micronaut.http.uri.UriBuilder;
 import io.micronaut.multitenancy.Tenant;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -113,9 +114,13 @@ class TeamControllerTest {
 
     static final TeamInvitation INVITATION_1 = new TeamInvitationRecord("pending@email.com", null);
 
+    @Inject
+    AuthenticationFetcherMock authMock;
+
     @Test
     void testListTeamMembers(@Client("/") HttpClient httpClient) {
         final BlockingHttpClient client = httpClient.toBlocking();
+        authMock.setAuthentication(AbstractAuthenticationFetcher.ADMIN);
         Assertions.assertThat(client.exchange(BrowserRequest.GET(URI_LIST), String.class))
                 .satisfies(htmlPage())
                 .satisfies(htmlBody("""
@@ -129,8 +134,25 @@ class TeamControllerTest {
     }
 
     @Test
+    void testListTeamMembersNonAdmin(@Client("/") HttpClient httpClient) {
+        final BlockingHttpClient client = httpClient.toBlocking();
+        authMock.setAuthentication(AbstractAuthenticationFetcher.SDELAMO);
+        Assertions.assertThat(client.exchange(BrowserRequest.GET(URI_LIST), String.class))
+                .satisfies(htmlPage())
+                .satisfies(htmlBody("""
+                        <span>User One</span>"""))
+                .satisfies(htmlBody("""
+                        <code>user2@email.com</code>"""))
+                .satisfies(htmlBody(body -> Assertions.assertThat(body).doesNotContain("""
+                        <code>pending@email.com</code>""")))
+                .satisfies(htmlBody(body -> Assertions.assertThat(body).doesNotContain("""
+                        <a href="/team/create">""")));
+    }
+
+    @Test
     void testCreateTeamMember(@Client("/") HttpClient httpClient) {
         final BlockingHttpClient client = httpClient.toBlocking();
+        authMock.setAuthentication(AbstractAuthenticationFetcher.ADMIN);
         Assertions.assertThat(client.exchange(BrowserRequest.GET(URI_CREATE), String.class))
                 .satisfies(htmlPage())
                 .satisfies(htmlBody("""
@@ -144,8 +166,17 @@ class TeamControllerTest {
     }
 
     @Test
+    void testCreateTeamMemberNonAdmin(@Client("/") HttpClient httpClient) {
+        final BlockingHttpClient client = httpClient.toBlocking();
+        authMock.setAuthentication(AbstractAuthenticationFetcher.SDELAMO);
+        Assertions.assertThat(client.exchange(BrowserRequest.GET(URI_CREATE), String.class))
+                .satisfies(redirection("/unauthorized"));
+    }
+
+    @Test
     void testSaveTeamMember(@Client("/") HttpClient httpClient) {
         final BlockingHttpClient client = httpClient.toBlocking();
+        authMock.setAuthentication(AbstractAuthenticationFetcher.ADMIN);
         final Map<String, Object> body = Map.of("email", "user3@email.com");
         final HttpRequest<?> request = BrowserRequest.POST(URI_SAVE, body);
         Assertions.assertThat(client.exchange(request))
@@ -154,8 +185,19 @@ class TeamControllerTest {
     }
 
     @Test
+    void testSaveTeamMemberNonAdmin(@Client("/") HttpClient httpClient) {
+        final BlockingHttpClient client = httpClient.toBlocking();
+        authMock.setAuthentication(AbstractAuthenticationFetcher.SDELAMO);
+        final Map<String, Object> body = Map.of("email", "user3@email.com");
+        final HttpRequest<?> request = BrowserRequest.POST(URI_SAVE, body);
+        Assertions.assertThat(client.exchange(request))
+                .satisfies(redirection("/unauthorized"));
+    }
+
+    @Test
     void testSaveTeamMemberInvalidEmail(@Client("/") HttpClient httpClient) {
         final BlockingHttpClient client = httpClient.toBlocking();
+        authMock.setAuthentication(AbstractAuthenticationFetcher.ADMIN);
         final Map<String, Object> body = Map.of("email", "Invalid Email");
         final HttpRequest<?> request = BrowserRequest.POST(URI_SAVE, body);
         HttpClientResponseExceptionAssert.assertThatThrowsHttpClientResponseException(() -> client.exchange(request))
@@ -165,6 +207,7 @@ class TeamControllerTest {
     @Test
     void testUninviteTeamMemberFormIllegalEmail(@Client("/") HttpClient httpClient) {
         final BlockingHttpClient client = httpClient.toBlocking();
+        authMock.setAuthentication(AbstractAuthenticationFetcher.ADMIN);
         final String email = "*** illegal email ***";
         Assertions.assertThat(client.exchange(BrowserRequest.GET(UriBuilder.of(URI_UNINVITE).queryParam("email", email).toString()), String.class))
                 .satisfies(redirection(URI_LIST));
@@ -173,14 +216,25 @@ class TeamControllerTest {
     @Test
     void testUninviteTeamMember(@Client("/") HttpClient httpClient) {
         final BlockingHttpClient client = httpClient.toBlocking();
+        authMock.setAuthentication(AbstractAuthenticationFetcher.ADMIN);
         final String email = INVITATION_1.email();
         Assertions.assertThat(client.exchange(BrowserRequest.POST(URI_UNINVITE, Map.of("email", email)), String.class))
                 .satisfies(redirection(URI_LIST));
     }
 
     @Test
+    void testUninviteTeamMemberNonAdmin(@Client("/") HttpClient httpClient) {
+        final BlockingHttpClient client = httpClient.toBlocking();
+        authMock.setAuthentication(AbstractAuthenticationFetcher.SDELAMO);
+        final String email = INVITATION_1.email();
+        Assertions.assertThat(client.exchange(BrowserRequest.POST(URI_UNINVITE, Map.of("email", email)), String.class))
+                .satisfies(redirection("/unauthorized"));
+    }
+
+    @Test
     void testRemoveTeamMemberIllegalEmail(@Client("/") HttpClient httpClient) {
         final BlockingHttpClient client = httpClient.toBlocking();
+        authMock.setAuthentication(AbstractAuthenticationFetcher.ADMIN);
         final String email = "*** illegal email ***";
         Assertions.assertThat(client.exchange(BrowserRequest.GET(UriBuilder.of(URI_DELETE).queryParam("email", email).toString()), String.class))
                 .satisfies(redirection(URI_LIST));
@@ -189,18 +243,26 @@ class TeamControllerTest {
     @Test
     void testRemoveTeamMember(@Client("/") HttpClient httpClient) {
         final BlockingHttpClient client = httpClient.toBlocking();
+        authMock.setAuthentication(AbstractAuthenticationFetcher.ADMIN);
         final Map<String, Object> body = Map.of("email", "user3@email.com");
         final HttpRequest<?> request = BrowserRequest.POST(URI_DELETE, body);
         Assertions.assertThat(client.exchange(request))
                 .satisfies(redirection(URI_LIST));
     }
 
+    @Test
+    void testRemoveTeamMemberNonAdmin(@Client("/") HttpClient httpClient) {
+        final BlockingHttpClient client = httpClient.toBlocking();
+        authMock.setAuthentication(AbstractAuthenticationFetcher.SDELAMO);
+        final Map<String, Object> body = Map.of("email", "user3@email.com");
+        final HttpRequest<?> request = BrowserRequest.POST(URI_DELETE, body);
+        Assertions.assertThat(client.exchange(request))
+                .satisfies(redirection("/unauthorized"));
+    }
+
     @Requires(property = "spec.name", value = "TeamControllerTest")
     @Singleton
     static class AuthenticationFetcherMock extends AbstractAuthenticationFetcher {
-        AuthenticationFetcherMock() {
-            setAuthentication(AbstractAuthenticationFetcher.SDELAMO);
-        }
     }
 
     @Requires(property = "spec.name", value = "TeamControllerTest")
