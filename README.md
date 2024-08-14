@@ -66,4 +66,3 @@ Configure the following environment variables:
 | `EMAIL_SENDER`                                                              |         | Gmail address                                                                |
 | `GMAIL_APP_SPECIFIC_PASSWORD`                                               |         | [Gmail App specific password](https://myaccount.google.com/apppasswords)     |
 | `MICRONAUT_SECURITY_TOKEN_JWT_SIGNATURES_SECRET_GENERATOR_SECRET`           |         | Secret                                                                       |
-		
